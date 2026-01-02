@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.experimental.UtilityClass;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -14,15 +15,18 @@ import java.util.List;
 @UtilityClass
 public class jwtUtil
 {
+    @Value("${Jwt.Secret}")
     private String jwtSecret;
+    @Value("${Jwt.access-token-expiration}")
     private long accessTokenExpiration;
+    @Value("${Jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
     private Key getSigningKey()
         {
             return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         }
 
-    private String generateAccessToken(long userId, String username , List<String> roles)
+    public String generateAccessToken(long userId, String username , List<String> roles)
     {
         return Jwts.builder()
                 .setSubject(username)
@@ -34,7 +38,7 @@ public class jwtUtil
                 .compact();
     }
 
-    private String generateRefreshToken(String username)
+    public String generateRefreshToken(String username)
     {
         return Jwts.builder()
                 .setSubject(username)
