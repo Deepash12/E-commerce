@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService
 {
-    private Auth auth;
-
-    public AuthService(Auth auth) {
-        this.auth = auth;
-    }
+//    private Auth auth;
+//
+//    public AuthService(Auth auth) {
+//        this.auth = auth;
+//    }
 
     public String userLogin(AuthDTO authDTO)
     {
