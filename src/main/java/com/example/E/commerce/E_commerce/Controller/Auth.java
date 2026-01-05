@@ -2,7 +2,7 @@ package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.AuthDTO;
 import com.example.E.commerce.E_commerce.DTO.AuthResponse;
 import com.example.E.commerce.E_commerce.Service.CustomUserDetails;
-import com.example.E.commerce.E_commerce.Utils.jwtUtil;
+import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,10 +17,10 @@ import java.util.List;
 @RequestMapping("/auth")
 public class Auth
 {
-    private final jwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public Auth(jwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public Auth(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
     }
