@@ -1,8 +1,11 @@
 package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.AuthDTO;
 import com.example.E.commerce.E_commerce.DTO.AuthResponse;
+import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
+import com.example.E.commerce.E_commerce.Service.AuthService;
 import com.example.E.commerce.E_commerce.Service.CustomUserDetails;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,12 +20,14 @@ import java.util.List;
 @RequestMapping("/auth")
 public class Auth
 {
+    private final AuthService authService;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public Auth(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public Auth(JwtUtil jwtUtil, AuthenticationManager authenticationManager,AuthService authService) {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -54,64 +59,11 @@ public class Auth
         return new AuthResponse(accessToken,refreshToken);
     }
 
+@PostMapping("/register")
+    public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)
+{
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public Auth(AuthService authService,AuthenticationManager authenticationManager) {
-//        this.authService = authService;
-//        this.authenticationManager = authenticationManager;
-//    }
-//    private  AuthService authService;
-//    private AuthenticationManager authenticationManager;
-//
-//    @PostMapping("/login")
-//    private ResponseEntity<String> Login(@RequestBody AuthDTO authDTO)
-//    {
-//        Authentication authentication =  authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(authDTO.getUserName(),authDTO.getPassword())
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        return ResponseEntity.ok("User Logged in Successfully");
-//    }
-//
-//    @PostMapping("/register")
-//
-//    private String registerUser()
-//    {
-//        return authService.registerUser();
-//    }
-//
-
-
-
-
+    return ResponseEntity.ok(authService.registerUser(registerRequestDTO));
+}
 
 }

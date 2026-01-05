@@ -1,6 +1,5 @@
 package com.example.E.commerce.E_commerce.DTO;
 
-import org.jspecify.annotations.Nullable;
 
 public class AuthDTO
 {
@@ -23,6 +22,7 @@ public class AuthDTO
     }
 
     private static String Password;
+
 
 
 }
