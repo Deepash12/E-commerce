@@ -5,19 +5,20 @@ import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Service.AuthService;
 import com.example.E.commerce.E_commerce.Service.CustomUserDetails;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class Auth
 {
     private final AuthService authService;
@@ -31,32 +32,41 @@ public class Auth
     }
 
     @PostMapping("/login")
-    public AuthResponse Login(@RequestBody AuthDTO request)
+    public ResponseEntity<?> Login(@RequestBody AuthDTO request)
     {
-        Authentication authentication = authenticationManager.authenticate
-                (
-                        new UsernamePasswordAuthenticationToken(request.getUserName(),request.getPassword())
-                );
+        try {
 
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
 
-        Long userId = userDetails.getId();
+            Authentication authentication = authenticationManager.authenticate
+                    (
+                            new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
+                    );
 
-        List<String> roles = userDetails.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
+            CustomUserDetails userDetails =
+                    (CustomUserDetails) authentication.getPrincipal();
 
-        String accessToken = jwtUtil.generateAccessToken
-                (
-                        userId,userDetails.getUsername(), roles
-                );
-        String refreshToken = jwtUtil.generateRefreshToken
-                (
-                        userDetails.getUsername()
-                );
-        return new AuthResponse(accessToken,refreshToken);
+            Long userId = userDetails.getId();
+
+            List<String> roles = userDetails.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            String accessToken = jwtUtil.generateAccessToken
+                    (
+                            userId, userDetails.getUsername(), roles
+                    );
+            String refreshToken = jwtUtil.generateRefreshToken
+                    (
+                            userDetails.getUsername()
+                    );
+            return ResponseEntity.ok( new AuthResponse(accessToken, refreshToken));
+        }
+        catch (BadCredentialsException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
+        }
     }
 
 @PostMapping("/register")
