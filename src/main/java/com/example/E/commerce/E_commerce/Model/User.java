@@ -1,36 +1,101 @@
 package com.example.E.commerce.E_commerce.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import org.hibernate.type.descriptor.jdbc.TinyIntAsSmallIntJdbcType;
 
-import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
 @Entity
+
 public class User {
+
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long user_id;
 
     private String username;
-
-    private String password;
 
     @Email
     private String email;
 
-    private BigInteger phoneNumber;
+    private String password_hash;
+    private String first_name;
+    private String last_name;
 
-    private String role;
+    private String phone;
+    private String avatar_url;
+    private TinyIntAsSmallIntJdbcType email_verified;
+    private String accountStatus;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    private Date lastLoggedIn;
 
-    public Long getId() {
-        return id;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
+
+    public String getAvatar_url() {
+        return avatar_url;
+    }
+
+    public void setAvatar_url(String avatar_url) {
+        this.avatar_url = avatar_url;
+    }
+
+    public TinyIntAsSmallIntJdbcType getEmail_verified() {
+        return email_verified;
+    }
+
+    public void setEmail_verified(TinyIntAsSmallIntJdbcType email_verified) {
+        this.email_verified = email_verified;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public String getUsername() {
@@ -41,12 +106,12 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPassword_hash() {
+        return password_hash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword_hash(String password_hash) {
+        this.password_hash = password_hash;
     }
 
     public String getEmail() {
@@ -57,21 +122,15 @@ public class User {
         this.email = email;
     }
 
-    public BigInteger getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(BigInteger phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getRole() {
-        return role;
-    }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public Date getLastLoggedIn() {
         return lastLoggedIn;
@@ -81,5 +140,5 @@ public class User {
         this.lastLoggedIn = lastLoggedIn;
     }
 
-    private Date lastLoggedIn;
+
 }

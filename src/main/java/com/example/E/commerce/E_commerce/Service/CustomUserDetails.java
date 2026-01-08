@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails
 
     public Long getId()
     {
-        return user.getId();
+        return user.getUser_id();
     }
     @Override
     public String getUsername ()
@@ -29,7 +29,7 @@ public class CustomUserDetails implements UserDetails
     @Override
     public String getPassword()
     {
-        return user.getPassword();
+        return user.getPassword_hash();
     }
 
     @Override

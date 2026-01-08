@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.AuthDTO;
 import com.example.E.commerce.E_commerce.DTO.AuthResponse;
 import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
+import com.example.E.commerce.E_commerce.Repository.UserRepository;
 import com.example.E.commerce.E_commerce.Service.AuthService;
 import com.example.E.commerce.E_commerce.Service.CustomUserDetails;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
@@ -15,17 +16,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 public class Auth
 {
+    private final UserRepository userRepository;
     private final AuthService authService;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public Auth(JwtUtil jwtUtil, AuthenticationManager authenticationManager,AuthService authService) {
+    public Auth(UserRepository userRepository, JwtUtil jwtUtil, AuthenticationManager authenticationManager, AuthService authService) {
+        this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.authService = authService;
@@ -69,11 +73,17 @@ public class Auth
         }
     }
 
-@PostMapping("/register")
-    public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)
-{
+    @PostMapping("/register")
+        public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)
+    {
 
-    return ResponseEntity.ok(authService.registerUser(registerRequestDTO));
-}
+        return ResponseEntity.ok(authService.registerUser(registerRequestDTO));
+    }
 
+    @GetMapping("/admin-Exists")
+    public Map<String,Boolean> adminExists()
+    {
+        boolean exists = userRepository.existsByRole("ROLE_ADMIN");
+        return Map.of("Admin Exists",exists);
+    }
 }
