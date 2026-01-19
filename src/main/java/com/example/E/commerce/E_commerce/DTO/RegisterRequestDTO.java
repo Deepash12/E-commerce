@@ -22,7 +22,7 @@ public class RegisterRequestDTO
             regexp = "^[6-9]\\d{9}$",
             message = "Invalid phone number"
     )
-    private BigInteger phoneNumber;
+    private String phoneNumber;
     @Email(message = "Invalid Email is Written")
     @NotBlank(message = "Email is Required")
     private String email;

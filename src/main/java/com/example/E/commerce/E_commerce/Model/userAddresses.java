@@ -13,7 +13,6 @@ public class userAddresses
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long address_id;
-    @ForeignKey
 
     private Long user_id;
     private String fullName;

@@ -19,23 +19,29 @@ public class CustomUserDetails implements UserDetails
 
     public Long getId()
     {
-        return user.getUser_id();
+        return user.getId();
     }
     @Override
     public String getUsername ()
     {
        return user.getUsername();
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
     @Override
     public String getPassword()
     {
         return user.getPassword_hash();
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getRole()));
-    }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+////        return List.of(new SimpleGrantedAuthority(user.getRole()));
+//    }
 
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }

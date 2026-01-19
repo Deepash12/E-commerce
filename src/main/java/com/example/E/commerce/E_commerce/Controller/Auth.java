@@ -80,10 +80,10 @@ public class Auth
         return ResponseEntity.ok(authService.registerUser(registerRequestDTO));
     }
 
-    @GetMapping("/admin-Exists")
-    public Map<String,Boolean> adminExists()
-    {
-        boolean exists = userRepository.existsByRole("ROLE_ADMIN");
-        return Map.of("Admin Exists",exists);
-    }
+//    @GetMapping("/admin-Exists")
+//    public Map<String,Boolean> adminExists()
+//    {
+//        boolean exists = userRepository.existsByRole("ROLE_ADMIN");
+//        return Map.of("Admin Exists",exists);
+//    }
 }
