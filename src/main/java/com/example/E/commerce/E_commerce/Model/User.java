@@ -15,7 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long id;
 
     private String username;
 
@@ -90,12 +90,12 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getId() {
+        return id;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setId(Long user_id) {
+        this.id = user_id;
     }
 
     public String getUsername() {

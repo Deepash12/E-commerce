@@ -20,9 +20,9 @@ private final UserRepository userRepository;
 
     public String registerUser(RegisterRequestDTO registerRequestDTO)
     {
-        boolean adminExists = userRepository.existsByRole("ROLE_ADMIN");
+//        boolean adminExists = userRepository.existsByRole("ROLE_ADMIN");
 
-        if(userRepository.existsByusername(registerRequestDTO.getUsername()))
+        if(userRepository.existsByUsername(registerRequestDTO.getUsername()))
         {
             throw new RuntimeException("Username Already existed!!!");
         }
@@ -38,14 +38,14 @@ private final UserRepository userRepository;
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setEmail(registerRequestDTO.getEmail());
         user.setPhone(registerRequestDTO.getPhoneNumber());
-        if(!adminExists)
-        {
-            user.setRole("ROLE_ADMIN");
-        }
-        else
-        {
-            user.setRole(registerRequestDTO.getRoles());
-        }
+//        if(!adminExists)
+//        {
+//            user.setRole("ROLE_ADMIN");
+//        }
+//        else
+//        {
+//            user.setRole(registerRequestDTO.getRoles());
+//        }
         userRepository.save(user);
         return "Registered Successfully , Please Login";
     }
