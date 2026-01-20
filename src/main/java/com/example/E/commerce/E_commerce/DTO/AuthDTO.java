@@ -4,24 +4,24 @@ package com.example.E.commerce.E_commerce.DTO;
 public class AuthDTO
 {
     public  String getUserName() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
-    private static String userName;
+    private static String username;
 
     public  String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        password = password;
     }
 
-    private static String Password;
+    private static String password;
 
 
 

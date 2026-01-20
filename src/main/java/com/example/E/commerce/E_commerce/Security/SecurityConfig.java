@@ -20,18 +20,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 //@RequiredArgsConstructor
 public class SecurityConfig
 {
-//    private final AuthenticationManager authenticationManager;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
-//        this.authenticationManager = authenticationManager;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint)
+    {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
 
     }
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)throws Exception
+    public AuthenticationManager authenticationManager
+            (AuthenticationConfiguration authenticationConfiguration)throws Exception
     {
         return authenticationConfiguration.getAuthenticationManager();
     }
@@ -45,50 +46,6 @@ public class SecurityConfig
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .sessionManagement(session ->
-//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-
-
-
-
-
-
-
-
-
-        //second mistake code
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .exceptionHandling(ex ->
-//                        ex.authenticationEntryPoint((AuthenticationEntryPoint) jwtauthenticationEntryPoint)
-//                )
-//                .sessionManagement(session ->
-//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                )
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(
-//                        jwtAuthenticationFilter,
-//                        UsernamePasswordAuthenticationFilter.class
-//                );
-//        return http.build();
-
-
-
-
-
         http
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception ->
