@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -27,12 +28,12 @@ public class JwtUtil
             return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         }
 
-    public String generateAccessToken(long userId, String username , List<String> roles)
+    public String generateAccessToken(UserDetails userDetails)
     {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("userId",userId)
-                .claim("roles",roles)
+                .setSubject(userDetails.getUsername())
+//                .claim("userId",userId)
+//                .claim("roles",roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+accessTokenExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -56,4 +57,7 @@ public class JwtUtil
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+//    public String generateAccessToken(UserDetails userDetails) {
+//    }
 }
