@@ -18,6 +18,8 @@ import java.util.List;
 public class JwtUtil
 {
     @Value("${jwt.secret}")
+//    @Value("9f3c7a2d8e41b6f0c2a9d4e57b8f1a6c0e9d3b5a7f4c2e8a1d6b9f0e3c4")
+//    @Value("n0w6LY5BtvDCqdTle48abA6dO1p/RMLooa1rmw5jNA=")
     private String jwtSecret;
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
@@ -56,6 +58,18 @@ public class JwtUtil
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+    public String extractUsername(String token) {
+        return ValidateTokens(token).getSubject();
+    }
+
+    public boolean isTokenExpired(String token) {
+        return ValidateTokens(token).getExpiration().before(new Date());
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
 //    public String generateAccessToken(UserDetails userDetails) {
