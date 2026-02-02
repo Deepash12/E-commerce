@@ -15,48 +15,98 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+//@Configuration
+//@EnableWebSecurity
+////@RequiredArgsConstructor
+//public class SecurityConfig
+//{
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+//
+//    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+//                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint)
+//    {
+//        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+//        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+//
+//    }
+//    @Bean
+//    public AuthenticationManager authenticationManager
+//            (AuthenticationConfiguration authenticationConfiguration)throws Exception
+//    {
+//        return authenticationConfiguration.getAuthenticationManager();
+//    }
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder()
+//    {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .exceptionHandling(exception ->
+//                        exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                )
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .anyRequest().authenticated()
+//                );
+//
+//        return http.build();
+//    }
+//
+//}
+
+
 @Configuration
 @EnableWebSecurity
-//@RequiredArgsConstructor
-public class SecurityConfig
-{
+public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint)
-    {
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-
     }
+
     @Bean
-    public AuthenticationManager authenticationManager
-            (AuthenticationConfiguration authenticationConfiguration)throws Exception
-    {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
+
+                // ✅ REQUIRED FOR JWT
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
+                        exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .anyRequest().authenticated())
+
+                // 🔥 THIS LINE WAS MISSING
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }
