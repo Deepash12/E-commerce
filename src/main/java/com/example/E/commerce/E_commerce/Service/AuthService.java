@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service;
 import com.example.E.commerce.E_commerce.DTO.LoginRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.LoginResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
-import com.example.E.commerce.E_commerce.Model.User;
+import com.example.E.commerce.E_commerce.Entity.User;
 import com.example.E.commerce.E_commerce.Repository.UserRepository;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Service
 public class AuthService
 {
-//    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;

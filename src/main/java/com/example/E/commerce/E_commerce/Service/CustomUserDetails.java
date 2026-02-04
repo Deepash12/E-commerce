@@ -1,8 +1,7 @@
 package com.example.E.commerce.E_commerce.Service;
 
-import com.example.E.commerce.E_commerce.Model.User;
+import com.example.E.commerce.E_commerce.Entity.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -37,11 +36,6 @@ public class CustomUserDetails implements UserDetails
     {
         return user.getPassword_hash();
     }
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-////        return List.of(new SimpleGrantedAuthority(user.getRole()));
-//    }
 
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
