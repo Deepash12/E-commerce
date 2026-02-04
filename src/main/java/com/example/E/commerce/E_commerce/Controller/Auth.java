@@ -1,6 +1,8 @@
 package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.*;
 import com.example.E.commerce.E_commerce.Service.AuthService;
+import com.example.E.commerce.E_commerce.Service.tokenBlackListService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,48 +12,13 @@ import org.springframework.web.bind.annotation.*;
 public class Auth
 {
     private final AuthService authService;
+    private final tokenBlackListService tokenBlackListService;
 
-    public Auth(AuthService authService) {
+    public Auth(AuthService authService, tokenBlackListService tokenBlackListService) {
         this.authService = authService;
+        this.tokenBlackListService = tokenBlackListService;
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> Login(@RequestBody AuthDTO request)
-//    {
-//        try {
-//
-//
-//            Authentication authentication = authenticationManager.authenticate
-//                    (
-//                            new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
-//                    );
-//
-//            CustomUserDetails userDetails =
-//                    (CustomUserDetails) authentication.getPrincipal();
-//
-//            Long userId = userDetails.getId();
-//
-//            List<String> roles = userDetails.getAuthorities()
-//                    .stream()
-//                    .map(GrantedAuthority::getAuthority)
-//                    .toList();
-//
-//            String accessToken = jwtUtil.generateAccessToken
-//                    (
-//                            userId, userDetails.getUsername(), roles
-//                    );
-//            String refreshToken = jwtUtil.generateRefreshToken
-//                    (
-//                            userDetails.getUsername()
-//                    );
-//            return ResponseEntity.ok( new AuthResponse(accessToken, refreshToken));
-//        }
-//        catch (BadCredentialsException ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.UNAUTHORIZED)
-//                    .body("Invalid username or password");
-//        }
-//    }
 
     @PostMapping("/register")
         public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)
@@ -66,6 +33,21 @@ public class Auth
     {
 
         return ResponseEntity.ok(authService.loginUser(request));
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<String> LogoutUser(HttpServletRequest request)
+    {
+        String header = request.getHeader("Authorization");
+        if(header!=null && header.startsWith("Bearer"))
+        {
+            String token = header.substring(7);
+            tokenBlackListService.blacklist(token);
+            return ResponseEntity.ok("logged out Successfully");
+        }
+        else
+        {
+            return ResponseEntity.ok("Failed to logout!!!");
+        }
     }
 
 }
