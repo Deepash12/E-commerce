@@ -1,4 +1,4 @@
 jwt:
   secret : ${JWT_SECRET:n0w6LY5BtvDCqdTle48abA6dO1p/RMLooa1rmw5jNA=}
-  access-token-expiration : 900000
+  access-token-expiration : 43200000
   refresh-token-expiration : 604800000
