@@ -1,4 +1,7 @@
 package com.example.E.commerce.E_commerce.Repository;
 
-public interface RoleRepository {
+import com.example.E.commerce.E_commerce.Entity.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoleRepository extends JpaRepository<Role,Long> {
 }
