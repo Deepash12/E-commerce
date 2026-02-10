@@ -49,16 +49,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.ValidateTokens(token);
                 String username = claims.getSubject();
 
+//                if (username != null &&
+//                        SecurityContextHolder.getContext().getAuthentication() == null) {
+//
+//                    // ✅ SAFE: roles optional
+////                    List<String> roles = claims.get("roles", List.class);
+////                    if (roles == null) roles = List.of();
+////
+////                    var authorities = roles.stream()
+////                            .map(SimpleGrantedAuthority::new)
+////                            .toList();
+//
+//                    String role = claims.get("role", String.class);
+//
+//                    if (role != null) {
+//                        var authorities = List.of(new SimpleGrantedAuthority(role));
+//                    }
+//
+//                    UsernamePasswordAuthenticationToken authToken =
+//                            new UsernamePasswordAuthenticationToken(
+//                                    username, null, authorities
+//                            );
+//
+//                    SecurityContextHolder.getContext().setAuthentication(authToken);
+//                }
+
+
                 if (username != null &&
                         SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    // ✅ SAFE: roles optional
-                    List<String> roles = claims.get("roles", List.class);
-                    if (roles == null) roles = List.of();
+                    String role = claims.get("role", String.class);
 
-                    var authorities = roles.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .toList();
+                    if (role == null) {
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+
+                    var authorities = List.of(new SimpleGrantedAuthority(role));
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(

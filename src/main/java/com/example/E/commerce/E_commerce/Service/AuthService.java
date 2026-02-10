@@ -3,7 +3,9 @@ package com.example.E.commerce.E_commerce.Service;
 import com.example.E.commerce.E_commerce.DTO.LoginRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.LoginResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
+import com.example.E.commerce.E_commerce.Entity.Role;
 import com.example.E.commerce.E_commerce.Entity.User;
+import com.example.E.commerce.E_commerce.Repository.RoleRepository;
 import com.example.E.commerce.E_commerce.Repository.UserRepository;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,16 +24,19 @@ public class AuthService
     private AuthenticationManager authenticationManager;
     private CustomUserDetailsService customUserDetailsService;
     private JwtUtil jwtUtil;
+    private final RoleRepository role;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil, AuthenticationManager authenticationManager,
-                       CustomUserDetailsService customUserDetailsService)
+                       CustomUserDetailsService customUserDetailsService, RoleRepository role)
     {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
+
+        this.role = role;
     }
 
 
@@ -47,11 +52,16 @@ public class AuthService
             throw new RuntimeException("Email Already Existed!!!");
         }
 
+        Role role1 = role.findById
+                (
+                        registerRequestDTO.getRoleId()
+                ).orElseThrow(() -> new RuntimeException("Role not found"));
         User user =  new User();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setEmail(registerRequestDTO.getEmail());
         user.setPhone(registerRequestDTO.getPhoneNumber());
+        user.setRole(role1);
         userRepository.save(user);
         return "Registered Successfully , Please Login";
     }
