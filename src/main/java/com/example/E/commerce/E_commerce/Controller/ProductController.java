@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Controller;
 //
-//import com.example.E.commerce.E_commerce.DTO.ProductRequestDTO;
+//import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 //import com.example.E.commerce.E_commerce.Entity.Product;
 //import com.example.E.commerce.E_commerce.Service.ProductService;
 //import org.springframework.context.annotation.Configuration;
@@ -25,15 +25,15 @@ package com.example.E.commerce.E_commerce.Controller;
 //        this.productService = productService;
 //    }
 
-import com.example.E.commerce.E_commerce.DTO.ProductRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Product;
 import com.example.E.commerce.E_commerce.Service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 ////
 ////    public ProductController(ProductService productService)
@@ -134,8 +134,19 @@ public class ProductController {
 
     // PUBLIC
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+
+    public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
+    (
+            @RequestParam(required = false) int categoryId,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5")int pageSize,
+            @RequestParam (defaultValue = "id") String sortBy,
+            @RequestParam (defaultValue = "asc") String sortDir
+    ) {
+        return productService.getAllProducts(pageNumber,pageSize,sortBy,sortDir,categoryId,minPrice,maxPrice,keyword);
     }
 
     // PUBLIC
@@ -147,6 +158,10 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
+
+
+
+
 
     // ADMIN
     @PreAuthorize("hasRole('ADMIN')")

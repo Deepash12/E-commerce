@@ -1,5 +1,7 @@
 package com.example.E.commerce.E_commerce.Controller;
-import com.example.E.commerce.E_commerce.DTO.*;
+import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Service.AuthService;
 import com.example.E.commerce.E_commerce.Service.tokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
