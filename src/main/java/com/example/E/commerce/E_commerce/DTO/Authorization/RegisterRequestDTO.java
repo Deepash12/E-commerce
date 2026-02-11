@@ -1,13 +1,10 @@
-package com.example.E.commerce.E_commerce.DTO;
+package com.example.E.commerce.E_commerce.DTO.Authorization;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
-
-
-import java.math.BigInteger;
 
 @Setter
 @Getter

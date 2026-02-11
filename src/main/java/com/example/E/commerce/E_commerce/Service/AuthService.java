@@ -1,8 +1,8 @@
 package com.example.E.commerce.E_commerce.Service;
 
-import com.example.E.commerce.E_commerce.DTO.LoginRequestDTO;
-import com.example.E.commerce.E_commerce.DTO.LoginResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.RegisterRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Entity.Role;
 import com.example.E.commerce.E_commerce.Entity.User;
 import com.example.E.commerce.E_commerce.Repository.RoleRepository;

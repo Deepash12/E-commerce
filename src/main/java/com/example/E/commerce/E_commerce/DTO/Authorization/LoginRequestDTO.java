@@ -1,4 +1,4 @@
-package com.example.E.commerce.E_commerce.DTO;
+package com.example.E.commerce.E_commerce.DTO.Authorization;
 
 import lombok.Getter;
 import lombok.Setter;

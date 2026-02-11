@@ -1,10 +1,16 @@
 package com.example.E.commerce.E_commerce.Service;
 
-import com.example.E.commerce.E_commerce.DTO.ProductRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Category;
 import com.example.E.commerce.E_commerce.Entity.Product;
 import com.example.E.commerce.E_commerce.Repository.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +27,69 @@ public class ProductService
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Product> getAllProducts()
-    {
-        return productRepository.findAll();
+    public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            String sortDir,
+            Integer categoryId,
+            Double minPrice,
+            Double maxPrice,
+            String keyword
+    ) {
+
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        // Only ONE query should be used
+        Page<Product> productPage =
+                productRepository.findWithFilter(
+                        categoryId, minPrice, maxPrice, keyword, pageable
+                );
+
+        List<ProductResponseDTO> dtoList =
+                productPage.getContent()
+                        .stream()
+                        .map(this::convertToDTO)
+                        .toList();
+
+        ProductPageResponseDTO<ProductResponseDTO> response =
+                new ProductPageResponseDTO<>();
+
+        response.setContent(dtoList);
+        response.setCurrentPage(productPage.getNumber());
+        response.setPageSize(productPage.getSize());
+        response.setTotalPages(productPage.getTotalPages());
+        response.setTotalElements(productPage.getTotalElements());
+        response.setLast(productPage.isLast());
+
+        return response;
     }
 
 
-public Product addProduct(ProductRequestDTO productRequestDTO) {
+
+
+
+    private ProductResponseDTO convertToDTO(Product product)
+    {
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .stockQuantity(product.getStockQuantity())
+                .categoryName(product.getCategory().getName())
+                .build();
+    }
+
+
+
+
+
+    public Product addProduct(ProductRequestDTO productRequestDTO) {
 
     Category category = categoryRepository.findById(
             productRequestDTO.getCategoryId()

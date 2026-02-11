@@ -1,6 +1,5 @@
-package com.example.E.commerce.E_commerce.DTO;
+package com.example.E.commerce.E_commerce.DTO.Product;
 
-import com.example.E.commerce.E_commerce.Entity.Category;
 import lombok.Getter;
 import lombok.Setter;
 
