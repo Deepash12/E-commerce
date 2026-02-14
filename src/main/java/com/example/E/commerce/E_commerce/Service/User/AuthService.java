@@ -1,12 +1,13 @@
-package com.example.E.commerce.E_commerce.Service;
+package com.example.E.commerce.E_commerce.Service.User;
 
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
-import com.example.E.commerce.E_commerce.Entity.Role;
-import com.example.E.commerce.E_commerce.Entity.User;
-import com.example.E.commerce.E_commerce.Repository.RoleRepository;
-import com.example.E.commerce.E_commerce.Repository.UserRepository;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Role;
+import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Exception.BadRequestException;
+import com.example.E.commerce.E_commerce.Repository.User.RoleRepository;
+import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,17 +46,17 @@ public class AuthService
 
         if(userRepository.existsByUsername(registerRequestDTO.getUsername()))
         {
-            throw new RuntimeException("Username Already existed!!!");
+            throw new BadRequestException("Username Already existed!!!");
         }
         if(userRepository.existsByEmail(registerRequestDTO.getEmail()))
         {
-            throw new RuntimeException("Email Already Existed!!!");
+            throw new BadRequestException("Email Already Existed!!!");
         }
 
         Role role1 = role.findById
                 (
                         registerRequestDTO.getRoleId()
-                ).orElseThrow(() -> new RuntimeException("Role not found"));
+                ).orElseThrow(() -> new BadRequestException("Role not found"));
         User user =  new User();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));

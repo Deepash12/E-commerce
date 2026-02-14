@@ -1,4 +1,4 @@
-package com.example.E.commerce.E_commerce.Entity;
+package com.example.E.commerce.E_commerce.Entity.Authorization;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

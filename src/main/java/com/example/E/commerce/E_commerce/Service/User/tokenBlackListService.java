@@ -1,4 +1,4 @@
-package com.example.E.commerce.E_commerce.Service;
+package com.example.E.commerce.E_commerce.Service.User;
 
 import org.springframework.stereotype.Service;
 
