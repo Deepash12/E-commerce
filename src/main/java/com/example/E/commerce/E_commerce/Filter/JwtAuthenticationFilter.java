@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Filter;
 
-import com.example.E.commerce.E_commerce.Service.tokenBlackListService;
+import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

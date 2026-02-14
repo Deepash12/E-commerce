@@ -1,12 +1,13 @@
-package com.example.E.commerce.E_commerce.Service;
+package com.example.E.commerce.E_commerce.Service.Product;
 
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Category;
-import com.example.E.commerce.E_commerce.Entity.Product;
-import com.example.E.commerce.E_commerce.Repository.CategoryRepository;
-import com.example.E.commerce.E_commerce.Repository.ProductRepository;
+import com.example.E.commerce.E_commerce.Entity.Product.Product;
+import com.example.E.commerce.E_commerce.Exception.BadRequestException;
+import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
+import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -93,7 +94,7 @@ public class ProductService
 
     Category category = categoryRepository.findById(
             productRequestDTO.getCategoryId()
-    ).orElseThrow(() -> new RuntimeException("Category not found"));
+    ).orElseThrow(() -> new BadRequestException("Category not found"));
 
     Product product = new Product();
     product.setName(productRequestDTO.getName());
@@ -108,7 +109,7 @@ public class ProductService
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new BadRequestException("Product not found"));
     }
 
 
@@ -128,10 +129,10 @@ public class ProductService
     {
 
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product does not exist!!!"));
+                .orElseThrow(() -> new BadRequestException("Product does not exist!!!"));
 
         Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new BadRequestException("Category not found"));
 
         existingProduct.setName(productRequestDTO.getName());
         existingProduct.setDescription(productRequestDTO.getDescription());

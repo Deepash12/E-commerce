@@ -1,7 +1,8 @@
-package com.example.E.commerce.E_commerce.Service;
+package com.example.E.commerce.E_commerce.Service.User;
 
-import com.example.E.commerce.E_commerce.Entity.User;
-import com.example.E.commerce.E_commerce.Repository.UserRepository;
+import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Exception.BadRequestException;
+import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
+                        new BadRequestException("User not found"));
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())

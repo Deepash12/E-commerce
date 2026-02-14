@@ -1,7 +1,6 @@
-package com.example.E.commerce.E_commerce.Repository;
+package com.example.E.commerce.E_commerce.Repository.Product;
 
-import com.example.E.commerce.E_commerce.Entity.Product;
-import org.aspectj.weaver.ast.And;
+import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
