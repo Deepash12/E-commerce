@@ -22,12 +22,12 @@ public class ProductController {
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
     (
-            @RequestParam(required = false) int categoryId,
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "5")int pageSize,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "5")Integer pageSize,
             @RequestParam (defaultValue = "id") String sortBy,
             @RequestParam (defaultValue = "asc") String sortDir
     )
