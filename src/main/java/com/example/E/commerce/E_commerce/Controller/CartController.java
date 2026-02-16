@@ -32,8 +32,8 @@ public class CartController
         return ResponseEntity.ok(cartService.addItems(cartItemsRequestDTO,username));
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<String> RemoveProductFromCart(@RequestParam Long productId, Authentication authentication)
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> RemoveProductFromCart(@PathVariable Long productId, Authentication authentication)
     {
         String username = authentication.getName();
             return ResponseEntity.ok(cartService.removeProductFromCart(username,productId));
