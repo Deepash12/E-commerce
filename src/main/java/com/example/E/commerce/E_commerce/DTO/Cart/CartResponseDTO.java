@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.DTO.Cart;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Data
 @NoArgsConstructor
@@ -11,6 +12,6 @@ import java.util.List;
 public class CartResponseDTO
 {
     List<CartItemsResponseDTO> items ;
-    private Double grandTotal;
+    private BigDecimal grandTotal;
     private Integer totalItems;
 }

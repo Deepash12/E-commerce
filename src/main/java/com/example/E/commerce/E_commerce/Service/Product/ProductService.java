@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,7 +100,7 @@ public class ProductService
     Product product = new Product();
     product.setName(productRequestDTO.getName());
     product.setDescription(productRequestDTO.getDescription());
-    product.setPrice(productRequestDTO.getPrice());
+    product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
     product.setCategory(category);
 
@@ -136,7 +137,7 @@ public class ProductService
 
         existingProduct.setName(productRequestDTO.getName());
         existingProduct.setDescription(productRequestDTO.getDescription());
-        existingProduct.setPrice(productRequestDTO.getPrice());
+        existingProduct.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
         existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
         existingProduct.setCategory(category);
 
