@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -20,7 +22,7 @@ public class Product
     private Long id;
     private String Name;
     private String Description;
-    private Double price;
+    private BigDecimal price;
     private int stockQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)

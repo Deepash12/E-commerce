@@ -13,6 +13,9 @@ import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,9 +53,12 @@ public class CartService
                                 item.getProduct().getName(),
                                 item.getProduct().getPrice(),
                                 item.getQuantity(),
-                                item.getProduct().getPrice()* item.getQuantity()
+                                item.getProduct().getPrice()
+                                        .multiply(BigDecimal.valueOf(item.getQuantity()))
                         )).toList();
-        double totalAmount = items.stream().mapToDouble(CartItemsResponseDTO::getTotalPrice).sum();
+        BigDecimal totalAmount = items.stream()
+                .map(CartItemsResponseDTO::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
 
