@@ -24,6 +24,7 @@ public class UserAddresses
     private String city;
     private String state;
     private String postalCode;
+    private String country;
     private Boolean isDefault = false;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
