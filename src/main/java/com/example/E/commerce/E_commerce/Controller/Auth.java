@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.ResetPasswordDtoRequest;
 import com.example.E.commerce.E_commerce.Service.User.AuthService;
 import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +51,21 @@ public class Auth
         {
             return ResponseEntity.ok("Failed to logout!!!");
         }
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity<?> forgetPassword(@RequestParam String email)
+    {
+        return  ResponseEntity.ok(authService.forgetPassword(email));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDtoRequest resetPasswordDtoRequest)
+    {
+        return ResponseEntity.ok
+                (authService.resetPassword
+                        (resetPasswordDtoRequest.getNewPassword(),resetPasswordDtoRequest.getToken())
+                );
     }
 
 }
