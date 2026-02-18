@@ -1,11 +1,16 @@
 package com.example.E.commerce.E_commerce.Service.Address;
 import com.example.E.commerce.E_commerce.DTO.Address.AddAddressRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 @Service
 public class AddressService {
@@ -52,5 +57,33 @@ public class AddressService {
         }
         addressRepository.save(address);
         return "Address Saved Successfully";
+    }
+
+    public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize, String username)
+    {
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User not found with username: "+ username));
+        Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
+        Page<UserAddresses> addresses = addressRepository.findByUser(user,pageable);
+
+        return addresses.map(this::mapToDTO);
+
+    }
+    private AddressResponseDTO mapToDTO(UserAddresses userAddresses)
+    {
+        AddressResponseDTO dto = new AddressResponseDTO();
+        dto.setId(userAddresses.getId());
+        dto.setCity(userAddresses.getCity());
+        dto.setPhone(userAddresses.getPhone());
+        dto.setAddressLine2(userAddresses.getAddressLine2());
+        dto.setLandmark(userAddresses.getLandmark());
+        dto.setAddressLine1(userAddresses.getAddressLine1());
+        dto.setState(userAddresses.getState());
+        dto.setFullName(userAddresses.getFullName());
+        dto.setPostalCode(userAddresses.getPostalCode());
+        dto.setCountry(userAddresses.getCountry());
+        dto.setIsDefault(userAddresses.getIsDefault());
+        dto.setCreatedAt(userAddresses.getCreatedAt());
+        dto.setUpdatedAt(userAddresses.getUpdatedAt());
+        return dto;
     }
 }

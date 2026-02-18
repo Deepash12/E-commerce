@@ -1,13 +1,12 @@
 package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.Address.AddAddressRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Address.AddressService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/address")
@@ -25,4 +24,12 @@ public class AddressController
         String username = authentication.getName();
         return ResponseEntity.ok(addressService.addAddress(addAddressRequestDTO,username));
     }
+    @GetMapping("/view")
+    private Page<AddressResponseDTO> viewAllAddress
+            (@PathVariable Integer PageNumber, @PathVariable Integer PageSize,Authentication authentication)
+    {
+        String username = authentication.getName();;
+        return addressService.viewAddress(PageNumber,PageSize,username);
+    }
+
 }
