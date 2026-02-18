@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.type.descriptor.jdbc.TinyIntAsSmallIntJdbcType;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -42,6 +43,12 @@ public class User {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Timestamp updatedAt;
     private Date lastLoggedIn;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
 
 
 }
