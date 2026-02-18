@@ -1,7 +1,7 @@
 package com.example.E.commerce.E_commerce.Entity.Order;
 
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
-import com.example.E.commerce.E_commerce.Entity.Authorization.UserAddresses;
+import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import jakarta.persistence.*;
 import lombok.Data;
 
