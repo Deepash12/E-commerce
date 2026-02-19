@@ -11,7 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+
 @Service
 public class AddressService {
     public AddressService(AddressRepository addressRepository, UserRepository userRepository) {
@@ -21,6 +24,27 @@ public class AddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+
+    private AddressResponseDTO mapToDTO(UserAddresses userAddresses)
+    {
+        AddressResponseDTO dto = new AddressResponseDTO();
+        dto.setId(userAddresses.getId());
+        dto.setCity(userAddresses.getCity());
+        dto.setPhone(userAddresses.getPhone());
+        dto.setAddressLine2(userAddresses.getAddressLine2());
+        dto.setLandmark(userAddresses.getLandmark());
+        dto.setAddressLine1(userAddresses.getAddressLine1());
+        dto.setState(userAddresses.getState());
+        dto.setFullName(userAddresses.getFullName());
+        dto.setPostalCode(userAddresses.getPostalCode());
+        dto.setCountry(userAddresses.getCountry());
+        dto.setIsDefault(userAddresses.getIsDefault());
+        dto.setCreatedAt(userAddresses.getCreatedAt());
+        dto.setUpdatedAt(userAddresses.getUpdatedAt());
+        return dto;
+    }
+
+
     @Transactional
     public String addAddress(AddAddressRequestDTO addAddressRequestDTO,String username)
     {
@@ -68,22 +92,37 @@ public class AddressService {
         return addresses.map(this::mapToDTO);
 
     }
-    private AddressResponseDTO mapToDTO(UserAddresses userAddresses)
+
+
+    public AddressResponseDTO selectedAddress(Long id, String username)
     {
-        AddressResponseDTO dto = new AddressResponseDTO();
-        dto.setId(userAddresses.getId());
-        dto.setCity(userAddresses.getCity());
-        dto.setPhone(userAddresses.getPhone());
-        dto.setAddressLine2(userAddresses.getAddressLine2());
-        dto.setLandmark(userAddresses.getLandmark());
-        dto.setAddressLine1(userAddresses.getAddressLine1());
-        dto.setState(userAddresses.getState());
-        dto.setFullName(userAddresses.getFullName());
-        dto.setPostalCode(userAddresses.getPostalCode());
-        dto.setCountry(userAddresses.getCountry());
-        dto.setIsDefault(userAddresses.getIsDefault());
-        dto.setCreatedAt(userAddresses.getCreatedAt());
-        dto.setUpdatedAt(userAddresses.getUpdatedAt());
-        return dto;
+        User user =userRepository.findByUsername(username)
+                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+
+        UserAddresses addresses= addressRepository.findByIdAndUser(id,user)
+                .orElseThrow(()-> new BadRequestException("Address is not Added yet!!"));
+        return mapToDTO(addresses);
     }
+
+    @Transactional
+    public AddressResponseDTO updateAddress(Long id, String username,AddAddressRequestDTO addAddressRequestDTO)
+    {
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+
+        UserAddresses address =addressRepository.findByIdAndUser(id,user)
+                .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!! for the USER"));
+
+        address.setFullName(addAddressRequestDTO.getFullName());
+        address.setPhone(addAddressRequestDTO.getPhone());
+        address.setAddressLine1(addAddressRequestDTO.getAddressLine1());
+        address.setAddressLine2(addAddressRequestDTO.getAddressLine2());
+        address.setCity(addAddressRequestDTO.getCity());
+        address.setLandmark(addAddressRequestDTO.getLandmark());
+        address.setState(addAddressRequestDTO.getState());
+        address.setPostalCode(addAddressRequestDTO.getPostalCode());
+        address.setIsDefault(addAddressRequestDTO.getIsDefault());
+        return mapToDTO(address);
+    }
+
+
 }
