@@ -2,20 +2,23 @@ package com.example.E.commerce.E_commerce.Service.Order;
 import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
+import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
-import com.example.E.commerce.E_commerce.Entity.Order.PayementStatus;
+import com.example.E.commerce.E_commerce.Entity.Order.PaymentStatus;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
+import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
+import com.example.E.commerce.E_commerce.Repository.Cart.CartItemsRepository;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
+import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,26 +26,31 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class OrderService
 {
-    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository) {
+    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
 
         this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.addressRepository = addressRepository;
+        this.cartItemsRepository = cartItemsRepository;
     }
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final AddressRepository addressRepository;
+    private final CartItemsRepository cartItemsRepository;
 
 
-    @Transactional
+
     public OrderResponseDTO checkoutOrders(String username, CheckoutOrderRequestDTO dto) {
 
         Order order = checkoutOrder(username, dto);
@@ -79,6 +87,8 @@ public class OrderService
     }
 
 //our Business Logic Methods Here
+
+    @Transactional
     private Order checkoutOrder(String username, CheckoutOrderRequestDTO dto) {
 
         User user = userRepository.findByUsername(username)
@@ -94,15 +104,31 @@ public class OrderService
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PayementStatus.PENDING);
-        order.setCreatedAt(LocalDateTime.now());
+        order.setPaymentStatus(PaymentStatus.PENDING);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
 
+        UserAddresses address = addressRepository
+                .findByIdAndUser(dto.getAddressId(), user)
+                .orElseThrow(() -> new BadRequestException("Address Not Found!!!"));
+
+
+        order.setShippingCity(address.getCity());
+        order.setShippingCountry(address.getCountry());
+        order.setShippingFullName(address.getFullName());
+        order.setShippingPhone(address.getPhone());
+        order.setShippingLandmark(address.getLandmark());
+        order.setShippingState(address.getState());
+        order.setShippingPostalCode(address.getPostalCode());
+        order.setShippingAddressLine1(address.getAddressLine1());
+        order.setShippingAddressLine2(address.getAddressLine2());
+
         for (CartItems items : cart.getItems()) {
 
-            Product product = items.getProduct();
+            Product product = productRepository.findByIdForUpdate
+                    (items.getProduct().getId())
+                    .orElseThrow(()-> new BadRequestException("Product Not Found!!!"));
 
             if (product.getStockQuantity() < items.getQuantity()) {
                 throw new BadRequestException(
@@ -116,13 +142,15 @@ public class OrderService
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
+            orderItem.setProductName(product.getName());
+            orderItem.setProductPrice(product.getPrice());
             orderItem.setQuantity(items.getQuantity());
             orderItem.setPriceAtPurchase((product.getPrice()));
 
             orderItems.add(orderItem);
 
-            BigDecimal itemTotal = product.getPrice()
-                    .multiply(BigDecimal.valueOf(items.getQuantity()));
+            BigDecimal itemTotal = orderItem.getPriceAtPurchase()
+                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
 
             totalAmount = totalAmount.add(itemTotal);
         }
@@ -130,11 +158,8 @@ public class OrderService
 
         order.setTotalAmount(totalAmount);
         order.setOrderItems(orderItems);
-
-        cart.getItems().clear();
-
-        orderRepository.save(order);
-
+        orderRepository.saveAndFlush(order);
+        cartItemsRepository.deleteAll(cart.getItems());
         return order;
     }
 

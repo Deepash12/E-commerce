@@ -1,13 +1,11 @@
 package com.example.E.commerce.E_commerce.Entity.Product;
 
-import com.example.E.commerce.E_commerce.Entity.Category;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
