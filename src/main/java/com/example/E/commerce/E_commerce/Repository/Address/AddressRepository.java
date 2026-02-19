@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<UserAddresses,Long>
 {
@@ -17,4 +18,6 @@ public interface AddressRepository extends JpaRepository<UserAddresses,Long>
     void cleanDefaultForUser(Long userId);
 
     Page<UserAddresses> findByUser(User user, Pageable pageable);
+
+    Optional<UserAddresses> findByIdAndUser(Long id, User user);
 }
