@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service.Product;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
-import com.example.E.commerce.E_commerce.Entity.Category;
+import com.example.E.commerce.E_commerce.Entity.Product.Category;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
