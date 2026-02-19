@@ -7,13 +7,18 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.LifecycleState;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Service
 public class AddressService {
@@ -124,5 +129,22 @@ public class AddressService {
         return mapToDTO(address);
     }
 
+    @Transactional
+    public String deleteAddress(Long id, String username)
+    {
+        User user=  userRepository.findByUsername(username)
+                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
+        UserAddresses address = addressRepository.findByIdAndUser(id,user)
+                .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!!"));
+
+
+        long addressCount = addressRepository.countByUser(user);
+        if(addressCount <=1)
+        {
+            throw new BadRequestException("At least one address must exist!!!");
+        }
+        addressRepository.delete(address);
+        return "Address Deleted Successfully, Now if you want you can Add Address";
+    }
 }

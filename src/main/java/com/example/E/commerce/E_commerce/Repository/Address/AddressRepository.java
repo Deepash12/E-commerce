@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<UserAddresses,Long>
@@ -20,4 +21,10 @@ public interface AddressRepository extends JpaRepository<UserAddresses,Long>
     Page<UserAddresses> findByUser(User user, Pageable pageable);
 
     Optional<UserAddresses> findByIdAndUser(Long id, User user);
+
+    boolean deleteByIdAndUser(Long id, User user);
+
+    long countByUser(User user);
+
+//    List<UserAddresses> findByUsers(User user);
 }
