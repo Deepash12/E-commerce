@@ -47,4 +47,11 @@ public class AddressController
         String username = authentication.getName();
         return addressService.updateAddress(id,username,addAddressRequestDTO);
     }
+
+    @DeleteMapping("/delete/address/{id}")
+    private ResponseEntity<String> deleteAddress(@PathVariable Long id,Authentication authentication)
+    {
+        String username= authentication.getName();
+        return ResponseEntity.ok(addressService.deleteAddress(id,username));
+    }
 }
