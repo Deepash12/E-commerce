@@ -7,18 +7,11 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.LifecycleState;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
 
 @Service
 public class AddressService {
@@ -77,7 +70,7 @@ public class AddressService {
         }
         else if (Boolean.TRUE.equals(addAddressRequestDTO.getIsDefault()))
         {
-            addressRepository.cleanDefaultForUser(userId);
+            addressRepository.resetDefaultForUser(userId);
             address.setIsDefault(true);
         }
         else
