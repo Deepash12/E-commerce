@@ -26,7 +26,7 @@ AND (:keyword IS NULL OR LOWER(p.Name) LIKE LOWER(CONCAT('%', :keyword, '%')))
 //    List<Product> findByActiveTrue();
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from product p where p.id = :id")
+    @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Long id);
 
 }
