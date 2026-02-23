@@ -13,7 +13,6 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product,Long>
 {
-
     @Query("""
 SELECT p FROM Product p
 WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
@@ -22,8 +21,6 @@ AND (:maxPrice IS NULL OR p.price <= :maxPrice)
 AND (:keyword IS NULL OR LOWER(p.Name) LIKE LOWER(CONCAT('%', :keyword, '%')))
 """)
     Page<Product> findWithFilter(Integer categoryId, Double minPrice, Double maxPrice, String keyword, Pageable pageable);
-
-//    List<Product> findByActiveTrue();
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Product p where p.id = :id")
