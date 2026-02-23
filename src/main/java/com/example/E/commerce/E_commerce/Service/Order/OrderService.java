@@ -9,7 +9,7 @@ import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
-import com.example.E.commerce.E_commerce.Entity.Order.PaymentStatus;
+import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;

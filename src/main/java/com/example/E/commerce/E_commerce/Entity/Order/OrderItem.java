@@ -27,11 +27,10 @@ public class OrderItem {
     private Product product;
 
     private String productName;
-    private BigDecimal productPrice;
+//    private BigDecimal productPrice;
+    @Column(nullable = false)
     private Integer quantity;
+    @Column(nullable = false)
     private BigDecimal priceAtPurchase;
-
-
-
 
 }

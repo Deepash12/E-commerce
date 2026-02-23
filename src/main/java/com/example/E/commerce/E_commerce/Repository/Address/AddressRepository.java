@@ -13,8 +13,6 @@ import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<UserAddresses,Long>
 {
-
-
     int countByUserId(Long userId);
 
     @Modifying
@@ -25,13 +23,5 @@ public interface AddressRepository extends JpaRepository<UserAddresses,Long>
 
     Optional<UserAddresses> findByIdAndUser(Long id, User user);
 
-//    boolean deleteByIdAndUser(Long id, User user);
-
     long countByUser(User user);
-
-//    UserAddresses findByIdAndUsername(String username, String addressId);
-
-//    UserAddresses findByIdAndUsers(Long addressId, User user);
-
-//    List<UserAddresses> findByUsers(User user);
 }

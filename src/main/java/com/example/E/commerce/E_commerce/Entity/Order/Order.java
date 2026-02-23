@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Entity.Order;
 
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
+import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;

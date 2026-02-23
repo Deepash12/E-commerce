@@ -5,10 +5,14 @@ import lombok.Data;
 
 public enum OrderStatus
 {
-    PENDING,
-    PAID,
+    CREATED ,
+    CONFIRMED,
+    PROCESSING,
     SHIPPED,
     DELIVERED,
     CANCELLED,
-    CONFIRMED
+    RETURNED
+    ,PENDING
+
+
 }
