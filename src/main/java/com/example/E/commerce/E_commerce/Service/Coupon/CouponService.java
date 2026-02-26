@@ -149,4 +149,28 @@ public class CouponService
         Page<Coupon> coupons = couponRepository.findAll(spec,pageable);
         return coupons.map(this::mapCouponToDTO);
     }
+
+    public getAllCouponResponseDTO viewCoupon(Long id)
+    {
+        Coupon coupon = couponRepository.findById(id).
+                orElseThrow(()-> new BadRequestException("Coupon Does Not Exist!!!"));
+        return mapCouponToDTO(coupon);
+    }
+
+    @Transactional
+    public String disableCoupon(Long id)
+    {
+        Coupon coupon = couponRepository.findById(id).
+                orElseThrow(()-> new BadRequestException("Coupon does Not Exist!!!"));
+        if(!coupon.getIsActive())
+        {
+            throw new BadRequestException("Coupon Already Disabled!!!");
+        }
+        if(coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+        {
+            throw new BadRequestException("Expired Coupon Does not need to be delete !!!");
+        }
+        coupon.setIsActive(false);
+        return "Coupon Successfully Disabled!!!";
+    }
 }

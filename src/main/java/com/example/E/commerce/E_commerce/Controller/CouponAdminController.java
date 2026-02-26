@@ -21,8 +21,6 @@ public class CouponAdminController
 {
     private final CouponService couponService;
     private final CouponValidationService couponValidationService;
-    private final CouponCalculationService couponCalculationService;
-
 
     @PostMapping("/createCoupon")
     private CouponResponseDTO createCoupon(@RequestBody @Valid AddCouponRequestDTO addCouponRequestDTO)
@@ -40,6 +38,17 @@ public class CouponAdminController
     public Page<getAllCouponResponseDTO> getAllCoupon(@PathVariable Integer pageNumber , @PathVariable Integer pageSize,@RequestBody CouponFilterRequest filter)
     {
         return couponService.viewAllCoupon(pageNumber,pageSize,filter);
+    }
+    @GetMapping("/{id}")
+    public getAllCouponResponseDTO getCouponById(@PathVariable Long id)
+    {
+        return couponService.viewCoupon(id);
+    }
+    @DeleteMapping("{id}")
+    public String deleteCouponById(@PathVariable Long id)
+    {
+
+        return couponService.disableCoupon(id);
     }
 
 
