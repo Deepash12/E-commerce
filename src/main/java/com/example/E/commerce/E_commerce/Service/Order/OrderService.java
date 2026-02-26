@@ -143,7 +143,7 @@ public class OrderService
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setProductName(product.getName());
-            orderItem.setProductPrice(product.getPrice());
+//            orderItem.setProductPrice(product.getPrice());
             orderItem.setQuantity(items.getQuantity());
             orderItem.setPriceAtPurchase((product.getPrice()));
 

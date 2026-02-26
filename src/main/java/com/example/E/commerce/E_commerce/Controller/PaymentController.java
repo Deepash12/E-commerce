@@ -27,7 +27,7 @@ public class PaymentController
         return paymentService.initiatePayment(orderId,paymentMethod);
     }
 
-    @PostMapping("/complete/{PaymentId")
+    @PostMapping("/complete/{PaymentId}")
     private Payment completePayment(@PathVariable Long PaymentId,Authentication authentication)
     {
 
