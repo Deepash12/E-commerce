@@ -4,11 +4,12 @@ import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequest;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@Component
 public class CouponSpecification
 {
     public Specification<Coupon> buildSpecification(CouponFilterRequest filterRequest)
