@@ -1,5 +1,6 @@
 package com.example.E.commerce.E_commerce.Repository.Coupon;
 
+import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,5 @@ public interface CouponRepository extends JpaRepository<Coupon,Long>, JpaSpecifi
     boolean existsByCouponCode(String couponCode);
 
 
-
-
+    Optional<Coupon> findByCouponCode(@NotBlank String couponCode);
 }

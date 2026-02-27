@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Service.Coupon;
 
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequest;
+import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class CouponSpecification
 {
-    public Specification<Coupon> buildSpecification(CouponFilterRequest filterRequest)
+    public Specification<Coupon> buildSpecification(CouponFilterRequestAdmin filterRequest)
     {
         return (root, query, criteriaBuilder) ->
         {
@@ -26,7 +26,7 @@ public class CouponSpecification
             {
                 predicates.add
                         (criteriaBuilder.equal
-                                (root.get("couponType"),filterRequest.getCouponCode())
+                                (root.get("couponType"),filterRequest.getCouponType())
                         );
             }
             if(filterRequest.getIsActive()!=null)
@@ -64,17 +64,17 @@ public class CouponSpecification
                                     criteriaBuilder.and
                                             (
                                                     criteriaBuilder.isTrue
-                                                            (root.get("isActive")),criteriaBuilder.greaterThanOrEqualTo
+                                                            (root.get("isActive")),criteriaBuilder.lessThanOrEqualTo
                                                             (
                                                                     root.get("validFrom"),now),
-                                                    criteriaBuilder.lessThanOrEqualTo(root.get("expiryAt"),now),
+                                                    criteriaBuilder.greaterThanOrEqualTo(root.get("expiryAt"),now),
                                                     criteriaBuilder.lessThan(root.get("usedCount"),root.get("globalUsageLimit"))
                                             )
                             );
 
                 }
             }
-            return criteriaBuilder.and(predicates.toArray(predicates.toArray(new Predicate[0])));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }
