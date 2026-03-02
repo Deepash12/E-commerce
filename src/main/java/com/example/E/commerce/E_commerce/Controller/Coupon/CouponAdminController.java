@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/coupon")
+@RequestMapping("/api/admin/coupon")
 @PreAuthorize("hasRole('ADMIN')")
 public class CouponAdminController
 {

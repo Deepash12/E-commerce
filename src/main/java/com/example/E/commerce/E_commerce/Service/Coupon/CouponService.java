@@ -210,7 +210,7 @@ public class CouponService
         return mapCouponToDTO(coupon);
     }
 
-    public String removeCoupon(String id)
+    public String removeCoupon(Long id)
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
