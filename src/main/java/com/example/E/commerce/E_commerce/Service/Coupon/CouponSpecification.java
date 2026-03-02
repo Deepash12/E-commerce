@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Service.Coupon;
 
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequest;
+import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class CouponSpecification
 {
-    public Specification<Coupon> buildSpecification(CouponFilterRequest filterRequest)
+    public Specification<Coupon> buildSpecification(CouponFilterRequestAdmin filterRequest)
     {
         return (root, query, criteriaBuilder) ->
         {

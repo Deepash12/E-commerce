@@ -3,8 +3,7 @@ package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.Coupon.AddCouponRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.getAllCouponResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequest;
-import com.example.E.commerce.E_commerce.Service.Coupon.CouponCalculationService;
+import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponValidationService;
 import jakarta.validation.Valid;
@@ -35,7 +34,7 @@ public class CouponAdminController
         return couponService.updateCoupon(id,addCouponRequestDTO);
     }
     @GetMapping
-    public Page<getAllCouponResponseDTO> getAllCoupon(@PathVariable Integer pageNumber , @PathVariable Integer pageSize,@RequestBody CouponFilterRequest filter)
+    public Page<getAllCouponResponseDTO> getAllCoupon(@PathVariable Integer pageNumber , @PathVariable Integer pageSize,@RequestBody CouponFilterRequestAdmin filter)
     {
         return couponService.viewAllCoupon(pageNumber,pageSize,filter);
     }

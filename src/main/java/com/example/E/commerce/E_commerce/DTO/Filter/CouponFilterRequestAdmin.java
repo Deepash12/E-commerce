@@ -5,7 +5,7 @@ import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
 import lombok.Data;
 
 @Data
-public class CouponFilterRequest
+public class CouponFilterRequestAdmin
 {
     private String couponCode;
     private CouponType couponType;

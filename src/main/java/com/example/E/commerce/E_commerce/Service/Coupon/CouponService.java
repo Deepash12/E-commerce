@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service.Coupon;
 import com.example.E.commerce.E_commerce.DTO.Coupon.AddCouponRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.getAllCouponResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequest;
+import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Coupon.CouponStatus;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
@@ -141,7 +141,7 @@ public class CouponService
 
     }
 
-    public Page<getAllCouponResponseDTO> viewAllCoupon(Integer pageNumber, Integer pageSize,CouponFilterRequest filter)
+    public Page<getAllCouponResponseDTO> viewAllCoupon(Integer pageNumber, Integer pageSize, CouponFilterRequestAdmin filter)
     {
         Sort sort = Sort.by(Sort.Order.asc("expiryAt"));
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
