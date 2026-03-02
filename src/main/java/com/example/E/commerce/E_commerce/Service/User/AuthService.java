@@ -6,12 +6,10 @@ import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.Role;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
-import com.example.E.commerce.E_commerce.Repository.User.RoleRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Email.EmailService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import jakarta.transaction.Transactional;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,19 +31,17 @@ public class AuthService
     private AuthenticationManager authenticationManager;
     private CustomUserDetailsService customUserDetailsService;
     private JwtUtil jwtUtil;
-    private final RoleRepository role;
     private final EmailService emailService;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil, AuthenticationManager authenticationManager,
-                       CustomUserDetailsService customUserDetailsService, RoleRepository role, EmailService emailService)
+                       CustomUserDetailsService customUserDetailsService, EmailService emailService)
     {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
-        this.role = role;
         this.emailService = emailService;
     }
 
@@ -62,16 +58,16 @@ public class AuthService
             throw new BadRequestException("Email Already Existed!!!");
         }
 
-        Role role1 = role.findById
-                (
-                        registerRequestDTO.getRoleId()
-                ).orElseThrow(() -> new BadRequestException("Role not found"));
+//        Role role1 = role.findById
+//                (
+//                        registerRequestDTO.getRoleId()
+//                ).orElseThrow(() -> new BadRequestException("Role not found"));
         User user =  new User();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setEmail(registerRequestDTO.getEmail());
         user.setPhone(registerRequestDTO.getPhoneNumber());
-        user.setRole(role1);
+        user.setRole(Role.USER);
         userRepository.save(user);
         return "Registered Successfully , Please Login";
     }
@@ -84,10 +80,10 @@ public class AuthService
                 (
                         new UsernamePasswordAuthenticationToken
                                 (
-                                        loginRequestDTO.getUsername(),loginRequestDTO.getPassword()
+                                        loginRequestDTO.getEmail(),loginRequestDTO.getPassword()
                                 )
                 );
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDTO.getUsername());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDTO.getEmail());
 
         String token = jwtUtil.generateAccessToken(userDetails);
         return new LoginResponseDTO(token,userDetails.getUsername());
