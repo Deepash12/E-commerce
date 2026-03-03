@@ -19,38 +19,28 @@ import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
 public class OrderService
 {
-    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository) {
-        this.userRepository = userRepository;
-        this.cartRepository = cartRepository;
-
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-        this.addressRepository = addressRepository;
-        this.cartItemsRepository = cartItemsRepository;
-    }
-
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
     private final CartItemsRepository cartItemsRepository;
-
-
-
+    
     public OrderResponseDTO checkoutOrders(String username, CheckoutOrderRequestDTO dto) {
 
         Order order = checkoutOrder(username, dto);
@@ -212,9 +202,9 @@ public class OrderService
         return "Order Successfully Cancelled";
     }
 
-    public Page<OrderResponseDTO> viewOrders(Integer pageNumber, Integer pageSize,
-             String username)
+    public Page<OrderResponseDTO> viewOrders(Integer pageNumber, Integer pageSize)
     {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         Pageable pageable = PageRequest.of(
                 pageNumber,

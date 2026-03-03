@@ -6,21 +6,17 @@ import com.example.E.commerce.E_commerce.DTO.Authorization.ResetPasswordDtoReque
 import com.example.E.commerce.E_commerce.Service.User.AuthService;
 import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class Auth
 {
     private final AuthService authService;
     private final tokenBlackListService tokenBlackListService;
-
-    public Auth(AuthService authService, tokenBlackListService tokenBlackListService) {
-        this.authService = authService;
-        this.tokenBlackListService = tokenBlackListService;
-    }
-
 
     @PostMapping("/register")
         public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)

@@ -4,19 +4,16 @@ import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Service.Product.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class ProductController {
-
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping
 

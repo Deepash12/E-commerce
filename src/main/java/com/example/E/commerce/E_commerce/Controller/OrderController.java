@@ -1,7 +1,10 @@
 package com.example.E.commerce.E_commerce.Controller;
 
 import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Order.OrderService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -10,14 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/orders")
 @PreAuthorize("hasRole('USER')")
+@RequiredArgsConstructor
 public class OrderController
 {
     private final OrderService orderService;
-
-
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
     @PostMapping("/checkout")
     private ResponseEntity<?> checkoutProduct(CheckoutOrderRequestDTO checkoutOrderRequestDTO, Authentication authentication)
@@ -41,11 +40,10 @@ public class OrderController
     }
 
     @GetMapping("/all")
-    private ResponseEntity<?> viewAllOrder(@RequestParam(defaultValue = "0") Integer pageNumber,
-                                           @RequestParam(defaultValue = "5")Integer pageSize,
-                                           Authentication authentication)
+    private Page<OrderResponseDTO> viewAllOrder(@RequestParam(defaultValue = "0") Integer pageNumber,
+                                                @RequestParam(defaultValue = "5")Integer pageSize)
     {
-        String username = authentication.getName();
-        return ResponseEntity.ok(orderService.viewOrders(pageNumber,pageSize,username));
+//        String username = authentication.getName();
+        return orderService.viewOrders(pageNumber,pageSize);
     }
 }

@@ -11,6 +11,7 @@ import com.example.E.commerce.E_commerce.Repository.Payments.PaymentGateway;
 import com.example.E.commerce.E_commerce.Repository.Payments.PaymentRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.usertype.UserTypeSupport;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,20 +23,13 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PaymentService
 {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final PaymentGateway paymentGateway;
-
-    public PaymentService(PaymentRepository paymentRepository, UserRepository userRepository, OrderRepository orderRepository, PaymentGateway paymentGateway) {
-        this.paymentRepository = paymentRepository;
-        this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
-        this.paymentGateway = paymentGateway;
-    }
-
 
     public Payment initiatePayment(Long orderId,String method)
     {

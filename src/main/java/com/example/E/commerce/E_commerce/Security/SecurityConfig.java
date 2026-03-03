@@ -22,66 +22,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-//@Configuration
-//@EnableWebSecurity
-////@RequiredArgsConstructor
-//public class SecurityConfig
-//{
-//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-//
-//    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-//                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint)
-//    {
-//        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-//        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-//
-//    }
-//    @Bean
-//    public AuthenticationManager authenticationManager
-//            (AuthenticationConfiguration authenticationConfiguration)throws Exception
-//    {
-//        return authenticationConfiguration.getAuthenticationManager();
-//    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder()
-//    {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .exceptionHandling(exception ->
-//                        exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                )
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/**").permitAll()
-//                        .anyRequest().authenticated()
-//                );
-//
-//        return http.build();
-//    }
-//
-//}
-
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(

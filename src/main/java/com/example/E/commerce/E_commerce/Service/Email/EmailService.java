@@ -1,19 +1,16 @@
 package com.example.E.commerce.E_commerce.Service.Email;
 
 import jakarta.validation.constraints.Email;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
+@RequiredArgsConstructor
 @Service
 public class EmailService
 {
     private final JavaMailSender javaMailSender;
-
-    public EmailService(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
-    }
-
+    
     public void sendResetPasswordEmail(@Email String email, String resetLink)
     {
         SimpleMailMessage message = new SimpleMailMessage();

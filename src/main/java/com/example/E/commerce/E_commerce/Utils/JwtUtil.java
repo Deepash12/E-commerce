@@ -81,6 +81,4 @@ public class JwtUtil
         return ValidateTokens(token).get("role", String.class);
     }
 
-//    public String generateAccessToken(UserDetails userDetails) {
-//    }
 }

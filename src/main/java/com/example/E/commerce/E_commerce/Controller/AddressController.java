@@ -4,6 +4,7 @@ import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Service.Address.AddressService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/address")
+@RequiredArgsConstructor
 public class AddressController
 {
     private final AddressService addressService;
-
-    public AddressController(AddressService addressService) {
-        this.addressService = addressService;
-    }
 
     @PostMapping("/add")
     private ResponseEntity<?> addAddress(@Valid @RequestBody AddAddressRequestDTO addAddressRequestDTO, Authentication authentication)

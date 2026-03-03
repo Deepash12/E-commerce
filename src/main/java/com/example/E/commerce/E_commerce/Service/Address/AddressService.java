@@ -7,18 +7,15 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+@RequiredArgsConstructor
 @Service
 public class AddressService {
-    public AddressService(AddressRepository addressRepository, UserRepository userRepository) {
-        this.addressRepository = addressRepository;
-        this.userRepository = userRepository;
-    }
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
