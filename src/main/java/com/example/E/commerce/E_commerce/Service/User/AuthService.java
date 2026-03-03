@@ -80,10 +80,10 @@ public class AuthService
                 (
                         new UsernamePasswordAuthenticationToken
                                 (
-                                        loginRequestDTO.getEmail(),loginRequestDTO.getPassword()
+                                        loginRequestDTO.getUsername(),loginRequestDTO.getPassword()
                                 )
                 );
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDTO.getEmail());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDTO.getUsername());
 
         String token = jwtUtil.generateAccessToken(userDetails);
         return new LoginResponseDTO(token,userDetails.getUsername());
