@@ -18,14 +18,14 @@ public class Product
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String Name;
-    private String Description;
+    private String name;
+    private String description;
     private BigDecimal price;
     private int stockQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "subcategory_id",nullable = false)
+    private SubCategory subCategory;
 
 
 //    private Category category;

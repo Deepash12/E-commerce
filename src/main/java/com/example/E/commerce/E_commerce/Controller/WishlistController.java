@@ -21,7 +21,8 @@ public class WishlistController
         return ResponseEntity.ok(wishlistService.productAddToWatchlist(productAddToWatchlistDTO));
     }
     @GetMapping
-    private Page<Wishlist> getAllWishlistProduct(@PathVariable Integer PageNumber , @PathVariable Integer PageSize)
+    private Page<Wishlist> getAllWishlistProduct(@RequestParam (defaultValue = "0") Integer PageNumber ,
+                                                 @RequestParam(defaultValue = "10") Integer PageSize)
     {
         return wishlistService.getAllWishlistProduct(PageNumber,PageSize);
     }

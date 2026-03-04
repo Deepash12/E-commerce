@@ -19,7 +19,7 @@ public class ProductController {
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
     (
-            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Integer subCategoryId,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String keyword,
@@ -30,7 +30,7 @@ public class ProductController {
     )
     {
         try {
-            return productService.getAllProducts(pageNumber,pageSize,sortBy,sortDir,categoryId,minPrice,maxPrice,keyword);
+            return productService.getAllProducts(pageNumber,pageSize,sortBy,sortDir,subCategoryId,minPrice,maxPrice,keyword);
         } catch (Exception e)
         {
             throw new RuntimeException(e);
@@ -46,7 +46,7 @@ public class ProductController {
         }
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/add")
     public Product addProduct(@RequestBody ProductRequestDTO dto) {
         return productService.addProduct(dto);
     }
