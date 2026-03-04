@@ -18,7 +18,7 @@ SELECT p FROM Product p
 WHERE (:subCategoryId IS NULL OR p.subCategory.id = :subCategoryId)
 AND (:minPrice IS NULL OR p.price >= :minPrice)
 AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-AND (:keyword IS NULL OR LOWER(p.Name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
 """)
     Page<Product> findWithFilter(Integer subCategoryId, Double minPrice, Double maxPrice, String keyword, Pageable pageable);
 

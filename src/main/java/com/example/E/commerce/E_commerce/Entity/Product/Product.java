@@ -18,8 +18,8 @@ public class Product
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String Name;
-    private String Description;
+    private String name;
+    private String description;
     private BigDecimal price;
     private int stockQuantity;
 
