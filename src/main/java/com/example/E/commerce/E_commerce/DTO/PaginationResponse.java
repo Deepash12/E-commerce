@@ -1,0 +1,24 @@
+package com.example.E.commerce.E_commerce.DTO;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+@Getter
+@Setter
+public class PaginationResponse<T>
+{
+    private List<T> data;
+    private int currentPage;
+    private int totalPages;
+    private long totalItems;
+
+    public PaginationResponse(List<T> data, Page<?> page) {
+        this.data = data;
+        this.currentPage = page.getNumber();
+        this.totalPages = page.getTotalPages();
+        this.totalItems = page.getTotalElements();
+    }
+
+}

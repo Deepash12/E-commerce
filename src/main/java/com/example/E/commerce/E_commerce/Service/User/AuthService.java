@@ -10,6 +10,7 @@ import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Email.EmailService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,29 +23,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
+//@RequiredArgsConstructor
 @Service
 public class AuthService
 {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private CustomUserDetailsService customUserDetailsService;
-    private JwtUtil jwtUtil;
+    private  AuthenticationManager authenticationManager;
+    private  CustomUserDetailsService customUserDetailsService;
+    private  JwtUtil jwtUtil;
     private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil, AuthenticationManager authenticationManager,
-                       CustomUserDetailsService customUserDetailsService, EmailService emailService)
-    {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService, JwtUtil jwtUtil, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtUtil = jwtUtil;
         this.emailService = emailService;
     }
-
 
     public String registerUser(RegisterRequestDTO registerRequestDTO)
     {
@@ -57,11 +54,6 @@ public class AuthService
         {
             throw new BadRequestException("Email Already Existed!!!");
         }
-
-//        Role role1 = role.findById
-//                (
-//                        registerRequestDTO.getRoleId()
-//                ).orElseThrow(() -> new BadRequestException("Role not found"));
         User user =  new User();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));

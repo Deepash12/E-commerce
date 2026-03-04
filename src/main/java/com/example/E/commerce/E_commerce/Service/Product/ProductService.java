@@ -8,6 +8,7 @@ import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,17 +18,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
+@RequiredArgsConstructor
 @Service
 public class ProductService
 {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-    }
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,

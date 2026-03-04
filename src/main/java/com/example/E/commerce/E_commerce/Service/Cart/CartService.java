@@ -12,6 +12,7 @@ import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,19 +21,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CartService
 {
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CartItemsRepository cartItemsRepository;
-
-    public CartService(CartRepository cartRepository, UserRepository userRepository, ProductRepository productRepository, CartItemsRepository cartItemsRepository) {
-        this.cartRepository = cartRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-        this.cartItemsRepository = cartItemsRepository;
-    }
 
     public CartResponseDTO viewCart(String username)
     {

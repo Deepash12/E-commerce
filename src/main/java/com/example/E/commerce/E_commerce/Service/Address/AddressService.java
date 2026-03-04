@@ -7,18 +7,16 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+@RequiredArgsConstructor
 @Service
 public class AddressService {
-    public AddressService(AddressRepository addressRepository, UserRepository userRepository) {
-        this.addressRepository = addressRepository;
-        this.userRepository = userRepository;
-    }
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
@@ -81,8 +79,9 @@ public class AddressService {
         return "Address Saved Successfully";
     }
 
-    public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize, String username)
+    public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize)
     {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User not found with username: "+ username));
         Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
         Page<UserAddresses> addresses = addressRepository.findByUser(user,pageable);
