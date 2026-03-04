@@ -3,11 +3,12 @@ package com.example.E.commerce.E_commerce.Service.Product;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
-import com.example.E.commerce.E_commerce.Entity.Product.Category;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
+import com.example.E.commerce.E_commerce.Entity.Product.SubCategory;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
+import com.example.E.commerce.E_commerce.Repository.Product.SubCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,14 +24,14 @@ import java.util.Optional;
 public class ProductService
 {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
             int pageSize,
             String sortBy,
             String sortDir,
-            Integer categoryId,
+            Integer subCategoryId,
             Double minPrice,
             Double maxPrice,
             String keyword
@@ -45,7 +46,7 @@ public class ProductService
         // Only ONE query should be used
         Page<Product> productPage =
                 productRepository.findWithFilter(
-                        categoryId, minPrice, maxPrice, keyword, pageable
+                        subCategoryId, minPrice, maxPrice, keyword, pageable
                 );
 
         List<ProductResponseDTO> dtoList =
@@ -79,7 +80,7 @@ public class ProductService
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
-                .categoryName(product.getCategory().getName())
+                .categoryName(product.getSubCategory().getName())
                 .build();
     }
 
@@ -89,16 +90,16 @@ public class ProductService
 
     public Product addProduct(ProductRequestDTO productRequestDTO) {
 
-    Category category = categoryRepository.findById(
-            productRequestDTO.getCategoryId()
-    ).orElseThrow(() -> new BadRequestException("Category not found"));
+    SubCategory subCategory = subCategoryRepository.findById(
+            productRequestDTO.getSubcategoryId()
+    ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
     Product product = new Product();
     product.setName(productRequestDTO.getName());
     product.setDescription(productRequestDTO.getDescription());
     product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
-    product.setCategory(category);
+    product.setSubCategory(subCategory);
 
     return productRepository.save(product);
 }
@@ -128,14 +129,14 @@ public class ProductService
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Product does not exist!!!"));
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-                .orElseThrow(() -> new BadRequestException("Category not found"));
+        SubCategory subCategory = subCategoryRepository.findById(productRequestDTO.getSubcategoryId())
+                .orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
         existingProduct.setName(productRequestDTO.getName());
         existingProduct.setDescription(productRequestDTO.getDescription());
         existingProduct.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
         existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
-        existingProduct.setCategory(category);
+        existingProduct.setSubCategory(subCategory);
 
         return productRepository.save(existingProduct);
 
