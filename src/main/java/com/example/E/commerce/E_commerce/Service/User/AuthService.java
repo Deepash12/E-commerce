@@ -23,16 +23,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Service
 public class AuthService
 {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private CustomUserDetailsService customUserDetailsService;
-    private JwtUtil jwtUtil;
+    private  AuthenticationManager authenticationManager;
+    private  CustomUserDetailsService customUserDetailsService;
+    private  JwtUtil jwtUtil;
     private final EmailService emailService;
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService, JwtUtil jwtUtil, EmailService emailService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
+    }
 
     public String registerUser(RegisterRequestDTO registerRequestDTO)
     {

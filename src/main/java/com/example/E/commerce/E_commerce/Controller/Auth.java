@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class Auth
 {
     private final AuthService authService;
     private final tokenBlackListService tokenBlackListService;
+
+    public Auth(AuthService authService, tokenBlackListService tokenBlackListService) {
+        this.authService = authService;
+        this.tokenBlackListService = tokenBlackListService;
+    }
 
     @PostMapping("/register")
         public ResponseEntity<String> Register(@RequestBody RegisterRequestDTO registerRequestDTO)

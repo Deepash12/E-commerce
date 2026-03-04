@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
@@ -78,8 +79,9 @@ public class AddressService {
         return "Address Saved Successfully";
     }
 
-    public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize, String username)
+    public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize)
     {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User not found with username: "+ username));
         Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
         Page<UserAddresses> addresses = addressRepository.findByUser(user,pageable);
