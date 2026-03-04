@@ -6,8 +6,10 @@ import com.example.E.commerce.E_commerce.DTO.Authorization.ResetPasswordDtoReque
 import com.example.E.commerce.E_commerce.Service.User.AuthService;
 import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -65,6 +67,12 @@ public class Auth
                 (authService.resetPassword
                         (resetPasswordDtoRequest.getNewPassword(),resetPasswordDtoRequest.getToken())
                 );
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/register")
+    public ResponseEntity<String> registerAdmin(@RequestBody @Valid RegisterRequestDTO registerRequestDTO)
+    {
+        return ResponseEntity.ok(authService.registerAdmin(registerRequestDTO));
     }
 
 }

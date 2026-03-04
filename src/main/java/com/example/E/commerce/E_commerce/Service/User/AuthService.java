@@ -11,6 +11,7 @@ import com.example.E.commerce.E_commerce.Service.Email.EmailService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,15 +46,16 @@ public class AuthService
 
     public String registerUser(RegisterRequestDTO registerRequestDTO)
     {
+        if(userRepository.existsByEmail(registerRequestDTO.getEmail()))
+        {
+            throw new BadRequestException("Email Already Existed!!!");
+        }
 
         if(userRepository.existsByUsername(registerRequestDTO.getUsername()))
         {
             throw new BadRequestException("Username Already existed!!!");
         }
-        if(userRepository.existsByEmail(registerRequestDTO.getEmail()))
-        {
-            throw new BadRequestException("Email Already Existed!!!");
-        }
+
         User user =  new User();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
@@ -113,5 +115,25 @@ public class AuthService
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
         return  ResponseEntity.ok("Password Reset Successfully , Now you can Login");
+    }
+
+    public String registerAdmin(RegisterRequestDTO registerRequestDTO)
+    {
+        if(userRepository.existsByEmail(registerRequestDTO.getEmail()))
+        {
+            throw new BadRequestException("Email Already Existed!!!");
+        }
+        if(userRepository.existsByUsername(registerRequestDTO.getUsername()))
+        {
+            throw new BadRequestException("Username Already Existed!!!");
+        }
+        User user = new User();
+        user.setEmail(registerRequestDTO.getEmail());
+        user.setRole(Role.ADMIN);
+        user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        user.setPhone(registerRequestDTO.getPhoneNumber());
+        user.setUsername(registerRequestDTO.getUsername());
+        userRepository.save(user);
+        return "Registered Successfully!!!";
     }
 }
