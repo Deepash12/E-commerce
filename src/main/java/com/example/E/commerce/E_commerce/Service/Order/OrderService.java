@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-@RequiredArgsConstructor
+
 @Service
 public class OrderService
 {
@@ -40,8 +40,20 @@ public class OrderService
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
     private final CartItemsRepository cartItemsRepository;
-    
-    public OrderResponseDTO checkoutOrders(String username, CheckoutOrderRequestDTO dto) {
+
+    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository) {
+        this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.addressRepository = addressRepository;
+        this.cartItemsRepository = cartItemsRepository;
+    }
+
+    @Transactional
+    public OrderResponseDTO checkoutOrders(CheckoutOrderRequestDTO dto)
+    {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Order order = checkoutOrder(username, dto);
         return mapToDTO(order);
@@ -78,7 +90,7 @@ public class OrderService
 
 //our Business Logic Methods Here
 
-    @Transactional
+
     private Order checkoutOrder(String username, CheckoutOrderRequestDTO dto) {
 
         User user = userRepository.findByUsername(username)
