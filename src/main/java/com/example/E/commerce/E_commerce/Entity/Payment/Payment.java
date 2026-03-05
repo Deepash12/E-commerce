@@ -30,7 +30,8 @@ public class Payment
     private PaymentStatus status;
     private String paymentMethod;
     private String failureReason;
-    private Integer failureCount;
+    @Column(name = "failure_count")
+    private Integer failureCount =0;
     @Version
     private Long version;
 

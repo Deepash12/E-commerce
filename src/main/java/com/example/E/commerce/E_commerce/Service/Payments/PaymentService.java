@@ -1,5 +1,7 @@
 package com.example.E.commerce.E_commerce.Service.Payments;
 
+import com.example.E.commerce.E_commerce.DTO.Payment.PaymentMapper;
+import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
@@ -30,8 +32,9 @@ public class PaymentService
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final PaymentGateway paymentGateway;
+    private final PaymentMapper paymentMapper;
 
-    public Payment initiatePayment(Long orderId,String method)
+    public PaymentResponseDTO initiatePayment(Long orderId, String method)
     {
         String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
@@ -57,7 +60,8 @@ public class PaymentService
         payment.setTransactionId(UUID.randomUUID().toString());
         payment.setCreatedAt(LocalDateTime.now());
         payment.setExpiresAt(LocalDateTime.now().plusMinutes(15));
-        return paymentRepository.save(payment);
+        Payment savePayment = paymentRepository.save(payment);
+        return paymentMapper.toPaymentResponse(savePayment);
 
     }
 
@@ -112,7 +116,7 @@ public class PaymentService
             }
 
             boolean success = paymentGateway.processPayment(payment.getAmount());
-
+            System.out.println(success);
             if (success)
             {
                 payment.setStatus(PaymentStatus.SUCCESS);
@@ -121,7 +125,10 @@ public class PaymentService
             }
             else
             {
-                payment.setFailureCount(payment.getFailureCount() + 1);
+                payment.setFailureCount(
+                        (payment.getFailureCount() == null ? 0 : payment.getFailureCount()) + 1
+                );
+//                payment.setFailureCount(payment.getFailureCount() + 1);
                 payment.setFailureReason("Gateway Declined Transaction");
                 payment.setStatus(PaymentStatus.FAILED);
                 order.setPaymentStatus(PaymentStatus.FAILED);

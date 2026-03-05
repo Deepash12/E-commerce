@@ -1,5 +1,7 @@
 package com.example.E.commerce.E_commerce.Controller;
 
+import com.example.E.commerce.E_commerce.DTO.Payment.PaymentMapper;
+import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import com.example.E.commerce.E_commerce.Service.Payments.PaymentService;
@@ -15,17 +17,21 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController
 {
     private final PaymentService paymentService;
+    private final PaymentMapper paymentMapper;
 
     @PostMapping("/initiate/{orderId}")
-    private Payment initiatePayment(@PathVariable Long orderId,@RequestParam String paymentMethod )
+    private ResponseEntity<PaymentResponseDTO> initiatePayment(@PathVariable Long orderId, @RequestParam String paymentMethod )
     {
-        return paymentService.initiatePayment(orderId,paymentMethod);
+        PaymentResponseDTO response = paymentService.initiatePayment(orderId,paymentMethod);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/complete/{PaymentId}")
-    private Payment completePayment(@PathVariable Long PaymentId,Authentication authentication)
-    {
+    @PostMapping("/complete/{paymentId}")
+    private ResponseEntity<PaymentResponseDTO> completePayment(@PathVariable Long paymentId)
 
-        return paymentService.completePayment(PaymentId);
+    {
+        Payment payment = paymentService.completePayment(paymentId);
+        PaymentResponseDTO response = paymentMapper.toPaymentResponse(payment);
+        return ResponseEntity.ok(response);
     }
 }

@@ -8,13 +8,10 @@ import java.math.BigDecimal;
 @Service
 public class MockPaymentGateway implements PaymentGateway
 {
-    @Override
-    public boolean ProcessPayment(BigDecimal amount) {
-        return Math.random()>0.1;
-    }
+
 
     @Override
     public boolean processPayment(BigDecimal amount) {
-        return false;
+        return true;
     }
 }
