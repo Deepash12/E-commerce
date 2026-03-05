@@ -4,6 +4,7 @@ import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -19,6 +20,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @ToString.Exclude
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
