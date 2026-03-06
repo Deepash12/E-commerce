@@ -13,11 +13,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+
 @Service
 public class CouponValidationService
 {
     private final CouponRepository couponRepository;
+
+    public CouponValidationService(CouponRepository couponRepository) {
+        this.couponRepository = couponRepository;
+    }
+
     public void validateForCreation(@Valid AddCouponRequestDTO request)
     {
         BigDecimal discount = request.getDiscountAmount();

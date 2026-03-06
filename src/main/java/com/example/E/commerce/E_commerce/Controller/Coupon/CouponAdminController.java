@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
+
 @RequestMapping("/api/coupon")
 @PreAuthorize("hasRole('ADMIN')")
 public class CouponAdminController
@@ -21,30 +21,37 @@ public class CouponAdminController
     private final CouponService couponService;
     private final CouponValidationService couponValidationService;
 
+    public CouponAdminController(CouponService couponService, CouponValidationService couponValidationService) {
+        this.couponService = couponService;
+        this.couponValidationService = couponValidationService;
+    }
+
     @PostMapping("/createCoupon")
-    private CouponResponseDTO createCoupon(@RequestBody @Valid AddCouponRequestDTO addCouponRequestDTO)
+    public CouponResponseDTO createCoupon(@RequestBody @Valid AddCouponRequestDTO addCouponRequestDTO)
     {
         couponValidationService.validateForCreation(addCouponRequestDTO);
         return couponService.addCoupon(addCouponRequestDTO);
     }
     @PutMapping("/updateCoupon/{id}")
-    private CouponResponseDTO updateCoupon
+    public CouponResponseDTO updateCoupon
             (@PathVariable Long id,@RequestBody @Valid AddCouponRequestDTO addCouponRequestDTO)
     {
         return couponService.updateCoupon(id,addCouponRequestDTO);
     }
-    @GetMapping
-    private Page<getAllCouponResponseDTO> getAllCoupon(@PathVariable Integer pageNumber , @PathVariable Integer pageSize,@RequestBody CouponFilterRequestAdmin filter)
+    @GetMapping("/all")
+    public Page<getAllCouponResponseDTO> getAllCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
+                                                       @RequestParam(defaultValue = "5") Integer pageSize,
+                                                       @RequestBody CouponFilterRequestAdmin filter)
     {
         return couponService.viewAllCoupon(pageNumber,pageSize,filter);
     }
-    @GetMapping("/{id}")
-    private getAllCouponResponseDTO getCouponById(@PathVariable Long id)
+    @GetMapping("/view/{id}")
+    public getAllCouponResponseDTO getCouponById(@PathVariable Long id)
     {
         return couponService.viewCoupon(id);
     }
-    @DeleteMapping("{id}")
-    private String deleteCouponById(@PathVariable Long id)
+    @DeleteMapping("/delete/{id}")
+    public String deleteCouponById(@PathVariable Long id)
     {
 
         return couponService.disableCoupon(id);
