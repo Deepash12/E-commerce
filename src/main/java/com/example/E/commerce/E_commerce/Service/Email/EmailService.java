@@ -14,6 +14,7 @@ public class EmailService
     public void sendResetPasswordEmail(@Email String email, String resetLink)
     {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("deepashrathibhl@gmail.com");
         message.setTo(email);
         message.setSubject("Reset Email Password ");
         message.setText

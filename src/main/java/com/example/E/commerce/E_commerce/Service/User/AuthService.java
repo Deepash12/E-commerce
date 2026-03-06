@@ -87,6 +87,7 @@ public class AuthService
     public String forgetPassword(String email)
     {
         Optional<User>optionalUser = userRepository.findByEmail(email);
+        System.out.println(optionalUser);
         if(optionalUser.isEmpty())
         {
             return ("If email exists, reset link has been sent.");
@@ -105,7 +106,8 @@ public class AuthService
     @Transactional
     public ResponseEntity<String> resetPassword(String newPassword, String token)
     {
-        User user = userRepository.findByResetToken(token).orElseThrow(()-> new BadRequestException("Invalid Token!!!"));
+        User user = userRepository.findByResetToken(token).
+                orElseThrow(()-> new BadRequestException("Invalid Token!!!"));
 
         if(user.getResetTokenExpiry().isBefore(LocalDateTime.now()))
         {
