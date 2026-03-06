@@ -21,14 +21,14 @@ public class AddCouponRequestDTO
 {
     @Column(nullable = false)
     @NotNull
-    @NotBlank@Positive
+    @NotBlank
     private String couponCode;
     @Column(nullable = false)
     @NotNull
     private CouponType couponType;
     @Column(nullable = false)
     @NotNull
-    @NotBlank@Positive
+    @NotBlank
     private String description;
     @Column(nullable = false)
     @NotNull
@@ -58,6 +58,6 @@ public class AddCouponRequestDTO
     @Column(nullable = false)
     @NotNull
     @Positive
-    private Integer GlobalUsageLimit;
+    private Integer globalUsageLimit;
 
 }
