@@ -28,13 +28,15 @@ public class Product
     private SubCategory subCategory;
 
 
-//    private Category category;
-@Column(name = "created_at", insertable = false, updatable = false)
-private LocalDateTime createdAt;
+    //    private Category category;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
     private Timestamp deletedAt;
+
+    private String productImageUrl;
 
 //    private boolean active;
 }

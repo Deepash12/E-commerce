@@ -9,13 +9,16 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.SubCategoryRepository;
+import com.example.E.commerce.E_commerce.Service.File.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,7 @@ public class ProductService
 {
     private final ProductRepository productRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final FileService fileService;
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
@@ -69,9 +73,6 @@ public class ProductService
     }
 
 
-
-
-
     private ProductResponseDTO convertToDTO(Product product)
     {
         return ProductResponseDTO.builder()
@@ -80,34 +81,35 @@ public class ProductService
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
-                .categoryName(product.getSubCategory().getName())
+                .subCategoryName(product.getSubCategory().getName())
+                .productImageURl(product.getProductImageUrl())
                 .build();
     }
 
 
-
-
-
-    public Product addProduct(ProductRequestDTO productRequestDTO) {
+    public Product addProduct(ProductRequestDTO productRequestDTO, MultipartFile image) throws IOException {
 
     SubCategory subCategory = subCategoryRepository.findById(
             productRequestDTO.getSubcategoryId()
     ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
+    String productImageUrl = fileService.uploadFile(image);
     Product product = new Product();
     product.setName(productRequestDTO.getName());
     product.setDescription(productRequestDTO.getDescription());
     product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
     product.setSubCategory(subCategory);
+    product.setProductImageUrl(productImageUrl);
 
     return productRepository.save(product);
 }
 
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponseDTO getProductById(Long id) {
+        Product product =  productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Product not found"));
+        return convertToDTO(product);
     }
 
 
@@ -123,7 +125,8 @@ public class ProductService
         }
     }
 
-    public Product updateProductById(Long id, ProductRequestDTO productRequestDTO)
+    public Product updateProductById(Long id, ProductRequestDTO productRequestDTO,MultipartFile image)
+            throws IOException
     {
 
         Product existingProduct = productRepository.findById(id)
@@ -132,11 +135,13 @@ public class ProductService
         SubCategory subCategory = subCategoryRepository.findById(productRequestDTO.getSubcategoryId())
                 .orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
+        String productImageUrl = fileService.uploadFile(image);
         existingProduct.setName(productRequestDTO.getName());
         existingProduct.setDescription(productRequestDTO.getDescription());
         existingProduct.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
         existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
         existingProduct.setSubCategory(subCategory);
+        existingProduct.setProductImageUrl(productImageUrl);
 
         return productRepository.save(existingProduct);
 

@@ -9,13 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping
+    @GetMapping("/all")
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
     (
@@ -37,7 +41,10 @@ public class ProductController {
         }
 
     }
-    @GetMapping("/{id}")
+
+
+
+    @GetMapping("/view/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(productService.getProductById(id));
@@ -45,27 +52,34 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
-    public Product addProduct(@RequestBody ProductRequestDTO dto)
-    {
-        return productService.addProduct(dto);
+    public Product addProduct(@RequestPart ProductRequestDTO dto, @RequestPart MultipartFile image) throws IOException {
+        return productService.addProduct(dto,image);
     }
+
+
+
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
+    @PutMapping("/edit/{id}")
     public Product updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductRequestDTO dto)
+            @RequestPart ProductRequestDTO dto,
+            @RequestPart MultipartFile image)
     {
         try {
-            return productService.updateProductById(id, dto);
+            return productService.updateProductById(id, dto,image);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
+
+
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id)
     {
         try
