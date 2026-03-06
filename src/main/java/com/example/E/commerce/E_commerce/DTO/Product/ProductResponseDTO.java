@@ -18,5 +18,6 @@ public class ProductResponseDTO
     private String description;
     private BigDecimal price;
     private Integer stockQuantity;
-    private String categoryName;
+    private String subCategoryName;
+    private String productImageURl;
 }
