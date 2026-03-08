@@ -33,10 +33,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private String phone;
     private String avatar_url;
     private TinyIntAsSmallIntJdbcType email_verified;
     private String accountStatus;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
     @Column(name = "updated_at", insertable = false, updatable = false)
