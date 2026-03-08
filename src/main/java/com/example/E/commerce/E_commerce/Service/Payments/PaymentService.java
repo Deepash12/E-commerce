@@ -3,11 +3,13 @@ package com.example.E.commerce.E_commerce.Service.Payments;
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentMapper;
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
+import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Payments.PaymentGateway;
 import com.example.E.commerce.E_commerce.Repository.Payments.PaymentRepository;
@@ -33,6 +35,7 @@ public class PaymentService
     private final OrderRepository orderRepository;
     private final PaymentGateway paymentGateway;
     private final PaymentMapper paymentMapper;
+    private final CouponRepository couponRepository;
 
     public PaymentResponseDTO initiatePayment(Long orderId, String method)
     {
@@ -122,6 +125,12 @@ public class PaymentService
                 payment.setStatus(PaymentStatus.SUCCESS);
                 order.setPaymentStatus(PaymentStatus.SUCCESS);
                 order.setStatus(OrderStatus.CONFIRMED);
+                Coupon coupon = order.getCoupon();
+                if(coupon!=null)
+                {
+                    coupon.setUsedCount(coupon.getUsedCount()+1);
+                    couponRepository.save(coupon);
+                }
             }
             else
             {

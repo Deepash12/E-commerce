@@ -6,6 +6,7 @@ import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
+import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
@@ -15,9 +16,12 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartItemsRepository;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
+import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
+import com.example.E.commerce.E_commerce.Service.Coupon.CouponCalculationService;
+import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,14 +44,18 @@ public class OrderService
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
     private final CartItemsRepository cartItemsRepository;
+    private final CouponRepository couponRepository;
+    private final CouponCalculationService couponCalculationService;
 
-    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository) {
+    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository, CouponRepository couponRepository, CouponCalculationService couponCalculationService) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.addressRepository = addressRepository;
         this.cartItemsRepository = cartItemsRepository;
+        this.couponRepository = couponRepository;
+        this.couponCalculationService = couponCalculationService;
     }
 
     @Transactional
@@ -109,6 +117,8 @@ public class OrderService
         order.setPaymentStatus(PaymentStatus.PENDING);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
         List<OrderItem> orderItems = new ArrayList<>();
 
         UserAddresses address = addressRepository
@@ -145,7 +155,6 @@ public class OrderService
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setProductName(product.getName());
-//            orderItem.setProductPrice(product.getPrice());
             orderItem.setQuantity(items.getQuantity());
             orderItem.setPriceAtPurchase((product.getPrice()));
 
@@ -158,10 +167,34 @@ public class OrderService
         }
         totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
 
-        order.setTotalAmount(totalAmount);
+        Coupon coupons = cart.getCoupon();
+
+        if(coupons!=null && !coupons.getCouponCode().isBlank())
+        {
+//            Coupon coupon = couponRepository.findByCouponCode(dto.getCouponCode())
+//                    .orElseThrow(()-> new RuntimeException("Invalid Coupon Code!!!"));
+//            System.out.println("Coupon : \n"+ coupon);
+            discountAmount = couponCalculationService.calculateDiscount(coupons,totalAmount);
+            System.out.println("Discout Amount : "+discountAmount);
+            order.setCoupon(coupons);
+        }
+        BigDecimal finalAmount = totalAmount.subtract(discountAmount);
+
+        System.out.println("Final Amount : "+finalAmount);
+        if(finalAmount.compareTo(BigDecimal.ZERO)<0)
+        {
+            finalAmount = BigDecimal.ZERO;
+        }
+        order.setDiscountAmount(discountAmount);
+        order.setTotalAmount(finalAmount);
+
+
         order.setOrderItems(orderItems);
         orderRepository.saveAndFlush(order);
         cartItemsRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+        cart.setCoupon(null);
+        cartRepository.save(cart);
         return order;
     }
 

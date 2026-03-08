@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Entity.Order;
 
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
+import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -41,6 +42,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -52,6 +56,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<OrderItem> orderItems;
+
+    private BigDecimal discountAmount;
 
     //Address Entity Snapshot
     private String shippingFullName;
