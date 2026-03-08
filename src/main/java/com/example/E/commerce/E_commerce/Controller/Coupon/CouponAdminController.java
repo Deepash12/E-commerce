@@ -4,6 +4,8 @@ import com.example.E.commerce.E_commerce.DTO.Coupon.AddCouponRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.getAllCouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
+import com.example.E.commerce.E_commerce.Entity.Coupon.CouponStatus;
+import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponValidationService;
 import jakarta.validation.Valid;
@@ -41,8 +43,16 @@ public class CouponAdminController
     @GetMapping("/all")
     public Page<getAllCouponResponseDTO> getAllCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
                                                        @RequestParam(defaultValue = "5") Integer pageSize,
-                                                       @RequestBody CouponFilterRequestAdmin filter)
+                                                      @RequestParam(required = false) String couponCode,
+                                                      @RequestParam(required = false) CouponType couponType,
+                                                      @RequestParam(required = false) Boolean isActive,
+                                                      @RequestParam(required = false) CouponStatus status)
     {
+        CouponFilterRequestAdmin filter = new CouponFilterRequestAdmin();
+        filter.setCouponCode(couponCode);
+        filter.setCouponType(couponType);
+        filter.setIsActive(isActive);
+        filter.setStatus(status);
         return couponService.viewAllCoupon(pageNumber,pageSize,filter);
     }
     @GetMapping("/view/{id}")

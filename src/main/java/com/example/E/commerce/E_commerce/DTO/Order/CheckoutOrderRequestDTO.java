@@ -10,4 +10,5 @@ import lombok.*;
 public class CheckoutOrderRequestDTO
 {
     private Long addressId;
+    private String couponCode;
 }

@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -256,12 +257,12 @@ public class CouponService
         {
             throw new BadRequestException("Coupon usage limit exceeded");
         }
-        if(cart.getCoupon()!=null)
+        if(cart.getCoupon()!=null &&
+                !cart.getCoupon().getCouponCode().equals(code))
         {
-            throw new BadRequestException("Coupon is Already Applied on cart,Once Removed it then Apply it");
+            throw new BadRequestException("Another coupon already applied on cart");
         }
 
-        List<CartItems> cartItems;
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItems item : cart.getItems()) {
@@ -288,7 +289,7 @@ public class CouponService
 
             discount = totalAmount
                     .multiply(coupon.getDiscountAmount())
-                    .divide(BigDecimal.valueOf(100));
+                    .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
 
             if (discount.compareTo(coupon.getMaximumDiscountAmount()) > 0) {
                 discount = coupon.getMaximumDiscountAmount();

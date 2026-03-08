@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user/coupons")
-@PreAuthorize("HasRole('USER')")
+@PreAuthorize("hasRole('USER')")
 public class CouponController
 {
     private final CouponService couponService;
 
-    @GetMapping
+    @GetMapping("/all")
     public Page<getAllCouponResponseDTO> getAllActiveCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
                                                             @RequestParam(defaultValue = "10") Integer pageSize){
         return couponService.viewAllActiveCoupon(pageNumber,pageSize);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/view/{id}")
     public getAllCouponResponseDTO getActiveCoupon(@PathVariable Long id)
     {
         return couponService.viewActiveCoupon(id);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/delete/id")
     public String DeleteAppliedCoupon(@PathVariable Long id, Authentication authentication)
     {
         return couponService.removeCoupon("id");
