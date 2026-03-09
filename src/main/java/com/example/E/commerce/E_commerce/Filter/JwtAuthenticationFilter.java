@@ -34,7 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+        String path = request.getServletPath();
+        if(path.contains("/auth/login")|| path.contains("/auth/forget-password")||path.contains("/auth/reset-password"))
+        {
+            filterChain.doFilter(request,response);
+            return;
+        }
 
+        //jwt validation
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 

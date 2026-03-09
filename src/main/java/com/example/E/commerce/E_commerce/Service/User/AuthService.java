@@ -86,13 +86,14 @@ public class AuthService
     @Transactional
     public String forgetPassword(String email)
     {
-        Optional<User>optionalUser = userRepository.findByEmail(email);
-        System.out.println(optionalUser);
-        if(optionalUser.isEmpty())
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+//        Optional<User>optionalUser = userRepository.findByEmail(email);
+//        System.out.println(optionalUser);
+        if(user==null)
         {
             return ("If email exists, reset link has been sent.");
         }
-        User user = optionalUser.get();
+//        User user = optionalUser.get();
         String token = UUID.randomUUID().toString();
 
         user.setResetToken(token);
@@ -106,6 +107,8 @@ public class AuthService
     @Transactional
     public ResponseEntity<String> resetPassword(String newPassword, String token)
     {
+        System.out.println(token);
+        System.out.println(newPassword);
         User user = userRepository.findByResetToken(token).
                 orElseThrow(()-> new BadRequestException("Invalid Token!!!"));
 
@@ -116,6 +119,7 @@ public class AuthService
         user.setPassword_hash(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
+        userRepository.save(user);
         return  ResponseEntity.ok("Password Reset Successfully , Now you can Login");
     }
 
