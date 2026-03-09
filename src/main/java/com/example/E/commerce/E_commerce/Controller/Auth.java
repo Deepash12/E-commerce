@@ -63,6 +63,8 @@ public class Auth
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDtoRequest resetPasswordDtoRequest)
     {
+        System.out.println(resetPasswordDtoRequest.getToken());
+        System.out.println(resetPasswordDtoRequest.getNewPassword());
         return ResponseEntity.ok
                 (authService.resetPassword
                         (resetPasswordDtoRequest.getNewPassword(),resetPasswordDtoRequest.getToken())
