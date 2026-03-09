@@ -1,6 +1,4 @@
 package com.example.E.commerce.E_commerce.Controller.Profile;
-
-import com.example.E.commerce.E_commerce.Controller.Auth;
 import com.example.E.commerce.E_commerce.DTO.Profile.EditProfileDTO;
 import com.example.E.commerce.E_commerce.DTO.Profile.ProfileResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Profile.ProfileService;
@@ -31,9 +29,9 @@ public class ProfileController
 
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/edit")
-    public ProfileResponseDTO editProfile(Authentication authentication, @RequestPart EditProfileDTO dto
-            , @RequestPart MultipartFile image) throws IOException {
+    public ProfileResponseDTO editProfile(Authentication authentication, @RequestPart("dto") EditProfileDTO dto
+            , @RequestPart(value="avatar", required=false) MultipartFile avatar) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return profileService.editProfile(username,dto,image);
+        return profileService.editProfile(username,dto,avatar);
     }
 }
