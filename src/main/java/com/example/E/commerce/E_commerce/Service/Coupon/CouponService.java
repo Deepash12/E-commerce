@@ -2,7 +2,6 @@ package com.example.E.commerce.E_commerce.Service.Coupon;
 
 import com.example.E.commerce.E_commerce.DTO.Coupon.*;
 import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestUser;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
@@ -15,21 +14,18 @@ import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.jspecify.annotations.Nullable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.web.PagedModel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class CouponService
@@ -121,6 +117,7 @@ public class CouponService
         try
         {
             Coupon coupon = new Coupon();
+            System.out.println(addCouponRequestDTO.getCouponCode());
             coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
             coupon.setCouponType(addCouponRequestDTO.getCouponType());
             coupon.setDescription(addCouponRequestDTO.getDescription());
@@ -146,6 +143,7 @@ public class CouponService
         Coupon coupon = couponRepository.findById(id).
                 orElseThrow(()-> new BadRequestException("Coupon Does not Existed Anymore!!!"));
         couponValidationService.validateForUpdate(addCouponRequestDTO,coupon);
+        coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
         coupon.setCouponType(addCouponRequestDTO.getCouponType());
         coupon.setDescription(addCouponRequestDTO.getDescription());
         coupon.setMinOrderAmount(addCouponRequestDTO.getMinOrderAmount());
