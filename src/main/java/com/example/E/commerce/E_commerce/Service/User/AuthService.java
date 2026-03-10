@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Service.User;
 
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Authorization.RefreshTokenRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.Role;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
@@ -9,9 +10,9 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Email.EmailService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
-//@RequiredArgsConstructor
+
 @Service
 public class AuthService
 {
@@ -32,14 +33,16 @@ public class AuthService
     private final PasswordEncoder passwordEncoder;
     private  AuthenticationManager authenticationManager;
     private  CustomUserDetailsService customUserDetailsService;
+    private final TokenBlackListService tokenBlackListService;
     private  JwtUtil jwtUtil;
     private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService, JwtUtil jwtUtil, EmailService emailService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService, TokenBlackListService tokenBlackListService, JwtUtil jwtUtil, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
+        this.tokenBlackListService = tokenBlackListService;
         this.jwtUtil = jwtUtil;
         this.emailService = emailService;
     }
@@ -66,8 +69,6 @@ public class AuthService
         return "Registered Successfully , Please Login";
     }
 
-
-
     public LoginResponseDTO loginUser(@RequestBody LoginRequestDTO loginRequestDTO)
     {
         Authentication authentication = authenticationManager.authenticate
@@ -80,20 +81,19 @@ public class AuthService
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDTO.getEmail());
 
         String token = jwtUtil.generateAccessToken(userDetails);
-        return new LoginResponseDTO(token,userDetails.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+        System.out.println(refreshToken);
+        return new LoginResponseDTO(token,userDetails.getUsername(),refreshToken);
     }
 
     @Transactional
     public String forgetPassword(String email)
     {
         User user = userRepository.findByEmail(email).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-//        Optional<User>optionalUser = userRepository.findByEmail(email);
-//        System.out.println(optionalUser);
         if(user==null)
         {
             return ("If email exists, reset link has been sent.");
         }
-//        User user = optionalUser.get();
         String token = UUID.randomUUID().toString();
 
         user.setResetToken(token);
@@ -141,5 +141,25 @@ public class AuthService
         user.setUsername(registerRequestDTO.getUsername());
         userRepository.save(user);
         return "Registered Successfully!!!";
+    }
+
+    public ResponseEntity<?> refreshToken(RefreshTokenRequestDTO token)
+    {
+        String refreshToken = token.getRefreshToken();
+        if(tokenBlackListService.isBlacklisted(refreshToken))
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Claims claims = jwtUtil.validateTokens(refreshToken);
+        User user = userRepository.findByUsername(claims.getSubject())
+                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+
+        if(jwtUtil.isTokenValid(refreshToken,userDetails))
+        {
+            String newAccessToken = jwtUtil.generateAccessToken(userDetails);
+            return ResponseEntity.ok(Map.of("accessToken : ", newAccessToken));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

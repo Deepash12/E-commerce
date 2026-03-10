@@ -82,7 +82,8 @@ public class ProductService
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory().getName())
-                .productImageURl(product.getProductImageUrl())
+                .productImageUrl(product.getProductImageUrl())
+                .isWishlist(product.getIsWishlist())
                 .build();
     }
 

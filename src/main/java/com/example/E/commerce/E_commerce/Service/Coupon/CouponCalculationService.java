@@ -19,11 +19,11 @@ public class CouponCalculationService
             throw new BadRequestException("Order amount does not meet minimum requirement");
         }
 
-        if (coupon.getCouponType() == CouponType.Flat) {
+        if (coupon.getCouponType() == CouponType.FLAT) {
 
             discount = coupon.getDiscountAmount();
 
-        } else if (coupon.getCouponType() == CouponType.Percent) {
+        } else if (coupon.getCouponType() == CouponType.PERCENTAGE) {
 
             discount = orderAmount
                     .multiply(coupon.getDiscountAmount())

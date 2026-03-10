@@ -59,6 +59,7 @@ public class WishlistService
         wishlist.setProduct(product);
         wishlist.setUser(user);
         wishlist.setAddedAt(LocalDateTime.now());
+        product.setIsWishlist(true);
         return wishlistRepository.save(wishlist);
     }
 
@@ -76,7 +77,7 @@ public class WishlistService
 
         Wishlist wishlist = wishlistRepository.findByUserAndProduct(user, product).
                 orElseThrow(()-> new BadRequestException("Product not in Wishlist"));
-
+        product.setIsWishlist(false);
         wishlistRepository.delete(wishlist);
         return "Product Deleted From Wishlist!!!";
     }

@@ -19,5 +19,6 @@ public class ProductResponseDTO
     private BigDecimal price;
     private Integer stockQuantity;
     private String subCategoryName;
-    private String productImageURl;
+    private String productImageUrl;
+    private Boolean isWishlist;
 }

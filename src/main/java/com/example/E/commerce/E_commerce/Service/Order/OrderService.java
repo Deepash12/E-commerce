@@ -257,10 +257,6 @@ public class OrderService
                 Sort.by("createdAt").descending()
         );
         Page<Order> orders = orderRepository.findByUser(user,pageable);
-        if(orders.isEmpty())
-        {
-            throw new BadRequestException(("No orders Yet!!!"));
-        }
         return orders.map(this::mapToDTO);
     }
 }

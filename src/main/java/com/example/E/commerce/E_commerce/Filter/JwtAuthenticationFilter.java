@@ -1,13 +1,12 @@
 package com.example.E.commerce.E_commerce.Filter;
 
-import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
+import com.example.E.commerce.E_commerce.Service.User.TokenBlackListService;
 import com.example.E.commerce.E_commerce.Utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +19,9 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final tokenBlackListService tokenBlackListService;
+    private final TokenBlackListService tokenBlackListService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, tokenBlackListService tokenBlackListService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenBlackListService tokenBlackListService) {
         this.jwtUtil = jwtUtil;
         this.tokenBlackListService = tokenBlackListService;
     }
@@ -33,8 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+
         String header = request.getHeader("Authorization");
         String path = request.getServletPath();
+
         if(path.contains("/auth/login")|| path.contains("/auth/forget-password")||path.contains("/auth/reset-password"))
         {
             filterChain.doFilter(request,response);
@@ -51,7 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                Claims claims = jwtUtil.ValidateTokens(token);
+
+                Claims claims = jwtUtil.validateTokens(token);
+
                 String username = claims.getSubject();
                 if (username != null &&
                         SecurityContextHolder.getContext().getAuthentication() == null) {

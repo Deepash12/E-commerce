@@ -1,13 +1,9 @@
 package com.example.E.commerce.E_commerce.Controller;
-import com.example.E.commerce.E_commerce.DTO.Authorization.LoginRequestDTO;
-import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
-import com.example.E.commerce.E_commerce.DTO.Authorization.ResetPasswordDtoRequest;
+import com.example.E.commerce.E_commerce.DTO.Authorization.*;
 import com.example.E.commerce.E_commerce.Service.User.AuthService;
-import com.example.E.commerce.E_commerce.Service.User.tokenBlackListService;
+import com.example.E.commerce.E_commerce.Service.User.TokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 public class Auth
 {
     private final AuthService authService;
-    private final tokenBlackListService tokenBlackListService;
+    private final TokenBlackListService tokenBlackListService;
 
-    public Auth(AuthService authService, tokenBlackListService tokenBlackListService) {
+    public Auth(AuthService authService, TokenBlackListService tokenBlackListService) {
         this.authService = authService;
         this.tokenBlackListService = tokenBlackListService;
     }
@@ -39,13 +35,14 @@ public class Auth
         return ResponseEntity.ok(authService.loginUser(request));
     }
     @PostMapping("/logout")
-    public ResponseEntity<String> LogoutUser(HttpServletRequest request)
+    public ResponseEntity<String> LogoutUser(HttpServletRequest request,@RequestBody RefreshTokenRequestDTO requestDTO)
     {
         String header = request.getHeader("Authorization");
         if(header!=null && header.startsWith("Bearer"))
         {
             String token = header.substring(7);
             tokenBlackListService.blacklist(token);
+            tokenBlackListService.blacklist(requestDTO.getRefreshToken());
             return ResponseEntity.ok("logged out Successfully");
         }
         else
@@ -75,6 +72,13 @@ public class Auth
     public ResponseEntity<String> registerAdmin(@RequestBody @Valid RegisterRequestDTO registerRequestDTO)
     {
         return ResponseEntity.ok(authService.registerAdmin(registerRequestDTO));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDTO token)
+    {
+        return authService.refreshToken(token);
+
     }
 
 }

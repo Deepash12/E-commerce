@@ -47,7 +47,7 @@ public class CouponValidationService
         {
             throw new BadRequestException("Maximum Discount amount should be greater than 0");
         }
-        if(request.getCouponType()== CouponType.Percent)
+        if(request.getCouponType()== CouponType.PERCENTAGE)
         {
             if(request.getMaximumDiscountAmount().compareTo(request.getDiscountAmount())<0)
             {
@@ -59,7 +59,7 @@ public class CouponValidationService
             }
 
         }
-        if(request.getCouponType()==CouponType.Flat)
+        if(request.getCouponType()==CouponType.FLAT)
         {
             if(request.getDiscountAmount().compareTo(request.getMaximumDiscountAmount())!=0)
             {
@@ -95,7 +95,7 @@ public class CouponValidationService
             throw new BadRequestException("Expiry must be after valid from date");
 
         // Coupon Type validations
-        if (requestDTO.getCouponType() == CouponType.Percent) {
+        if (requestDTO.getCouponType() == CouponType.PERCENTAGE) {
 
             if (requestDTO.getDiscountAmount().compareTo(BigDecimal.valueOf(100)) > 0)
                 throw new BadRequestException("Discount percent cannot exceed 100");
@@ -104,7 +104,7 @@ public class CouponValidationService
                 throw new BadRequestException("Maximum discount must be greater than zero");
         }
 
-        if (requestDTO.getCouponType() == CouponType.Flat) {
+        if (requestDTO.getCouponType() == CouponType.FLAT) {
 
             if (requestDTO.getDiscountAmount().compareTo(requestDTO.getMaximumDiscountAmount()) != 0)
                 throw new BadRequestException("Flat discount must equal maximum discount");

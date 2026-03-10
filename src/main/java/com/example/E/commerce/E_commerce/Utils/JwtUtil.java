@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtUtil
@@ -52,11 +50,11 @@ public class JwtUtil
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+accessTokenExpiration))
-                .signWith(getSigningKey(),SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    public Claims ValidateTokens(String token)
+    public Claims validateTokens(String token)
     {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -65,11 +63,11 @@ public class JwtUtil
                 .getBody();
     }
     public String extractUsername(String token) {
-        return ValidateTokens(token).getSubject();
+        return validateTokens(token).getSubject();
     }
 
     public boolean isTokenExpired(String token) {
-        return ValidateTokens(token).getExpiration().before(new Date());
+        return validateTokens(token).getExpiration().before(new Date());
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -78,7 +76,7 @@ public class JwtUtil
     }
 
     public String extractRole(String token) {
-        return ValidateTokens(token).get("role", String.class);
+        return validateTokens(token).get("role", String.class);
     }
 
 }

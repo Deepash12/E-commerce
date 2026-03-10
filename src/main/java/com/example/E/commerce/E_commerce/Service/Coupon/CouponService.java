@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PagedModel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -163,6 +164,7 @@ public class CouponService
         Sort sort = Sort.by(Sort.Order.asc("expiryAt"));
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Specification<Coupon> spec = couponSpecification.buildSpecification(filter);
+
         Page<Coupon> coupons = couponRepository.findAll(spec,pageable);
         return coupons.map(this::mapCouponToDTO);
     }
@@ -281,11 +283,11 @@ public class CouponService
 
         BigDecimal discount = BigDecimal.ZERO;
 
-        if (coupon.getCouponType() == CouponType.Flat) {
+        if (coupon.getCouponType() == CouponType.FLAT) {
 
             discount = coupon.getDiscountAmount();
 
-        } else if (coupon.getCouponType() == CouponType.Percent) {
+        } else if (coupon.getCouponType() == CouponType.PERCENTAGE) {
 
             discount = totalAmount
                     .multiply(coupon.getDiscountAmount())

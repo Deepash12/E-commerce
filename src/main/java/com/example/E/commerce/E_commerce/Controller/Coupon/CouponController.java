@@ -19,19 +19,19 @@ public class CouponController
 {
     private final CouponService couponService;
 
-    @GetMapping("/all")
+    @GetMapping("/active/all")
     public Page<getAllCouponResponseDTO> getAllActiveCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
                                                             @RequestParam(defaultValue = "10") Integer pageSize){
         return couponService.viewAllActiveCoupon(pageNumber,pageSize);
     }
 
-    @GetMapping("/view/{id}")
+    @GetMapping("/active/view/{id}")
     public getAllCouponResponseDTO getActiveCoupon(@PathVariable Long id)
     {
         return couponService.viewActiveCoupon(id);
     }
 
-    @DeleteMapping("/delete/id")
+    @DeleteMapping("/applied/delete/id")
     public String DeleteAppliedCoupon(@PathVariable Long id, Authentication authentication)
     {
         return couponService.removeCoupon("id");

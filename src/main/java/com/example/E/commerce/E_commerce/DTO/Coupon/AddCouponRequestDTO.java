@@ -1,6 +1,7 @@
 package com.example.E.commerce.E_commerce.DTO.Coupon;
 
 import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,43 +20,35 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AddCouponRequestDTO
 {
-    @Column(nullable = false)
+
     @NotNull
     @NotBlank
     private String couponCode;
-    @Column(nullable = false)
     @NotNull
     private CouponType couponType;
-    @Column(nullable = false)
     @NotNull
     @NotBlank
     private String description;
-    @Column(nullable = false)
     @NotNull
     @Positive
     private BigDecimal minOrderAmount;
-    @Column(nullable = false)
     @NotNull
     @Positive
     private BigDecimal discountAmount;
-    @Column(nullable = false)
     @NotNull
     @Positive
     private BigDecimal maximumDiscountAmount;
-    @Column(nullable = false)
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime expiryAt;
-    @Column(nullable = false)
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime validFrom;
-    @Column(nullable = false)
     @NotNull
     private Boolean isActive = true;
-    @Column(nullable = false)
     @NotNull
     @Positive
     private Integer perUserLimit;
-    @Column(nullable = false)
     @NotNull
     @Positive
     private Integer globalUsageLimit;

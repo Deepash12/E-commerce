@@ -38,5 +38,7 @@ public class Product
 
     private String productImageUrl;
 
+    private Boolean isWishlist = false;
+
 //    private boolean active;
 }
