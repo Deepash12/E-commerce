@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/coupon/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
 
                 // 🔥 THIS LINE WAS MISSING

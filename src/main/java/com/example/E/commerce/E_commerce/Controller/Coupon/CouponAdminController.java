@@ -11,6 +11,7 @@ import com.example.E.commerce.E_commerce.Service.Coupon.CouponValidationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,12 +66,12 @@ public class CouponAdminController
     {
         return couponService.viewCoupon(id);
     }
-    @DeleteMapping("/delete/{id}")
-    public String deleteCouponById(@PathVariable Long id)
+    @PatchMapping("/toggle/{id}")
+    public ResponseEntity<String> toggleCoupon(@PathVariable Long id)
     {
-
-        return couponService.disableCoupon(id);
+        return ResponseEntity.ok(couponService.toggleCouponStatus(id));
     }
+
 
 
 }

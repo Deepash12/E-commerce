@@ -15,6 +15,7 @@ import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -177,20 +178,41 @@ public class CouponService
     }
 
     @Transactional
-    public String disableCoupon(Long id)
+    public String toggleCouponStatus(Long id)
     {
-        Coupon coupon = couponRepository.findById(id).
-                orElseThrow(()-> new BadRequestException("Coupon does Not Exist!!!"));
-        if(!coupon.getIsActive())
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Coupon Not Found!!!"));
+
+        // If coupon is currently ACTIVE → disable it
+        if (Boolean.TRUE.equals(coupon.getIsActive()))
         {
-            throw new BadRequestException("Coupon Already Disabled!!!");
+            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Expired coupon cannot be modified");
+            }
+
+            coupon.setIsActive(false);
+
+            return "Coupon Disabled Successfully";
         }
-        if(coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+
+        // If coupon is currently DISABLED → enable it
+        else
         {
-            throw new BadRequestException("Expired Coupon Does not need to be delete !!!");
+            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Coupon is already expired");
+            }
+
+            if (coupon.getValidFrom().isAfter(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Coupon is not valid yet");
+            }
+
+            coupon.setIsActive(true);
+
+            return "Coupon Enabled Successfully";
         }
-        coupon.setIsActive(false);
-        return "Coupon Successfully Disabled!!!";
     }
 
     public Page<getAllCouponResponseDTO> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
@@ -312,4 +334,5 @@ public class CouponService
 
         return response;
     }
+
 }
