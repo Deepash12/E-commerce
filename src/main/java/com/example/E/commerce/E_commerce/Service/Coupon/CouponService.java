@@ -2,7 +2,6 @@ package com.example.E.commerce.E_commerce.Service.Coupon;
 
 import com.example.E.commerce.E_commerce.DTO.Coupon.*;
 import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
-import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestUser;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
@@ -21,14 +20,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.web.PagedModel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class CouponService
@@ -120,6 +117,7 @@ public class CouponService
         try
         {
             Coupon coupon = new Coupon();
+            System.out.println(addCouponRequestDTO.getCouponCode());
             coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
             coupon.setCouponType(addCouponRequestDTO.getCouponType());
             coupon.setDescription(addCouponRequestDTO.getDescription());
@@ -145,6 +143,7 @@ public class CouponService
         Coupon coupon = couponRepository.findById(id).
                 orElseThrow(()-> new BadRequestException("Coupon Does not Existed Anymore!!!"));
         couponValidationService.validateForUpdate(addCouponRequestDTO,coupon);
+        coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
         coupon.setCouponType(addCouponRequestDTO.getCouponType());
         coupon.setDescription(addCouponRequestDTO.getDescription());
         coupon.setMinOrderAmount(addCouponRequestDTO.getMinOrderAmount());
@@ -177,20 +176,41 @@ public class CouponService
     }
 
     @Transactional
-    public String disableCoupon(Long id)
+    public String toggleCouponStatus(Long id)
     {
-        Coupon coupon = couponRepository.findById(id).
-                orElseThrow(()-> new BadRequestException("Coupon does Not Exist!!!"));
-        if(!coupon.getIsActive())
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Coupon Not Found!!!"));
+
+        // If coupon is currently ACTIVE → disable it
+        if (Boolean.TRUE.equals(coupon.getIsActive()))
         {
-            throw new BadRequestException("Coupon Already Disabled!!!");
+            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Expired coupon cannot be modified");
+            }
+
+            coupon.setIsActive(false);
+
+            return "Coupon Disabled Successfully";
         }
-        if(coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+
+        // If coupon is currently DISABLED → enable it
+        else
         {
-            throw new BadRequestException("Expired Coupon Does not need to be delete !!!");
+            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Coupon is already expired");
+            }
+
+            if (coupon.getValidFrom().isAfter(LocalDateTime.now()))
+            {
+                throw new BadRequestException("Coupon is not valid yet");
+            }
+
+            coupon.setIsActive(true);
+
+            return "Coupon Enabled Successfully";
         }
-        coupon.setIsActive(false);
-        return "Coupon Successfully Disabled!!!";
     }
 
     public Page<getAllCouponResponseDTO> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
@@ -312,4 +332,5 @@ public class CouponService
 
         return response;
     }
+
 }

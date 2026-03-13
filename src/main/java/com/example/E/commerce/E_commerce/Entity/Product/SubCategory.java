@@ -1,5 +1,6 @@
 package com.example.E.commerce.E_commerce.Entity.Product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+
 @Table(
         name = "sub_category",
         uniqueConstraints = {

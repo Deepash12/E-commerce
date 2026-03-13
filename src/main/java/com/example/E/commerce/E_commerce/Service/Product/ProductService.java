@@ -80,8 +80,10 @@ public class ProductService
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
+                .categoryName(product.getCategory())
+                .discountPrice(product.getDiscountPrice())
                 .stockQuantity(product.getStockQuantity())
-                .subCategoryName(product.getSubCategory().getName())
+                .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
                 .isWishlist(product.getIsWishlist())
                 .build();
