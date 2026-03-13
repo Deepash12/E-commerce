@@ -1,5 +1,6 @@
 package com.example.E.commerce.E_commerce.Entity.Product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,10 +9,7 @@ import lombok.*;
 
 @Data
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Category
 {
     @Id

@@ -158,7 +158,7 @@ public class AuthService
         if(jwtUtil.isTokenValid(refreshToken,userDetails))
         {
             String newAccessToken = jwtUtil.generateAccessToken(userDetails);
-            return ResponseEntity.ok(Map.of("accessToken : ", newAccessToken));
+            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
