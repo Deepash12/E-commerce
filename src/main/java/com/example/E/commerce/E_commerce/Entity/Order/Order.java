@@ -42,6 +42,11 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+
+    private String paymentMethod;
+    private String cancelReason;
+
+
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;

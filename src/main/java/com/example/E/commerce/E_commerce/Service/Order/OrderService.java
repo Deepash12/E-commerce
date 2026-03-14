@@ -1,4 +1,7 @@
 package com.example.E.commerce.E_commerce.Service.Order;
+import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Coupon.CouponDtoOrderResponse;
+import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
@@ -22,6 +25,7 @@ import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponCalculationService;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
+import jakarta.mail.Address;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +36,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class OrderService
@@ -67,24 +76,59 @@ public class OrderService
         return mapToDTO(order);
     }
 
-    private OrderResponseDTO mapToDTO(Order order) {
+    private OrderResponseDTO mapToDTO(Order order)
+    {
+       UserAddresses address = addressRepository.findById(order.getUserAddress().getId()).orElseThrow(()-> new BadRequestException("Address Not Exist!!!"));
+        AddressResponseDTO addressDto = new AddressResponseDTO();
+        addressDto.setCountry(address.getCountry());
+        addressDto.setState(address.getState());
+        addressDto.setAddressLine1(address.getAddressLine1());
+        addressDto.setAddressLine2(address.getAddressLine2());
+        addressDto.setPhone(address.getPhone());
+        addressDto.setCity(address.getCity());
+        addressDto.setLandmark(address.getLandmark());
+        addressDto.setPostalCode(address.getPostalCode());
+        addressDto.setFullName(address.getFullName());
+
+        Coupon coupon = couponRepository.findById(order.getCoupon().getId())
+                .orElseThrow(()-> new BadRequestException("Coupon Not Used!!!"));
+
+        CouponDtoOrderResponse couponResponseDTO = new CouponDtoOrderResponse();
+        couponResponseDTO.setCouponCode(coupon.getCouponCode());
+        couponResponseDTO.setDiscountAmount(couponResponseDTO.getDiscountAmount());
+
+
+
+
 
         List<OrderItemsResponseDTO> items = order.getOrderItems().stream()
-                .map(item -> new OrderItemsResponseDTO(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
-                        item.getPriceAtPurchase(),
-                        item.getQuantity(),
-                        item.getPriceAtPurchase()
-                                .multiply(BigDecimal.valueOf(item.getQuantity()))
-                )).toList();
+                .map
+                        (item -> new OrderItemsResponseDTO
+                                        (
+                                            item.getProduct().getId(),
+                                            item.getProduct().getName(),
+                                            item.getProduct().getDescription(),
+                                            item.getProduct().getProductImageUrl(),
+                                            item.getPriceAtPurchase(),
+                                            item.getQuantity(),
+                                            item.getPriceAtPurchase()
+                                                    .multiply(BigDecimal.valueOf(item.getQuantity()))
+                                        )
+                )
+                .toList();
 
         OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setOrderId(order.getId());
+        dto.setId(order.getId());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setOrderStatus(order.getStatus().name());
         dto.setPaymentStatus(order.getPaymentStatus().name());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setCancelReason(order.getCancelReason());
+        dto.setEstimatedDeliveryDate(order.getCreatedAt().plusDays(4));
         dto.setCreatedAt(order.getCreatedAt());
+        dto.setAddress(addressDto);
+        dto.setCoupon(couponResponseDTO);
+        dto.setDiscountAmount(order.getDiscountAmount());
         dto.setItems(items);
 
         return dto;
@@ -112,6 +156,8 @@ public class OrderService
         }
 
         Order order = new Order();
+        UUID id = UUID.randomUUID();
+        order.setId(Long.valueOf("OD-"+id));
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
@@ -125,7 +171,7 @@ public class OrderService
                 .findByIdAndUser(dto.getAddressId(), user)
                 .orElseThrow(() -> new BadRequestException("Address Not Found!!!"));
 
-
+        order.setUserAddress(address);
         order.setShippingCity(address.getCity());
         order.setShippingCountry(address.getCountry());
         order.setShippingFullName(address.getFullName());
@@ -171,9 +217,6 @@ public class OrderService
 
         if(coupons!=null && !coupons.getCouponCode().isBlank())
         {
-//            Coupon coupon = couponRepository.findByCouponCode(dto.getCouponCode())
-//                    .orElseThrow(()-> new RuntimeException("Invalid Coupon Code!!!"));
-//            System.out.println("Coupon : \n"+ coupon);
             discountAmount = couponCalculationService.calculateDiscount(coupons,totalAmount);
             System.out.println("Discout Amount : "+discountAmount);
             order.setCoupon(coupons);

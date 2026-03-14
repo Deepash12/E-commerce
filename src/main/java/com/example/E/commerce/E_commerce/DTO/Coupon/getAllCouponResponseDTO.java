@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.DTO.Coupon;
 
 import com.example.E.commerce.E_commerce.Entity.Coupon.CouponStatus;
 import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
-@NoArgsConstructor
 public class getAllCouponResponseDTO
 {
 
@@ -33,5 +34,6 @@ public class getAllCouponResponseDTO
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private CouponStatus calculatedStatus;
+
 
 }

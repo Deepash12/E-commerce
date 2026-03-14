@@ -1,11 +1,13 @@
 package com.example.E.commerce.E_commerce.DTO.Product;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-@Getter
-@Setter
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductPageResponseDTO<T>
 {
     private List<T> content;

@@ -1,14 +1,12 @@
 package com.example.E.commerce.E_commerce.DTO.Cart;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItemsResponseDTO
 {
     private Long productId;
@@ -19,4 +17,6 @@ public class CartItemsResponseDTO
     private BigDecimal totalPrice;
 
 
+    public CartItemsResponseDTO(Long id, String name, BigDecimal price, Integer quantity, BigDecimal multiply) {
+    }
 }
