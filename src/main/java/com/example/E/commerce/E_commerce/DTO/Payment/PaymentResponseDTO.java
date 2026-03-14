@@ -12,8 +12,6 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentResponseDTO
 {
@@ -30,8 +28,6 @@ public class PaymentResponseDTO
 
     @Data
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class OrderDTO {
         private Long id;
         private LocalDateTime createdAt;
@@ -43,16 +39,12 @@ public class PaymentResponseDTO
 
     @Data
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class StatusDTO {
         private String name;
     }
 
     @Data
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class OrderItemDTO {
         private Long id;
         private Integer quantity;
@@ -63,8 +55,6 @@ public class PaymentResponseDTO
 
     @Data
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ProductDTO {
         private Long id;
         private String name;

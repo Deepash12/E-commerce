@@ -1,10 +1,12 @@
 package com.example.E.commerce.E_commerce.DTO.Address;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddressResponseDTO
 {
     private Long id;
