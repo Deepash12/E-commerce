@@ -14,6 +14,7 @@ import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Payments.PaymentGateway;
 import com.example.E.commerce.E_commerce.Repository.Payments.PaymentRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
+import com.example.E.commerce.E_commerce.Service.Email.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.usertype.UserTypeSupport;
@@ -36,6 +37,7 @@ public class PaymentService
     private final PaymentGateway paymentGateway;
     private final PaymentMapper paymentMapper;
     private final CouponRepository couponRepository;
+    private final EmailService emailService;
 
     public PaymentResponseDTO initiatePayment(Long orderId, String method)
     {
@@ -149,6 +151,7 @@ public class PaymentService
             }
 
             orderRepository.save(order);
+            emailService.confirmedOrderSendMail(user.getEmail(),order);
             return paymentRepository.save(payment);
         }
         catch (ObjectOptimisticLockingFailureException ex)

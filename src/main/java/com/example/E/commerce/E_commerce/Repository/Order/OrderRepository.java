@@ -17,4 +17,6 @@ public interface OrderRepository extends JpaRepository<Order,Long>
     Page<Order> findByUser(User user, Pageable pageable);
     @Query("Select o from Order o where o.id= :orderId AND o.user.username= :username")
     Optional<Order> findByIdAndUsername(@Param("orderId") Long orderId,@Param("username") String username);
+
+    long countByUserIdAndCouponId(Long id, Long id1);
 }

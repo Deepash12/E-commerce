@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Service.Coupon;
 
 import com.example.E.commerce.E_commerce.DTO.Coupon.*;
 import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
@@ -11,6 +12,7 @@ import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
 import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
+import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CouponService
@@ -35,12 +38,14 @@ public class CouponService
     private final CouponValidationService couponValidationService;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
-    public CouponService(CouponSpecification couponSpecification, CouponRepository couponRepository, CouponValidationService couponValidationService, UserRepository userRepository, CartRepository cartRepository) {
+    private final OrderRepository orderRepository;
+    public CouponService(CouponSpecification couponSpecification, CouponRepository couponRepository, CouponValidationService couponValidationService, UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository) {
         this.couponSpecification = couponSpecification;
         this.couponRepository = couponRepository;
         this.couponValidationService = couponValidationService;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
+        this.orderRepository = orderRepository;
     }
 
     public CouponResponseDTO mapToResponse(Coupon coupon)
@@ -63,6 +68,8 @@ public class CouponService
                     coupon.getCreatedAt()
                 );
     }
+
+
     public getAllCouponResponseDTO mapCouponToDTO(Coupon coupon)
     {
         return new getAllCouponResponseDTO(
@@ -85,6 +92,23 @@ public class CouponService
                 calculateStatus(coupon)
         );
     }
+
+    public CouponResponseDTOForUser mapCouponToDTOForUser(Coupon coupon)
+    {
+        return new CouponResponseDTOForUser
+                (
+                        coupon.getId(),
+                        coupon.getCouponCode(),
+                        coupon.getDescription(),
+                        coupon.getDiscountAmount(),
+                        coupon.getMaximumDiscountAmount(),
+                        coupon.getMinOrderAmount(),
+                        coupon.getExpiryAt(),
+                        calculateStatus(coupon)
+
+                );
+    }
+
 
     public Integer calculateRemainingUsage( Integer globalUsageLimit,Integer usedCount)
     {
@@ -213,8 +237,11 @@ public class CouponService
         }
     }
 
-    public Page<getAllCouponResponseDTO> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
+    public ProductPageResponseDTO<CouponResponseDTOForUser> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
     {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+
         CouponFilterRequestAdmin filterRequestUser = new CouponFilterRequestAdmin();
         filterRequestUser.setStatus(CouponStatus.ACTIVE);
 
@@ -222,18 +249,48 @@ public class CouponService
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Specification<Coupon> spec =  couponSpecification.buildSpecification(filterRequestUser);
         Page<Coupon> coupons = couponRepository.findAll(spec,pageable);
-        return coupons.map(this::mapCouponToDTO);
+
+
+
+        List<CouponResponseDTOForUser> dto = coupons.getContent().stream().map
+                (coupon ->
+                {
+                    CouponResponseDTOForUser responseDTOForUser = mapCouponToDTOForUser(coupon);
+                    long usage = orderRepository.countByUserIdAndCouponId(user.getId(),coupon.getId());
+                    responseDTOForUser.setAlreadyUsed(usage>=coupon.getPerUserLimit());
+                    return responseDTOForUser;
+                }).toList();
+
+        ProductPageResponseDTO<CouponResponseDTOForUser> response = new ProductPageResponseDTO<>();
+        response.setContent(dto);
+        response.setTotalPages(coupons.getTotalPages());
+        response.setTotalElements(coupons.getTotalElements());
+        response.setPageSize(coupons.getSize());
+        response.setCurrentPage(coupons.getNumber());
+        response.setLast(coupons.isLast());
+        return response;
     }
 
-    public getAllCouponResponseDTO viewActiveCoupon(Long id)
+    public CouponResponseDTOForUser viewActiveCoupon(Long id)
     {
         CouponFilterRequestAdmin filterRequestUser = new CouponFilterRequestAdmin();
         filterRequestUser.setStatus(CouponStatus.ACTIVE);
         Specification<Coupon> spec = couponSpecification.buildSpecification(filterRequestUser).
                 and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.get("id"),id));
-        Coupon coupon = couponRepository.findOne(spec).orElseThrow(()-> new BadRequestException("Coupon is not Active Anymore!!!"));
-        return mapCouponToDTO(coupon);
+        Coupon coupon = couponRepository.findOne(spec)
+                .orElseThrow(()-> new BadRequestException("Coupon is not Active Anymore!!!"));
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        CouponResponseDTOForUser responseDTOForUser = mapCouponToDTOForUser(coupon);
+        long usage = orderRepository.countByUserIdAndCouponId(user.getId(), coupon.getId());
+        if(usage>=coupon.getPerUserLimit())
+        {
+            responseDTOForUser.setAlreadyUsed(true);
+        }
+        return responseDTOForUser;
     }
 
     public String removeCoupon(String id)
@@ -279,6 +336,13 @@ public class CouponService
         {
             throw new BadRequestException("Coupon usage limit exceeded");
         }
+
+        long usage = orderRepository.countByUserIdAndCouponId(user.getId(), coupon.getId());
+        if(usage>=coupon.getPerUserLimit())
+        {
+            throw new BadRequestException("Coupon Already used!!!");
+        }
+
         if(cart.getCoupon()!=null &&
                 !cart.getCoupon().getCouponCode().equals(code))
         {
