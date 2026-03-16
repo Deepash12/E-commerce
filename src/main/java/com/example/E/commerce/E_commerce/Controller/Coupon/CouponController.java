@@ -1,12 +1,9 @@
 package com.example.E.commerce.E_commerce.Controller.Coupon;
 
-import com.example.E.commerce.E_commerce.DTO.Coupon.ApplyCouponResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseUserDTO;
-import com.example.E.commerce.E_commerce.DTO.Coupon.getAllCouponResponseDTO;
+import com.example.E.commerce.E_commerce.DTO.Coupon.*;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +17,13 @@ public class CouponController
     private final CouponService couponService;
 
     @GetMapping("/active/all")
-    public Page<getAllCouponResponseDTO> getAllActiveCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
-                                                            @RequestParam(defaultValue = "10") Integer pageSize){
+    public ProductPageResponseDTO<CouponResponseDTOForUser> getAllActiveCoupon(@RequestParam(defaultValue = "0") Integer pageNumber ,
+                                                                               @RequestParam(defaultValue = "10") Integer pageSize){
         return couponService.viewAllActiveCoupon(pageNumber,pageSize);
     }
 
     @GetMapping("/active/view/{id}")
-    public getAllCouponResponseDTO getActiveCoupon(@PathVariable Long id)
+    public CouponResponseDTOForUser getActiveCoupon(@PathVariable Long id)
     {
         return couponService.viewActiveCoupon(id);
     }

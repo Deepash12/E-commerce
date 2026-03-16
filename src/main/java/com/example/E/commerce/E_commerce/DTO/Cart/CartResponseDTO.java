@@ -13,6 +13,10 @@ public class CartResponseDTO
     private BigDecimal grandTotal;
     private Integer totalItems;
 
-    public CartResponseDTO(List<CartItemsResponseDTO> items, BigDecimal totalAmount, int totalItems) {
+    public CartResponseDTO(List<CartItemsResponseDTO> items, BigDecimal totalAmount, int totalItems)
+    {
+        this.items = items;
+        this.grandTotal = totalAmount;
+        this.totalItems = totalItems;
     }
 }

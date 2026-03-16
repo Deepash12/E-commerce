@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,7 @@ public class CartService
                     return cartRepository.save(newCart);
                 });
 
+
         List<CartItemsResponseDTO> items = cart1.getItems().stream()
                 .map(item-> new CartItemsResponseDTO
                         (
@@ -53,6 +55,7 @@ public class CartService
                         )).toList();
         BigDecimal totalAmount = items.stream()
                 .map(CartItemsResponseDTO::getTotalPrice)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();

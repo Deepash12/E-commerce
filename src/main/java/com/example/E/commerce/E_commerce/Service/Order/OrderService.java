@@ -156,8 +156,8 @@ public class OrderService
         }
 
         Order order = new Order();
-        UUID id = UUID.randomUUID();
-        order.setId(Long.valueOf("OD-"+id));
+//        UUID id = UUID.randomUUID();
+//        order.setId(Long.valueOf(id));
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
