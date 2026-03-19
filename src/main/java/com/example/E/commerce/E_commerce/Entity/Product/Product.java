@@ -43,5 +43,7 @@ public class Product
 
     private Boolean isWishlist = false;
 
+    private BigDecimal averageRating;
+    private Integer reviewCount;
 //    private boolean active;
 }

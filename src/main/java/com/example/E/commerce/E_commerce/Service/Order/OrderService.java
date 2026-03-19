@@ -105,6 +105,7 @@ public class OrderService
                 .map
                         (item -> new OrderItemsResponseDTO
                                         (
+                                                item.getId(),
                                             item.getProduct().getId(),
                                             item.getProduct().getName(),
                                             item.getProduct().getDescription(),
