@@ -12,4 +12,5 @@ public class ProductRequestDTO
     private Double price;
     private Integer stockQuantity;
     private Long subcategoryId;
+    private Long categoryId;
 };

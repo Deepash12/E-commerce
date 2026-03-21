@@ -23,4 +23,6 @@ public interface ReviewAndRatingRepository extends JpaRepository<Review,Long>
     Optional<Review> findByIdAndUser(Long id, User user);
 
     List<Review> findByProductId(Long id);
+
+    Review findByProduct(Product product);
 }

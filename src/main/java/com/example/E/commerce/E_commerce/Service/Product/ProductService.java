@@ -1,8 +1,10 @@
 package com.example.E.commerce.E_commerce.Service.Product;
 
+import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
+import com.example.E.commerce.E_commerce.Entity.Product.Category;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Product.SubCategory;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
@@ -10,6 +12,7 @@ import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.SubCategoryRepository;
 import com.example.E.commerce.E_commerce.Service.File.FileService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ProductService
@@ -29,6 +31,7 @@ public class ProductService
     private final ProductRepository productRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final FileService fileService;
+    private final CategoryRepository categoryRepository;
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
@@ -48,9 +51,10 @@ public class ProductService
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         // Only ONE query should be used
+        Boolean flag = true;
         Page<Product> productPage =
                 productRepository.findWithFilter(
-                        subCategoryId, minPrice, maxPrice, keyword, pageable
+                        subCategoryId, minPrice, maxPrice, keyword,flag, pageable
                 );
 
         List<ProductResponseDTO> dtoList =
@@ -86,6 +90,7 @@ public class ProductService
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
                 .isWishlist(product.getIsWishlist())
+                .isActive(product.isActive())
                 .build();
     }
 
@@ -96,6 +101,8 @@ public class ProductService
             productRequestDTO.getSubcategoryId()
     ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId()).orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
+
     String productImageUrl = fileService.uploadFile(image);
     Product product = new Product();
     product.setName(productRequestDTO.getName());
@@ -103,6 +110,7 @@ public class ProductService
     product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
     product.setSubCategory(subCategory);
+    product.setCategory(category);
     product.setProductImageUrl(productImageUrl);
 
     return productRepository.save(product);
@@ -116,16 +124,16 @@ public class ProductService
     }
 
 
-    public String deleteProductById(Long id)
+    @Transactional
+    public String deleteProductById(Long id,Boolean flag)
     {
-        Optional<Product> product = productRepository.findById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Product Not Exist!!!"));
 
-        if (product.isPresent()) {
-            productRepository.deleteById(id);
-            return "Product Deleted Successfully";
-        } else {
-            return "Product does not exist";
-        }
+        product.setActive(flag);
+        productRepository.save(product);
+
+        return "Product Deleted Successfully";
     }
 
     public Product updateProductById(Long id, ProductRequestDTO productRequestDTO,MultipartFile image)
@@ -148,5 +156,41 @@ public class ProductService
 
         return productRepository.save(existingProduct);
 
+    }
+
+    public ProductPageResponseDTO<ProductResponseDTO> viewAllProduct
+            (Integer pageNumber, Integer pageSize, String sortBy, String sortDir, Integer subCategoryId,
+             Double minPrice, Double maxPrice, String keyword)
+    {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        // Only ONE query should be used
+        Boolean flag = true;
+        Page<Product> productPage =
+                productRepository.findWithFilters(
+                        subCategoryId, minPrice, maxPrice, keyword, pageable
+                );
+
+        List<ProductResponseDTO> dtoList =
+                productPage.getContent()
+                        .stream()
+                        .map(this::convertToDTO)
+                        .toList();
+
+        ProductPageResponseDTO<ProductResponseDTO> response =
+                new ProductPageResponseDTO<>();
+
+        response.setContent(dtoList);
+        response.setCurrentPage(productPage.getNumber());
+        response.setPageSize(productPage.getSize());
+        response.setTotalPages(productPage.getTotalPages());
+        response.setTotalElements(productPage.getTotalElements());
+        response.setLast(productPage.isLast());
+
+        return response;
     }
 }

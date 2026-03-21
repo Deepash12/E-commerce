@@ -27,4 +27,5 @@ public class ProductResponseDTO
     private String productImageUrl;
     private Boolean isWishlist;
     private LocalDateTime createdAt;
+    private Boolean isActive;
 }
