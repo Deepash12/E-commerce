@@ -1,4 +1,5 @@
 package com.example.E.commerce.E_commerce.Controller;
+import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ import java.io.IOException;
 public class ProductController {
     private final ProductService productService;
 
+    
     @GetMapping("/all")
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
@@ -31,6 +34,7 @@ public class ProductController {
             @RequestParam(defaultValue = "5")Integer pageSize,
             @RequestParam (defaultValue = "id") String sortBy,
             @RequestParam (defaultValue = "asc") String sortDir
+
     )
     {
         try {
@@ -41,6 +45,32 @@ public class ProductController {
         }
 
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/view")
+    public ApiResponseDTO<ProductPageResponseDTO<ProductResponseDTO>> viewAllProducts
+            (
+                    @RequestParam(required = false) Integer subCategoryId,
+                    @RequestParam(required = false) Double minPrice,
+                    @RequestParam(required = false) Double maxPrice,
+                    @RequestParam(required = false) String keyword,
+                    @RequestParam(defaultValue = "0") Integer pageNumber,
+                    @RequestParam(defaultValue = "5")Integer pageSize,
+                    @RequestParam (defaultValue = "id") String sortBy,
+                    @RequestParam (defaultValue = "asc") String sortDir
+            )
+    {
+        try {
+
+            ProductPageResponseDTO<ProductResponseDTO> responseDTO = productService.viewAllProduct(pageNumber,pageSize,sortBy,sortDir,subCategoryId,minPrice,maxPrice,keyword);
+            return new ApiResponseDTO<>(201,"fetch All Products", LocalDateTime.now(),responseDTO);
+        } catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
 
 
@@ -79,12 +109,12 @@ public class ProductController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Long id)
+    @PutMapping("/enable-disable/{id}")
+    public String deleteProduct(@PathVariable Long id,@RequestParam Boolean flag)
     {
         try
         {
-            return productService.deleteProductById(id);
+            return productService.deleteProductById(id,flag);
         }
         catch (Exception e) {
             throw new RuntimeException(e);

@@ -3,6 +3,7 @@ package com.example.E.commerce.E_commerce.Entity.Cart;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.engine.internal.Cascade;
 
 @Entity
 

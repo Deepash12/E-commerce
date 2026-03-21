@@ -45,5 +45,6 @@ public class Product
 
     private BigDecimal averageRating;
     private Integer reviewCount;
-//    private boolean active;
+
+    private boolean isActive = true;
 }
