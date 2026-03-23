@@ -1,6 +1,8 @@
 package com.example.E.commerce.E_commerce.Service.Wishlist;
 
+import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Wishlist.ProductAddToWatchlistDTO;
+import com.example.E.commerce.E_commerce.DTO.Wishlist.WishlistResponse;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Wishlist.Wishlist;
@@ -19,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,57 +33,82 @@ public class WishlistService
     private final ProductRepository productRepository;
     private final WishlistRepository wishlistRepository;
 
-    public Page<Wishlist> getAllWishlistProduct(Integer pageNumber, Integer pageSize)
+
+    private ProductResponseDTO mapToDTO(Product product)
     {
-        String username =
-                SecurityContextHolder.getContext().getAuthentication().getName();
-        Sort sort = Sort.by(Sort.Order.desc("addedAt"));
-        Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
-        User user = userRepository.findByUsername(username).
-                orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-        return wishlistRepository.findByUser(user,pageable);
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .categoryName(product.getCategory())
+                .discountPrice(product.getDiscountPrice())
+                .stockQuantity(product.getStockQuantity())
+                .subCategoryName(product.getSubCategory())
+                .productImageUrl(product.getProductImageUrl())
+                .isActive(product.isActive())
+                .build();
     }
 
-    @Transactional
-    public Wishlist productAddToWatchlist(ProductAddToWatchlistDTO productAddToWatchlistDTO)
+
+    public Page<ProductResponseDTO> getAllWishlistProduct(Integer pageNumber, Integer pageSize)
     {
-        String username =
-                SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByUsername(username).
-                orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("addedAt").descending());
 
-        Product product = productRepository.findById(productAddToWatchlistDTO.getProduct_id()).
-                orElseThrow(()-> new BadRequestException("Product Not Found!!!"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
-        if(wishlistRepository.existsByUserAndProduct(user,product))
+        Page<Wishlist> wishlistPage = wishlistRepository.findByUser(user, pageable);
+
+        return wishlistPage.map(wishlist -> {
+            Product product = wishlist.getProduct();
+
+            ProductResponseDTO dto = mapToDTO(product);
+
+            dto.setIsWishlist(true); // always true because it's wishlist page
+
+            return dto;
+        });
+    }
+
+
+
+    @Transactional
+    public WishlistResponse toggleWishlist(Long productId)
+    {
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new BadRequestException("Product Not Found!!!"));
+
+        Optional<Wishlist> existingWishlist =
+                wishlistRepository.findByUserAndProduct(user, product);
+
+        if (existingWishlist.isPresent())
         {
-            throw new BadRequestException("Product Already in Watchlist");
+            wishlistRepository.delete(existingWishlist.get());
+
+            return new WishlistResponse(false, "Product removed from wishlist");
         }
-        Wishlist wishlist = new Wishlist();
-        wishlist.setProduct(product);
-        wishlist.setUser(user);
-        wishlist.setAddedAt(LocalDateTime.now());
-        product.setIsWishlist(true);
-        return wishlistRepository.save(wishlist);
-    }
+        else
+        {
 
-    @Transactional
-    public String deleteProductFromWishlist(Long productId)
-    {
-        String username =
-                SecurityContextHolder.getContext().getAuthentication().getName();
+            Wishlist wishlist = new Wishlist();
+            wishlist.setUser(user);
+            wishlist.setProduct(product);
+            wishlist.setAddedAt(LocalDateTime.now());
 
-        User user = userRepository.findByUsername(username).
-                orElseThrow(()-> new BadRequestException("User not found!!!"));
+            wishlistRepository.save(wishlist);
 
-        Product product = productRepository.findById(productId).
-                orElseThrow(()-> new BadRequestException("Product Not Found!!!"));
-
-        Wishlist wishlist = wishlistRepository.findByUserAndProduct(user, product).
-                orElseThrow(()-> new BadRequestException("Product not in Wishlist"));
-        product.setIsWishlist(false);
-        wishlistRepository.delete(wishlist);
-        return "Product Deleted From Wishlist!!!";
+            return new WishlistResponse(true, "Product added to wishlist");
+        }
     }
 }

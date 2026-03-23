@@ -1,7 +1,6 @@
 package com.example.E.commerce.E_commerce.Controller;
 
-import com.example.E.commerce.E_commerce.DTO.Wishlist.ProductAddToWatchlistDTO;
-import com.example.E.commerce.E_commerce.Entity.Wishlist.Wishlist;
+import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Wishlist.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,21 +14,15 @@ public class WishlistController
 {
     private final WishlistService wishlistService;
 
-    @PostMapping("/addToWishlist")
-    private ResponseEntity<?> addToWatchlist(@RequestBody ProductAddToWatchlistDTO productAddToWatchlistDTO)
+    @PutMapping("/toggleWishlist/{ProductId}")
+    private ResponseEntity<?> addToWatchlist(@PathVariable Long ProductId)
     {
-        return ResponseEntity.ok(wishlistService.productAddToWatchlist(productAddToWatchlistDTO));
+        return ResponseEntity.ok(wishlistService.toggleWishlist(ProductId));
     }
     @GetMapping
-    private Page<Wishlist> getAllWishlistProduct(@RequestParam (defaultValue = "0") Integer PageNumber ,
-                                                 @RequestParam(defaultValue = "10") Integer PageSize)
+    private Page<ProductResponseDTO> getAllWishlistProduct(@RequestParam (defaultValue = "0") Integer PageNumber ,
+                                                           @RequestParam(defaultValue = "10") Integer PageSize)
     {
         return wishlistService.getAllWishlistProduct(PageNumber,PageSize);
-    }
-
-    @DeleteMapping("/delete/{ProductId}")
-    private ResponseEntity<String> deleteProductFromWatchlist(@PathVariable Long ProductId)
-    {
-        return ResponseEntity.ok(wishlistService.deleteProductFromWishlist(ProductId));
     }
 }

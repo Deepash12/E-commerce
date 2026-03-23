@@ -4,6 +4,7 @@ import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
+import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Product.Category;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Product.SubCategory;
@@ -11,6 +12,8 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Product.CategoryRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.SubCategoryRepository;
+import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
+import com.example.E.commerce.E_commerce.Repository.Wishlist.WishlistRepository;
 import com.example.E.commerce.E_commerce.Service.File.FileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +21,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class ProductService
@@ -32,6 +41,51 @@ public class ProductService
     private final SubCategoryRepository subCategoryRepository;
     private final FileService fileService;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final WishlistRepository wishlistRepository;
+
+//    public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
+//            int pageNumber,
+//            int pageSize,
+//            String sortBy,
+//            String sortDir,
+//            Integer subCategoryId,
+//            Double minPrice,
+//            Double maxPrice,
+//            String keyword
+//    ) {
+//
+//        Sort sort = sortDir.equalsIgnoreCase("asc")
+//                ? Sort.by(sortBy).ascending()
+//                : Sort.by(sortBy).descending();
+//
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+//
+//        // Only ONE query should be used
+//        Boolean flag = true;
+//        Page<Product> productPage =
+//                productRepository.findWithFilter(
+//                        subCategoryId, minPrice, maxPrice, keyword,flag, pageable
+//                );
+//
+//        List<ProductResponseDTO> dtoList =
+//                productPage.getContent()
+//                        .stream()
+//                        .map(this::convertToDTO)
+//                        .toList();
+//
+//        ProductPageResponseDTO<ProductResponseDTO> response =
+//                new ProductPageResponseDTO<>();
+//
+//        response.setContent(dtoList);
+//        response.setCurrentPage(productPage.getNumber());
+//        response.setPageSize(productPage.getSize());
+//        response.setTotalPages(productPage.getTotalPages());
+//        response.setTotalElements(productPage.getTotalElements());
+//        response.setLast(productPage.isLast());
+//
+//        return response;
+//    }
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
@@ -50,17 +104,47 @@ public class ProductService
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        // Only ONE query should be used
         Boolean flag = true;
+
         Page<Product> productPage =
                 productRepository.findWithFilter(
-                        subCategoryId, minPrice, maxPrice, keyword,flag, pageable
+                        subCategoryId, minPrice, maxPrice, keyword, flag, pageable
                 );
 
+        // ✅ STEP 1: Get user
+        String username = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
+            username = auth.getName();
+        }
+
+        // ✅ STEP 2: Get wishlist product IDs
+        Set<Object> wishlistProductIds;
+
+        if (username != null) {
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+
+            wishlistProductIds = wishlistRepository.findByUser(user)
+                    .stream()
+                    .map(w->w.getProduct().getId())
+                    .collect(Collectors.toSet());
+
+        } else {
+            wishlistProductIds = new HashSet<>();
+        }
+
+        // ✅ STEP 3: Map DTO
         List<ProductResponseDTO> dtoList =
                 productPage.getContent()
                         .stream()
-                        .map(this::convertToDTO)
+                        .map(product -> {
+                            ProductResponseDTO dto = convertToDTO(product);
+                            dto.setIsWishlist(wishlistProductIds.contains(product.getId()));
+                            return dto;
+                        })
                         .toList();
 
         ProductPageResponseDTO<ProductResponseDTO> response =
@@ -89,7 +173,7 @@ public class ProductService
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
-                .isWishlist(product.getIsWishlist())
+//                .isWishlist(product.getIsWishlist())
                 .isActive(product.isActive())
                 .build();
     }

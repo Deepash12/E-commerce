@@ -6,6 +6,7 @@ import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.File.FileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,17 +39,61 @@ public class ProfileService
         return mapTODto(user);
     }
 
-    public ProfileResponseDTO editProfile(String username, EditProfileDTO dto, MultipartFile image) throws IOException {
+//    public ProfileResponseDTO editProfile(String username, @Valid EditProfileDTO dto, MultipartFile image) throws IOException {
+//        User existingUser = userRepository.findByUsername(username)
+//                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+//
+//
+//        if(dto.getFirstname() != null && dto.getLastname() != null)
+//        {
+//            existingUser.setUsername(dto.getFirstname()+" "+ dto.getLastname());
+//        }
+//        existingUser.setEmail(dto.getEmail());
+//        existingUser.setGender(dto.getGender());
+//        existingUser.setPhone(dto.getPhone());
+//        if(image!= null && image.isEmpty())
+//        {
+//            String avatar = fileService.uploadFile(image);
+//            existingUser.setAvatar_url(avatar);
+//        }
+//        else
+//        {
+//            existingUser.setAvatar_url(null);
+//        }
+//        existingUser.setFirst_name(dto.getFirstname());
+//        existingUser.setLast_name(dto.getLastname());
+//
+//        return mapTODto(userRepository.save(existingUser));
+//    }
+
+    public ProfileResponseDTO editProfile(String username,
+                                          @Valid EditProfileDTO dto,
+                                          MultipartFile image) throws IOException {
+
         User existingUser = userRepository.findByUsername(username)
-                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-        String avatar = fileService.uploadFile(image);
-        existingUser.setUsername(dto.getFirstname()+" "+ dto.getLastname());
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+
+        if (dto.getFirstname() != null && dto.getLastname() != null) {
+            existingUser.setUsername(dto.getFirstname() + " " + dto.getLastname());
+        }
+
         existingUser.setEmail(dto.getEmail());
         existingUser.setGender(dto.getGender());
         existingUser.setPhone(dto.getPhone());
-        existingUser.setAvatar_url(avatar);
+
+        if (Boolean.TRUE.equals(dto.getRemoveAvatar())) {
+            // Case: User wants to REMOVE avatar
+            existingUser.setAvatar_url(null);
+
+        } else if (image != null && !image.isEmpty()) {
+            // Case: User uploads NEW avatar
+            String avatarUrl = fileService.uploadFile(image);
+            existingUser.setAvatar_url(avatarUrl);
+        }
+
         existingUser.setFirst_name(dto.getFirstname());
         existingUser.setLast_name(dto.getLastname());
+
         return mapTODto(userRepository.save(existingUser));
     }
 }

@@ -41,7 +41,7 @@ public class Product
 
     private String productImageUrl;
 
-    private Boolean isWishlist = false;
+//    private Boolean isWishlist = false;
 
     private BigDecimal averageRating;
     private Integer reviewCount;

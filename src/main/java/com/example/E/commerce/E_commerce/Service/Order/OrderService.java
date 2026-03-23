@@ -224,7 +224,6 @@ public class OrderService
         }
         BigDecimal finalAmount = totalAmount.subtract(discountAmount);
 
-        System.out.println("Final Amount : "+finalAmount);
         if(finalAmount.compareTo(BigDecimal.ZERO)<0)
         {
             finalAmount = BigDecimal.ZERO;
