@@ -1,5 +1,6 @@
 package com.example.E.commerce.E_commerce.Entity.Payment;
 
+import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,16 +20,21 @@ public class Payment
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id",nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     private String transactionId;
     @Column(nullable = false)
     private BigDecimal amount;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    private UserAddresses address;
+
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
     private String failureReason;
     @Column(name = "failure_count")
     private Integer failureCount =0;

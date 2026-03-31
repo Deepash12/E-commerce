@@ -1,8 +1,8 @@
 package com.example.E.commerce.E_commerce.Service.Order;
 import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.CouponDtoOrderResponse;
-import com.example.E.commerce.E_commerce.DTO.Coupon.CouponResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderRequestDTO;
+import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
@@ -19,15 +19,11 @@ import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartItemsRepository;
 import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
-import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponCalculationService;
-import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
-import jakarta.mail.Address;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,13 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class OrderService
@@ -53,28 +44,19 @@ public class OrderService
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
     private final CartItemsRepository cartItemsRepository;
-    private final CouponRepository couponRepository;
     private final CouponCalculationService couponCalculationService;
 
-    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository, CouponRepository couponRepository, CouponCalculationService couponCalculationService) {
+    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository, CouponCalculationService couponCalculationService) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.addressRepository = addressRepository;
         this.cartItemsRepository = cartItemsRepository;
-        this.couponRepository = couponRepository;
         this.couponCalculationService = couponCalculationService;
     }
 
-    @Transactional
-    public OrderResponseDTO checkoutOrders(CheckoutOrderRequestDTO dto)
-    {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Order order = checkoutOrder(username, dto);
-        return mapToDTO(order);
-    }
 
     private OrderResponseDTO mapToDTO(Order order)
     {
@@ -90,16 +72,16 @@ public class OrderService
         addressDto.setPostalCode(address.getPostalCode());
         addressDto.setFullName(address.getFullName());
 
-        Coupon coupon = couponRepository.findById(order.getCoupon().getId())
-                .orElseThrow(()-> new BadRequestException("Coupon Not Used!!!"));
+        CouponDtoOrderResponse couponResponseDTO = null;
 
-        CouponDtoOrderResponse couponResponseDTO = new CouponDtoOrderResponse();
-        couponResponseDTO.setCouponCode(coupon.getCouponCode());
-        couponResponseDTO.setDiscountAmount(couponResponseDTO.getDiscountAmount());
+        if(order.getCoupon() != null)
+        {
+            Coupon coupon = order.getCoupon();
 
-
-
-
+            couponResponseDTO = new CouponDtoOrderResponse();
+            couponResponseDTO.setCouponCode(coupon.getCouponCode());
+            couponResponseDTO.setDiscountAmount(order.getDiscountAmount());
+        }
 
         List<OrderItemsResponseDTO> items = order.getOrderItems().stream()
                 .map
@@ -135,16 +117,31 @@ public class OrderService
         return dto;
     }
 
+    private AddressResponseDTO mapToAddressDTO(UserAddresses addresses)
+    {
+        return new AddressResponseDTO(
+                addresses.getId(),addresses.getFullName(),addresses.getPhone(),addresses.getAddressLine1(),
+                addresses.getAddressLine2(),addresses.getLandmark(),addresses.getCity(),addresses.getState(),
+                addresses.getPostalCode(),addresses.getCountry(),addresses.getIsDefault(),addresses.getCreatedAt(),addresses.getUpdatedAt()
+        );
+    }
+
     public OrderResponseDTO checkOrderById(String username, Long id)
     {
         Order order = checkOrder(username,id);
         return mapToDTO(order);
     }
 
-//our Business Logic Methods Here
+    //our Business Logic Methods Here
 
 
-    private Order checkoutOrder(String username, CheckoutOrderRequestDTO dto) {
+
+    @Transactional
+    public CheckoutOrderResponseDTO checkoutOrders(CheckoutOrderRequestDTO dto)
+    {
+        String username = Objects.requireNonNull(
+                SecurityContextHolder.getContext().getAuthentication()
+        ).getName();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
@@ -152,95 +149,52 @@ public class OrderService
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new BadRequestException("Cart Not Found!!!"));
 
-        if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new BadRequestException("Cart Is Empty, cannot proceed to checkout!!!");
+        if (cart.getItems() == null || cart.getItems().isEmpty())
+        {
+            throw new BadRequestException("Cart is empty, cannot proceed to checkout!");
         }
 
-        Order order = new Order();
-//        UUID id = UUID.randomUUID();
-//        order.setId(Long.valueOf(id));
-        order.setUser(user);
-        order.setStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-
         BigDecimal totalAmount = BigDecimal.ZERO;
-        BigDecimal discountAmount = BigDecimal.ZERO;
 
-        List<OrderItem> orderItems = new ArrayList<>();
+        for (CartItems item : cart.getItems())
+        {
+            Product product = productRepository.findById(item.getProduct().getId())
+                    .orElseThrow(() -> new BadRequestException("Product Not Found!!!"));
 
-        UserAddresses address = addressRepository
-                .findByIdAndUser(dto.getAddressId(), user)
-                .orElseThrow(() -> new BadRequestException("Address Not Found!!!"));
-
-        order.setUserAddress(address);
-        order.setShippingCity(address.getCity());
-        order.setShippingCountry(address.getCountry());
-        order.setShippingFullName(address.getFullName());
-        order.setShippingPhone(address.getPhone());
-        order.setShippingLandmark(address.getLandmark());
-        order.setShippingState(address.getState());
-        order.setShippingPostalCode(address.getPostalCode());
-        order.setShippingAddressLine1(address.getAddressLine1());
-        order.setShippingAddressLine2(address.getAddressLine2());
-
-        for (CartItems items : cart.getItems()) {
-
-            Product product = productRepository.findByIdForUpdate
-                    (items.getProduct().getId())
-                    .orElseThrow(()-> new BadRequestException("Product Not Found!!!"));
-
-            if (product.getStockQuantity() < items.getQuantity()) {
-                throw new BadRequestException(
-                        "Insufficient Stock For this Product : " + product.getName());
-            }
-
-            product.setStockQuantity(
-                    product.getStockQuantity() - items.getQuantity()
-            );
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setProduct(product);
-            orderItem.setProductName(product.getName());
-            orderItem.setQuantity(items.getQuantity());
-            orderItem.setPriceAtPurchase((product.getPrice()));
-
-            orderItems.add(orderItem);
-
-            BigDecimal itemTotal = orderItem.getPriceAtPurchase()
-                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            BigDecimal itemTotal = product.getPrice()
+                    .multiply(BigDecimal.valueOf(item.getQuantity()));
 
             totalAmount = totalAmount.add(itemTotal);
         }
+
         totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
 
-        Coupon coupons = cart.getCoupon();
+        BigDecimal discountAmount = BigDecimal.ZERO;
 
-        if(coupons!=null && !coupons.getCouponCode().isBlank())
+        Coupon coupon = cart.getCoupon();
+
+        if (coupon != null && !coupon.getCouponCode().isBlank())
         {
-            discountAmount = couponCalculationService.calculateDiscount(coupons,totalAmount);
-            System.out.println("Discout Amount : "+discountAmount);
-            order.setCoupon(coupons);
+            discountAmount = couponCalculationService.calculateDiscount(coupon,totalAmount);
         }
+
         BigDecimal finalAmount = totalAmount.subtract(discountAmount);
 
-        if(finalAmount.compareTo(BigDecimal.ZERO)<0)
+        if (finalAmount.compareTo(BigDecimal.ZERO) < 0)
         {
             finalAmount = BigDecimal.ZERO;
         }
-        order.setDiscountAmount(discountAmount);
-        order.setTotalAmount(finalAmount);
 
+        UserAddresses addresses = addressRepository.findById(dto.getAddressId()).
+                orElseThrow(()-> new BadRequestException("Address Not Found!!!"));
 
-        order.setOrderItems(orderItems);
-        orderRepository.saveAndFlush(order);
-        cartItemsRepository.deleteAll(cart.getItems());
-        cart.getItems().clear();
-        cart.setCoupon(null);
-        cartRepository.save(cart);
-        return order;
+        AddressResponseDTO addressResponse = mapToAddressDTO(addresses);
+
+        return new CheckoutOrderResponseDTO(addressResponse,finalAmount);
+
+        // CREATE PAYMENT ORDER
+//        return finalAmount.toString();
     }
-
 
     private Order checkOrder(String username, Long id)
     {
@@ -292,7 +246,7 @@ public class OrderService
 
     public Page<OrderResponseDTO> viewOrders(Integer pageNumber, Integer pageSize)
     {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         Pageable pageable = PageRequest.of(
                 pageNumber,
@@ -302,4 +256,219 @@ public class OrderService
         Page<Order> orders = orderRepository.findByUser(user,pageable);
         return orders.map(this::mapToDTO);
     }
+
+
+    @Transactional
+    public Order placeOrderAfterPayment(Long addressId)
+    {
+
+        String username = Objects.requireNonNull(
+                SecurityContextHolder.getContext().getAuthentication()
+        ).getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new BadRequestException("Cart Not Found!!!"));
+
+        if (cart.getItems() == null || cart.getItems().isEmpty())
+        {
+            throw new BadRequestException("Cart Is Empty!!!");
+        }
+        UserAddresses addresses = addressRepository.findById(addressId)
+                .orElseThrow(()-> new BadRequestException("Address Not Exist!!!"));
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setStatus(OrderStatus.CONFIRMED);
+        order.setPaymentStatus(PaymentStatus.SUCCESS);
+
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+//        UserAddresses address = order.getUserAddress();
+
+//        UserAddresses address = cart.getSelectedAddress();
+
+        order.setUserAddress(addresses);
+
+        for (CartItems items : cart.getItems())
+        {
+
+            Product product = productRepository.findByIdForUpdate(
+                    items.getProduct().getId()
+            ).orElseThrow(() -> new BadRequestException("Product Not Found!!!"));
+
+            if (product.getStockQuantity() < items.getQuantity())
+            {
+                throw new BadRequestException(
+                        "Insufficient Stock For Product: " + product.getName());
+            }
+
+            product.setStockQuantity(
+                    product.getStockQuantity() - items.getQuantity()
+            );
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setProductName(product.getName());
+            orderItem.setQuantity(items.getQuantity());
+            orderItem.setPriceAtPurchase(product.getPrice());
+
+            orderItems.add(orderItem);
+
+            BigDecimal itemTotal = product.getPrice()
+                    .multiply(BigDecimal.valueOf(items.getQuantity()));
+
+            totalAmount = totalAmount.add(itemTotal);
+        }
+
+        totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
+
+        Coupon coupon = cart.getCoupon();
+
+        if (coupon != null && !coupon.getCouponCode().isBlank())
+        {
+            discountAmount = couponCalculationService
+                    .calculateDiscount(coupon,totalAmount);
+
+            order.setCoupon(coupon);
+        }
+
+        BigDecimal finalAmount = totalAmount.subtract(discountAmount);
+
+        if (finalAmount.compareTo(BigDecimal.ZERO) < 0)
+        {
+            finalAmount = BigDecimal.ZERO;
+        }
+
+        order.setDiscountAmount(discountAmount);
+        order.setTotalAmount(finalAmount);
+        order.setOrderItems(orderItems);
+
+        orderRepository.saveAndFlush(order);
+
+        cartItemsRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+        cart.setCoupon(null);
+
+        cartRepository.save(cart);
+
+        return order;
+    }
 }
+
+
+//    private Order checkoutOrder(String username, CheckoutOrderRequestDTO dto) {
+//
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+//
+//        Cart cart = cartRepository.findByUser(user)
+//                .orElseThrow(() -> new BadRequestException("Cart Not Found!!!"));
+//
+//        if (cart.getItems() == null || cart.getItems().isEmpty()) {
+//            throw new BadRequestException("Cart Is Empty, cannot proceed to checkout!!!");
+//        }
+//
+//        Order order = new Order();
+//        order.setUser(user);
+//        order.setStatus(OrderStatus.PENDING);
+//        order.setPaymentStatus(PaymentStatus.PENDING);
+//
+//        BigDecimal totalAmount = BigDecimal.ZERO;
+//        BigDecimal discountAmount = BigDecimal.ZERO;
+//
+//        List<OrderItem> orderItems = new ArrayList<>();
+//
+//        UserAddresses address = addressRepository
+//                .findByIdAndUser(dto.getAddressId(), user)
+//                .orElseThrow(() -> new BadRequestException("Address Not Found!!!"));
+//
+//        order.setUserAddress(address);
+//        order.setShippingCity(address.getCity());
+//        order.setShippingCountry(address.getCountry());
+//        order.setShippingFullName(address.getFullName());
+//        order.setShippingPhone(address.getPhone());
+//        order.setShippingLandmark(address.getLandmark());
+//        order.setShippingState(address.getState());
+//        order.setShippingPostalCode(address.getPostalCode());
+//        order.setShippingAddressLine1(address.getAddressLine1());
+//        order.setShippingAddressLine2(address.getAddressLine2());
+//
+//        for (CartItems items : cart.getItems()) {
+//
+//            Product product = productRepository.findByIdForUpdate
+//                    (items.getProduct().getId())
+//                    .orElseThrow(()-> new BadRequestException("Product Not Found!!!"));
+//
+//            if (product.getStockQuantity() < items.getQuantity()) {
+//                throw new BadRequestException(
+//                        "Insufficient Stock For this Product : " + product.getName());
+//            }
+//
+//            product.setStockQuantity(
+//                    product.getStockQuantity() - items.getQuantity()
+//            );
+//
+//            OrderItem orderItem = new OrderItem();
+//            orderItem.setOrder(order);
+//            orderItem.setProduct(product);
+//            orderItem.setProductName(product.getName());
+//            orderItem.setQuantity(items.getQuantity());
+//            orderItem.setPriceAtPurchase((product.getPrice()));
+//
+//            orderItems.add(orderItem);
+//
+//            BigDecimal itemTotal = orderItem.getPriceAtPurchase()
+//                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+//
+//            totalAmount = totalAmount.add(itemTotal);
+//        }
+//        totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
+//
+//        Coupon coupons = cart.getCoupon();
+//
+//        if(coupons !=null && !coupons.getCouponCode().isBlank())
+//        {
+//            discountAmount = couponCalculationService.calculateDiscount(coupons,totalAmount);
+//            System.out.println("Discount Amount : "+discountAmount);
+//            order.setCoupon(coupons);
+//        }
+//        BigDecimal finalAmount = totalAmount.subtract(discountAmount);
+//
+//        if(finalAmount.compareTo(BigDecimal.ZERO)<0)
+//        {
+//            finalAmount = BigDecimal.ZERO;
+//        }
+//        order.setDiscountAmount(discountAmount);
+//        order.setTotalAmount(finalAmount);
+//
+//        order.setOrderItems(orderItems);
+//        orderRepository.saveAndFlush(order);
+//        cartItemsRepository.deleteAll(cart.getItems());
+//        cart.getItems().clear();
+//        cart.setCoupon(null);
+//        cartRepository.save(cart);
+//
+//
+//
+//        return order;
+//
+//    }
+//
+
+//    @Transactional
+//    public String checkoutOrders(CheckoutOrderRequestDTO dto1)
+//    {
+//        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+//
+//        Order order = checkoutOrders(username, dto1);
+//        return mapToDTO(order);
+//    }
+

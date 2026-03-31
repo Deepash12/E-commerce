@@ -50,6 +50,7 @@ public class CartService
                                 item.getProduct().getName(),
                                 item.getProduct().getPrice(),
                                 item.getQuantity(),
+                                item.getProduct().getProductImageUrl(),
                                 item.getProduct().getPrice()
                                         .multiply(BigDecimal.valueOf(item.getQuantity()))
                         )).toList();

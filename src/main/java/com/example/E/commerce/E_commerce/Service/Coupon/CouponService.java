@@ -334,7 +334,7 @@ public class CouponService
         }
         if(coupon.getUsedCount()>= coupon.getGlobalUsageLimit())
         {
-            throw new BadRequestException("Coupon usage limit exceeded");
+            throw new BadRequestException("Coupon usage limit exceeded,Please Remove it");
         }
 
         long usage = orderRepository.countByUserIdAndCouponId(user.getId(), coupon.getId());

@@ -1,11 +1,14 @@
 package com.example.E.commerce.E_commerce.DTO.Payment;
 
+import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
+import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
+import jakarta.mail.Address;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -97,8 +100,7 @@ public class PaymentMapper {
     }
 
     private BigDecimal calculatePrice(OrderItem orderItem) {
-        // If price is stored in OrderItem, use it
-        // Otherwise get from product
+
         if (orderItem.getProduct() != null && orderItem.getProduct().getPrice() != null) {
             return orderItem.getProduct().getPrice();
         }
@@ -109,5 +111,28 @@ public class PaymentMapper {
         BigDecimal price = calculatePrice(orderItem);
         Integer quantity = orderItem.getQuantity() != null ? orderItem.getQuantity() : 0;
         return price.multiply(BigDecimal.valueOf(quantity));
+    }
+
+    private PaymentResponseDTO.AddressDTO mapToAddressDTO(UserAddresses address)
+    {
+        if(address==null)
+        {
+            return null;
+        }
+        return PaymentResponseDTO.AddressDTO.builder()
+                .id(address.getId())
+                .fullName(address.getFullName())
+                .phone(address.getPhone())
+                .addressLine1(address.getAddressLine1())
+                .addressLine2(address.getAddressLine2())
+                .landmark(address.getLandmark())
+                .city(address.getCity())
+                .state(address.getState())
+                .postalCode(address.getPostalCode())
+                .country(address.getCountry())
+                .isDefault(address.getIsDefault())
+                .build(
+
+        );
     }
 }
