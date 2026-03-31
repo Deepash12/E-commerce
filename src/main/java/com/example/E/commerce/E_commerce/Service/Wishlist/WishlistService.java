@@ -61,6 +61,13 @@ public class WishlistService
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Page<Wishlist> wishlistPage = wishlistRepository.findByUser(user, pageable);
+//        for(Wishlist w: wishlistPage)
+//        {
+//            if(w.getProduct().isActive()!= true)
+//            {
+//
+//            }
+//        }
 
         return wishlistPage.map(wishlist -> {
             Product product = wishlist.getProduct();

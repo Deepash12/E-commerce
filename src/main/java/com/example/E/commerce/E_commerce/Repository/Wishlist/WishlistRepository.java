@@ -7,16 +7,21 @@ import io.micrometer.common.KeyValues;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-
+@EnableJpaRepositories
 public interface WishlistRepository extends JpaRepository<Wishlist,Long>
 {
 
     Boolean deleteProductById(Long id);
 
-    Page<Wishlist> findByUser(User user, Pageable pageable);
+
+    @Query("select w from Wishlist w where w.user= :user and w.product.isActive= true")
+    Page<Wishlist> findByUser(@Param("user") User user, Pageable pageable);
 
 
     Optional<Wishlist> findByUserAndProduct(User user, Product product);
