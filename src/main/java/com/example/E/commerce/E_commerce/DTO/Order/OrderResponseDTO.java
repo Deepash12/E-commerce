@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.DTO.Order;
 
 import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Coupon.CouponDtoOrderResponse;
+import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class OrderResponseDTO
     private BigDecimal totalAmount;
     private String orderStatus;
     private String paymentStatus;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private LocalDateTime createdAt;
     private LocalDateTime estimatedDeliveryDate;
     private String CancelReason;

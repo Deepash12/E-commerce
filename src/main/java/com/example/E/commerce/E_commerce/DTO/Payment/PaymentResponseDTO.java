@@ -1,4 +1,5 @@
 package com.example.E.commerce.E_commerce.DTO.Payment;
+import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -20,11 +21,28 @@ public class PaymentResponseDTO
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
     private PaymentStatus status;
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private String transactionId;
 
         // Nested Order Object
     private OrderDTO order;
+
+    @Data
+    @Builder
+    public static class AddressDTO
+    {
+        private Long id;
+        private String fullName;
+        private String phone;
+        private String addressLine1;
+        private String addressLine2;
+        private String landmark;
+        private String city;
+        private String state;
+        private String postalCode;
+        private String country;
+        private Boolean isDefault;
+    }
 
     @Data
     @Builder

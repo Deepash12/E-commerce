@@ -1,11 +1,15 @@
 package com.example.E.commerce.E_commerce.DTO.Address;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddressResponseDTO
 {
@@ -22,4 +26,6 @@ public class AddressResponseDTO
     private Boolean isDefault;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
 }

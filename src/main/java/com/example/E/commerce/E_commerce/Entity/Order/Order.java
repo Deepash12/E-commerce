@@ -3,6 +3,7 @@ package com.example.E.commerce.E_commerce.Entity.Order;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
+import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
@@ -42,14 +43,15 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
-    private String paymentMethod;
     private String cancelReason;
-
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

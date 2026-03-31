@@ -1,4 +1,4 @@
-package com.example.E.commerce.E_commerce.Controller;
+package com.example.E.commerce.E_commerce.Controller.Product;
 import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;

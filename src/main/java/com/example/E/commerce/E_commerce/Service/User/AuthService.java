@@ -66,6 +66,7 @@ public class AuthService
         user.setPhone(registerRequestDTO.getPhoneNumber());
         user.setRole(Role.USER);
         userRepository.save(user);
+        emailService.sendRegistredEmail(registerRequestDTO.getEmail(),registerRequestDTO.getUsername());
         return "Registered Successfully , Please Login";
     }
 

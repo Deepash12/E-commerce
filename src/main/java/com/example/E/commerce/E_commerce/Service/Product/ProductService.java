@@ -142,7 +142,7 @@ public class ProductService
                         .stream()
                         .map(product -> {
                             ProductResponseDTO dto = convertToDTO(product);
-                            dto.setIsWishlist(wishlistProductIds.contains(product.getId()));
+                             dto.setIsWishlist(wishlistProductIds.contains(product.getId()));
                             return dto;
                         })
                         .toList();
