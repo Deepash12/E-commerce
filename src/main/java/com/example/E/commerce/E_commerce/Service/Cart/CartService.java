@@ -44,6 +44,7 @@ public class CartService
 
 
         List<CartItemsResponseDTO> items = cart1.getItems().stream()
+                .filter(cartItems -> cartItems.getProduct().isActive())
                 .map(item-> new CartItemsResponseDTO
                         (
                                 item.getProduct().getId(),
@@ -52,7 +53,8 @@ public class CartService
                                 item.getQuantity(),
                                 item.getProduct().getProductImageUrl(),
                                 item.getProduct().getPrice()
-                                        .multiply(BigDecimal.valueOf(item.getQuantity()))
+                                        .multiply(BigDecimal.valueOf(item.getQuantity())),
+                                item.getProduct().isActive()
                         )).toList();
         BigDecimal totalAmount = items.stream()
                 .map(CartItemsResponseDTO::getTotalPrice)
@@ -60,6 +62,14 @@ public class CartService
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
+
+//        for (CartItemsResponseDTO cart:items)
+//        {
+//            if(cart.getIsActiveProduct()!=true)
+//            {
+//                items.remove(cart);
+//            }
+//        }
 
         return new CartResponseDTO(items,totalAmount,totalItems);
     }

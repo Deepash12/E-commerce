@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@NoArgsConstructor
 public class CartItemsResponseDTO
 {
     private Long productId;
@@ -15,14 +17,15 @@ public class CartItemsResponseDTO
     private Integer quantity;
     private String productImageUrl;
     private BigDecimal totalPrice;
+    private Boolean isActiveProduct;
 
-    public CartItemsResponseDTO(Long id, String name, BigDecimal price, Integer quantity,String productImageUrl, BigDecimal multiply)
-    {
-        this.productId = id;
-        this.productName =name;
-        this.price = price;
-        this.quantity = quantity;
-        this.productImageUrl = productImageUrl;
-        this.totalPrice = multiply;
-    }
+//    public CartItemsResponseDTO(Long id, String name, BigDecimal price, Integer quantity,String productImageUrl, BigDecimal multiply)
+//    {
+//        this.productId = id;
+//        this.productName =name;
+//        this.price = price;
+//        this.quantity = quantity;
+//        this.productImageUrl = productImageUrl;
+//        this.totalPrice = multiply;
+//    }
 }
