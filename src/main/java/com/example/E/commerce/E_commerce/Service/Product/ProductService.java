@@ -193,6 +193,7 @@ public class ProductService
     product.setDescription(productRequestDTO.getDescription());
     product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
+    product.setDiscountPrice(productRequestDTO.getDiscountPrice());
     product.setSubCategory(subCategory);
     product.setCategory(category);
     product.setProductImageUrl(productImageUrl);
@@ -227,6 +228,9 @@ public class ProductService
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Product does not exist!!!"));
 
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+                .orElseThrow(()-> new BadRequestException("Category Not Exist!!!"));
+
         SubCategory subCategory = subCategoryRepository.findById(productRequestDTO.getSubcategoryId())
                 .orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
@@ -235,6 +239,8 @@ public class ProductService
         existingProduct.setDescription(productRequestDTO.getDescription());
         existingProduct.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
         existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
+        existingProduct.setDiscountPrice(productRequestDTO.getDiscountPrice());
+        existingProduct.setCategory(category);
         existingProduct.setSubCategory(subCategory);
         existingProduct.setProductImageUrl(productImageUrl);
 
