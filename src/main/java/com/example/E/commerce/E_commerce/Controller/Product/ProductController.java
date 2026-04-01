@@ -7,12 +7,14 @@ import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Service.Product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 @RestController
@@ -55,7 +57,7 @@ public class ProductController {
                     @RequestParam(required = false) Double maxPrice,
                     @RequestParam(required = false) String keyword,
                     @RequestParam(defaultValue = "0") Integer pageNumber,
-                    @RequestParam(defaultValue = "5")Integer pageSize,
+                    @RequestParam(defaultValue = "10")Integer pageSize,
                     @RequestParam (defaultValue = "id") String sortBy,
                     @RequestParam (defaultValue = "asc") String sortDir
             )
@@ -85,26 +87,30 @@ public class ProductController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/add")
-    public Product addProduct(@RequestPart ProductRequestDTO dto, @RequestPart MultipartFile image) throws IOException {
-        return productService.addProduct(dto,image);
+    @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Product addProduct
+            (@RequestPart("dto") String dto,
+             @RequestPart(value = "image",required = false) MultipartFile image) throws IOException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        ProductRequestDTO productDTO = mapper.readValue(dto, ProductRequestDTO.class);
+        return productService.addProduct(productDTO,image);
     }
 
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/edit/{id}")
+    @PutMapping(value = "/edit/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Product updateProduct(
             @PathVariable Long id,
-            @RequestPart ProductRequestDTO dto,
-            @RequestPart MultipartFile image)
-    {
-        try {
-            return productService.updateProductById(id, dto,image);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            @RequestPart("dto") String dto,
+            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
 
+        ObjectMapper mapper = new ObjectMapper();
+
+        ProductRequestDTO productDTO = mapper.readValue(dto, ProductRequestDTO.class);
+
+        return productService.updateProductById(id, productDTO, image);
     }
 
 

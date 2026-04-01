@@ -3,6 +3,8 @@ package com.example.E.commerce.E_commerce.DTO.Product;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class ProductRequestDTO
@@ -13,4 +15,5 @@ public class ProductRequestDTO
     private Integer stockQuantity;
     private Long subcategoryId;
     private Long categoryId;
+    private BigDecimal discountPrice;
 };
