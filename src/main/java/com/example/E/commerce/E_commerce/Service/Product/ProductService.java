@@ -1,6 +1,5 @@
 package com.example.E.commerce.E_commerce.Service.Product;
 
-import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
@@ -28,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -173,8 +173,8 @@ public class ProductService
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
-//                .isWishlist(product.getIsWishlist())
                 .isActive(product.isActive())
+                .createdAt(product.getCreatedAt())
                 .build();
     }
 
@@ -185,7 +185,8 @@ public class ProductService
             productRequestDTO.getSubcategoryId()
     ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId()).orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
+    Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+            .orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
 
     String productImageUrl = fileService.uploadFile(image);
     Product product = new Product();
@@ -196,6 +197,11 @@ public class ProductService
     product.setDiscountPrice(productRequestDTO.getDiscountPrice());
     product.setSubCategory(subCategory);
     product.setCategory(category);
+    product.setCreatedAt(LocalDateTime.now());
+    product.setUpdatedAt(LocalDateTime.now());
+
+        System.out.println("Created At :"+product.getCreatedAt());
+        System.out.println("Updated At :"+product.getUpdatedAt());
     product.setProductImageUrl(productImageUrl);
 
     return productRepository.save(product);
@@ -242,6 +248,7 @@ public class ProductService
         existingProduct.setDiscountPrice(productRequestDTO.getDiscountPrice());
         existingProduct.setCategory(category);
         existingProduct.setSubCategory(subCategory);
+        existingProduct.setUpdatedAt(LocalDateTime.now());
         existingProduct.setProductImageUrl(productImageUrl);
 
         return productRepository.save(existingProduct);
@@ -259,7 +266,6 @@ public class ProductService
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
         // Only ONE query should be used
-        Boolean flag = true;
         Page<Product> productPage =
                 productRepository.findWithFilters(
                         subCategoryId, minPrice, maxPrice, keyword, pageable
