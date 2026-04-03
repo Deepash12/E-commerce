@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @RequiredArgsConstructor
@@ -38,33 +37,6 @@ public class ProfileService
                     .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         return mapTODto(user);
     }
-
-//    public ProfileResponseDTO editProfile(String username, @Valid EditProfileDTO dto, MultipartFile image) throws IOException {
-//        User existingUser = userRepository.findByUsername(username)
-//                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-//
-//
-//        if(dto.getFirstname() != null && dto.getLastname() != null)
-//        {
-//            existingUser.setUsername(dto.getFirstname()+" "+ dto.getLastname());
-//        }
-//        existingUser.setEmail(dto.getEmail());
-//        existingUser.setGender(dto.getGender());
-//        existingUser.setPhone(dto.getPhone());
-//        if(image!= null && image.isEmpty())
-//        {
-//            String avatar = fileService.uploadFile(image);
-//            existingUser.setAvatar_url(avatar);
-//        }
-//        else
-//        {
-//            existingUser.setAvatar_url(null);
-//        }
-//        existingUser.setFirst_name(dto.getFirstname());
-//        existingUser.setLast_name(dto.getLastname());
-//
-//        return mapTODto(userRepository.save(existingUser));
-//    }
 
     public ProfileResponseDTO editProfile(String username,
                                           @Valid EditProfileDTO dto,

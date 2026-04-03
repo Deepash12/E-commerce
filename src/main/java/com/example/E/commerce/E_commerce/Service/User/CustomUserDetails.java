@@ -1,13 +1,10 @@
 package com.example.E.commerce.E_commerce.Service.User;
 
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
-
 
 public class CustomUserDetails implements UserDetails
 {

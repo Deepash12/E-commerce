@@ -6,10 +6,10 @@ import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+
 @EnableJpaRepositories
 public interface ReviewAndRatingRepository extends JpaRepository<Review,Long>
 {
@@ -24,5 +24,4 @@ public interface ReviewAndRatingRepository extends JpaRepository<Review,Long>
 
     List<Review> findByProductId(Long id);
 
-    Review findByProduct(Product product);
 }

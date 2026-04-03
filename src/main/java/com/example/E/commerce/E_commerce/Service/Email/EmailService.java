@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -52,8 +51,8 @@ public class EmailService
         javaMailSender.send(message);
     }
 
-    public void sendRegistredEmail(@Email(message = "Invalid Email is Written")
-                                   @NotBlank(message = "Email is Required") String email,@NotBlank String username)
+    public void sendRegisteredEmail(@Email(message = "Invalid Email is Written")
+                                   @NotBlank(message = "Email is Required") String email, @NotBlank String username)
     {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("deepashrathibhl@gmail.com");

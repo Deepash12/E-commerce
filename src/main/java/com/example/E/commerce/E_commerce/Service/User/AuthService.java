@@ -21,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -66,7 +65,7 @@ public class AuthService
         user.setPhone(registerRequestDTO.getPhoneNumber());
         user.setRole(Role.USER);
         userRepository.save(user);
-        emailService.sendRegistredEmail(registerRequestDTO.getEmail(),registerRequestDTO.getUsername());
+        emailService.sendRegisteredEmail(registerRequestDTO.getEmail(),registerRequestDTO.getUsername());
         return "Registered Successfully , Please Login";
     }
 

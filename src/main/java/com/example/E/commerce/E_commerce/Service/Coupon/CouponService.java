@@ -24,11 +24,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CouponService
@@ -39,6 +39,7 @@ public class CouponService
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+
     public CouponService(CouponSpecification couponSpecification, CouponRepository couponRepository, CouponValidationService couponValidationService, UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository) {
         this.couponSpecification = couponSpecification;
         this.couponRepository = couponRepository;
@@ -68,7 +69,6 @@ public class CouponService
                     coupon.getCreatedAt()
                 );
     }
-
 
     public getAllCouponResponseDTO mapCouponToDTO(Coupon coupon)
     {
@@ -105,10 +105,8 @@ public class CouponService
                         coupon.getMinOrderAmount(),
                         coupon.getExpiryAt(),
                         calculateStatus(coupon)
-
                 );
     }
-
 
     public Integer calculateRemainingUsage( Integer globalUsageLimit,Integer usedCount)
     {
@@ -133,7 +131,6 @@ public class CouponService
         else
             return CouponStatus.ACTIVE;
     }
-
 
     @Transactional
     public CouponResponseDTO addCoupon(@Valid AddCouponRequestDTO addCouponRequestDTO)
@@ -161,6 +158,7 @@ public class CouponService
             throw new BadRequestException("Coupon code Already Exist!!!");
         }
     }
+
     @Transactional
     public CouponResponseDTO updateCoupon(Long id, @Valid AddCouponRequestDTO addCouponRequestDTO)
     {
@@ -205,7 +203,6 @@ public class CouponService
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Coupon Not Found!!!"));
 
-        // If coupon is currently ACTIVE → disable it
         if (Boolean.TRUE.equals(coupon.getIsActive()))
         {
             if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
@@ -218,7 +215,6 @@ public class CouponService
             return "Coupon Disabled Successfully";
         }
 
-        // If coupon is currently DISABLED → enable it
         else
         {
             if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
@@ -239,7 +235,7 @@ public class CouponService
 
     public ProductPageResponseDTO<CouponResponseDTOForUser> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
     {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         CouponFilterRequestAdmin filterRequestUser = new CouponFilterRequestAdmin();
@@ -249,8 +245,6 @@ public class CouponService
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Specification<Coupon> spec =  couponSpecification.buildSpecification(filterRequestUser);
         Page<Coupon> coupons = couponRepository.findAll(spec,pageable);
-
-
 
         List<CouponResponseDTOForUser> dto = coupons.getContent().stream().map
                 (coupon ->
@@ -281,11 +275,12 @@ public class CouponService
         Coupon coupon = couponRepository.findOne(spec)
                 .orElseThrow(()-> new BadRequestException("Coupon is not Active Anymore!!!"));
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         CouponResponseDTOForUser responseDTOForUser = mapCouponToDTOForUser(coupon);
         long usage = orderRepository.countByUserIdAndCouponId(user.getId(), coupon.getId());
+
         if(usage>=coupon.getPerUserLimit())
         {
             responseDTOForUser.setAlreadyUsed(true);
@@ -295,7 +290,7 @@ public class CouponService
 
     public String removeCoupon(String id)
     {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         Cart cart = cartRepository.findByUser(user).orElseThrow(()-> new BadRequestException("Cart Does Not Exist!!!"));
@@ -311,7 +306,7 @@ public class CouponService
 
     public CouponResponseUserDTO applyCoupon(ApplyCouponResponseDTO dto)
     {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 

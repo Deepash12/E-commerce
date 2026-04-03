@@ -2,7 +2,6 @@ package com.example.E.commerce.E_commerce.Controller;
 import com.example.E.commerce.E_commerce.DTO.Address.AddAddressRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.PaginationResponse;
-import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Service.Address.AddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class AddressController
     private PaginationResponse<AddressResponseDTO> viewAllAddress
             (@RequestParam (defaultValue = "0") Integer PageNumber, @RequestParam(defaultValue = "5") Integer PageSize)
     {
-//        String username = authentication.getName();;
         Page<AddressResponseDTO> response =  addressService.viewAddress(PageNumber,PageSize);
         return new PaginationResponse<>(response.getContent(),response);
     }

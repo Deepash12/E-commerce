@@ -2,16 +2,14 @@ package com.example.E.commerce.E_commerce.Entity.Order;
 
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.ToString;
-
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Entity
 @Data
 @Table(name = "order_items")
+
 public class OrderItem {
 
     @Id
@@ -29,7 +27,6 @@ public class OrderItem {
     private Product product;
 
     private String productName;
-//    private BigDecimal productPrice;
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)

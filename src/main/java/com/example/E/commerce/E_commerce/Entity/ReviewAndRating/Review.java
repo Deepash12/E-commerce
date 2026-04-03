@@ -7,12 +7,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id","product_id"}))
+
 public class Review
 {
     @Id

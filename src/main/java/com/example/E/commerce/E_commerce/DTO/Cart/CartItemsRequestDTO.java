@@ -1,7 +1,4 @@
 package com.example.E.commerce.E_commerce.DTO.Cart;
-
-import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
-import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import lombok.*;
 
 @Data

@@ -15,28 +15,33 @@ public class CouponCalculationService
     {
         BigDecimal discount = BigDecimal.ZERO;
 
-        if (orderAmount.compareTo(coupon.getMinOrderAmount()) < 0) {
+        if (orderAmount.compareTo(coupon.getMinOrderAmount()) < 0)
+        {
             throw new BadRequestException("Order amount does not meet minimum requirement");
         }
 
-        if (coupon.getCouponType() == CouponType.FLAT) {
+        if (coupon.getCouponType() == CouponType.FLAT)
+        {
 
             discount = coupon.getDiscountAmount();
 
-        } else if (coupon.getCouponType() == CouponType.PERCENTAGE) {
-
+        }
+        else if (coupon.getCouponType() == CouponType.PERCENTAGE)
+        {
             discount = orderAmount
                     .multiply(coupon.getDiscountAmount())
                     .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
             if (coupon.getMaximumDiscountAmount() != null &&
-                    discount.compareTo(coupon.getMaximumDiscountAmount()) > 0) {
+                    discount.compareTo(coupon.getMaximumDiscountAmount()) > 0)
+            {
 
                 discount = coupon.getMaximumDiscountAmount();
             }
         }
 
-        if (discount.compareTo(orderAmount) > 0) {
+        if (discount.compareTo(orderAmount) > 0)
+        {
             discount = orderAmount;
         }
 

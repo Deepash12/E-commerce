@@ -19,13 +19,4 @@ public class CartItemsResponseDTO
     private BigDecimal totalPrice;
     private Boolean isActiveProduct;
 
-//    public CartItemsResponseDTO(Long id, String name, BigDecimal price, Integer quantity,String productImageUrl, BigDecimal multiply)
-//    {
-//        this.productId = id;
-//        this.productName =name;
-//        this.price = price;
-//        this.quantity = quantity;
-//        this.productImageUrl = productImageUrl;
-//        this.totalPrice = multiply;
-//    }
 }

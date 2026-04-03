@@ -1,4 +1,5 @@
 package com.example.E.commerce.E_commerce.Service.Cart;
+
 import com.example.E.commerce.E_commerce.DTO.Cart.CartItemsRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Cart.CartItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Cart.CartResponseDTO;
@@ -14,9 +15,7 @@ import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,7 +53,7 @@ public class CartService
                                 item.getProduct().getProductImageUrl(),
                                 item.getProduct().getPrice()
                                         .multiply(BigDecimal.valueOf(item.getQuantity())),
-                                item.getProduct().isActive()
+                                true
                         )).toList();
         BigDecimal totalAmount = items.stream()
                 .map(CartItemsResponseDTO::getTotalPrice)
@@ -63,15 +62,8 @@ public class CartService
 
         int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
 
-//        for (CartItemsResponseDTO cart:items)
-//        {
-//            if(cart.getIsActiveProduct()!=true)
-//            {
-//                items.remove(cart);
-//            }
-//        }
-
         return new CartResponseDTO(items,totalAmount,totalItems);
+
     }
 
     @Transactional
@@ -94,7 +86,6 @@ public class CartService
             else{
                 return "Product Deleted Successfully";
             }
-
 
         } catch (Exception e) {
             throw new BadRequestException("Product Does Not Exist!!!");
@@ -127,36 +118,35 @@ public class CartService
         int requestedQuantity = Math.toIntExact(cartItemsRequestDTO.getQuantity());
         int productStockQuantity = product.getStockQuantity();
 
-
         Optional<CartItems> existingItems =
                 cartItemsRepository.findByCartAndProduct(cart, product);
 
         int currentCartQuantity = existingItems.map(CartItems::getQuantity).orElse(0);
         int totalRequestedQuantity = currentCartQuantity + requestedQuantity;
+
         if(totalRequestedQuantity>productStockQuantity)
         {
             throw new BadRequestException("Only " + productStockQuantity + " items available in stock");
         }
+
+        CartItems cartItems;
         if (existingItems.isPresent()) {
 
-            CartItems cartItems = existingItems.get();
+            cartItems = existingItems.get();
             cartItems.setQuantity(
                     cartItems.getQuantity() + requestedQuantity
             );
-            cartItemsRepository.save(cartItems);
-            return "Product added to cart successfully";
 
         } else {
 
-            CartItems cartItems = new CartItems();
+            cartItems = new CartItems();
             cartItems.setCart(cart);
             cartItems.setProduct(product);
             cartItems.setQuantity(cartItemsRequestDTO.getQuantity().intValue());
 
-            cartItemsRepository.save(cartItems);
-            return "Product added to cart successfully";
         }
-
+        cartItemsRepository.save(cartItems);
+        return "Product added to cart successfully";
 
     }
 

@@ -1,4 +1,5 @@
 package com.example.E.commerce.E_commerce.Service.Address;
+
 import com.example.E.commerce.E_commerce.DTO.Address.AddAddressRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 @RequiredArgsConstructor
 @Service
 public class AddressService {
@@ -44,7 +46,8 @@ public class AddressService {
     @Transactional
     public String addAddress(AddAddressRequestDTO addAddressRequestDTO,String username)
     {
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        User user = userRepository.findByUsername(username).
+                orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         Long userId = user.getId();
         int addressCount = addressRepository.countByUserId(userId);
@@ -52,6 +55,7 @@ public class AddressService {
         {
             throw new BadRequestException("Address limit reached");
         }
+
         UserAddresses address = new UserAddresses();
         address.setFullName(addAddressRequestDTO.getFullName());
         address.setPhone(addAddressRequestDTO.getPhone());
@@ -62,6 +66,7 @@ public class AddressService {
         address.setState(addAddressRequestDTO.getState());
         address.setPostalCode(addAddressRequestDTO.getPostalCode());
         address.setUser(user);
+
         if(addressCount==0)
         {
             address.setIsDefault(true);
@@ -104,7 +109,8 @@ public class AddressService {
     @Transactional
     public AddressResponseDTO updateAddress(Long id, String username,AddAddressRequestDTO addAddressRequestDTO)
     {
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         UserAddresses address =addressRepository.findByIdAndUser(id,user)
                 .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!! for the USER"));
@@ -130,12 +136,13 @@ public class AddressService {
         UserAddresses address = addressRepository.findByIdAndUser(id,user)
                 .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!!"));
 
-
         long addressCount = addressRepository.countByUser(user);
+
         if(addressCount <=1)
         {
             throw new BadRequestException("At least one address must exist!!!");
         }
+
         addressRepository.delete(address);
         return "Address Deleted Successfully, Now if you want you can Add Address";
     }

@@ -1,20 +1,15 @@
 package com.example.E.commerce.E_commerce.DTO.Payment;
-
-import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
-
-import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
-import jakarta.mail.Address;
 import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Component
 public class PaymentMapper {
 
@@ -75,7 +70,6 @@ public class PaymentMapper {
             return null;
         }
 
-        // Calculate price and subtotal
         BigDecimal price = calculatePrice(orderItem);
         BigDecimal subtotal = calculateSubtotal(orderItem);
 

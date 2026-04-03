@@ -17,7 +17,6 @@ import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     private final JwtUtil jwtUtil;
     private final TokenBlackListService tokenBlackListService;
 
@@ -42,7 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        //jwt validation
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 

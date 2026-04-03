@@ -1,14 +1,15 @@
 package com.example.E.commerce.E_commerce.Entity.Address;
-
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_addresses")
+
 public class UserAddresses
 {
     @Id
@@ -29,12 +30,14 @@ public class UserAddresses
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String landmark;
+
     @PrePersist
     public void prePersist()
     {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+    
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();

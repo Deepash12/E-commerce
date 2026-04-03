@@ -1,7 +1,6 @@
 package com.example.E.commerce.E_commerce.Service.Wishlist;
 
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
-import com.example.E.commerce.E_commerce.DTO.Wishlist.ProductAddToWatchlistDTO;
 import com.example.E.commerce.E_commerce.DTO.Wishlist.WishlistResponse;
 import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
@@ -18,12 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +27,6 @@ public class WishlistService
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final WishlistRepository wishlistRepository;
-
 
     private ProductResponseDTO mapToDTO(Product product)
     {
@@ -50,7 +44,6 @@ public class WishlistService
                 .build();
     }
 
-
     public Page<ProductResponseDTO> getAllWishlistProduct(Integer pageNumber, Integer pageSize)
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -61,13 +54,6 @@ public class WishlistService
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Page<Wishlist> wishlistPage = wishlistRepository.findByUser(user, pageable);
-//        for(Wishlist w: wishlistPage)
-//        {
-//            if(w.getProduct().isActive()!= true)
-//            {
-//
-//            }
-//        }
 
         return wishlistPage.map(wishlist -> {
             Product product = wishlist.getProduct();
@@ -79,8 +65,6 @@ public class WishlistService
             return dto;
         });
     }
-
-
 
     @Transactional
     public WishlistResponse toggleWishlist(Long productId)
@@ -112,9 +96,7 @@ public class WishlistService
             wishlist.setUser(user);
             wishlist.setProduct(product);
             wishlist.setAddedAt(LocalDateTime.now());
-
             wishlistRepository.save(wishlist);
-
             return new WishlistResponse(true, "Product added to wishlist");
         }
     }

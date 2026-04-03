@@ -2,12 +2,8 @@ package com.example.E.commerce.E_commerce.DTO.Coupon;
 
 import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 @Data

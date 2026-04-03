@@ -16,13 +16,11 @@ import com.example.E.commerce.E_commerce.Repository.ReviewAndRating.ReviewAndRat
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,13 +31,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ReviewAndRatingService
 {
-
     private final ReviewAndRatingRepository reviewAndRatingRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
     private final OrderItemsRepository orderItemsRepository;
-
 
     private ReviewAndRatingResponseDTO mapTOReviewDTO(Review review)
     {
@@ -55,7 +50,6 @@ public class ReviewAndRatingService
                         review.getDislikes()
                 );
     }
-
 
     private MyReviewsResponseDTO mapTOMyReviewDTO(Review review)
     {
@@ -92,9 +86,6 @@ public class ReviewAndRatingService
                 .build();
     }
 
-
-
-
     public ReviewAndRatingResponseDTO writeReview(ReviewAndRatingRequestDTO requestDTO)
     {
 
@@ -107,12 +98,10 @@ public class ReviewAndRatingService
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
-
         if(!item.getOrder().getUser().getId().equals(user.getId()))
         {
             throw new BadRequestException("Unauthorized review attempt");
         }
-
 
         Order order = item.getOrder();
 
@@ -121,9 +110,7 @@ public class ReviewAndRatingService
             throw new BadRequestException("Review allowed only after delivery");
         }
 
-
         Product product = item.getProduct();
-
 
         Optional<Review> existingReview =
                 reviewAndRatingRepository.findByUserAndProduct(user, product);
@@ -141,7 +128,6 @@ public class ReviewAndRatingService
         review.setTitle(requestDTO.getTitle());
         review.setCreatedAt(LocalDateTime.now());
         review.setVerified(true);
-
         reviewAndRatingRepository.save(review);
         updateProductRating(product.getId());
         return mapTOReviewDTO(review);
@@ -170,12 +156,9 @@ public class ReviewAndRatingService
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-
         Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
-
         Page<Review> reviews = reviewAndRatingRepository.findAllByUser(user,pageable);
         List<MyReviewsResponseDTO> dtoList = reviews.getContent().stream().map(this::mapTOMyReviewDTO).toList();
-
         ProductPageResponseDTO<MyReviewsResponseDTO> dto = new ProductPageResponseDTO<>();
         dto.setContent(dtoList);
         dto.setTotalPages(reviews.getTotalPages());
@@ -207,7 +190,7 @@ public class ReviewAndRatingService
     @Transactional
     public String deleteReview(Long id)
     {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
@@ -266,10 +249,8 @@ public class ReviewAndRatingService
 
         Product product = productRepository.findById(productId)
                 .orElseThrow();
-
         product.setAverageRating(BigDecimal.valueOf(avg));
         product.setReviewCount(totalReviews);
-
         productRepository.save(product);
     }
 

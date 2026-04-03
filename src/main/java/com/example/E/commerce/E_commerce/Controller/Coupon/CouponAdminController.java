@@ -10,7 +10,6 @@ import com.example.E.commerce.E_commerce.Service.Coupon.CouponService;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponValidationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +70,4 @@ public class CouponAdminController
     {
         return ResponseEntity.ok(couponService.toggleCouponStatus(id));
     }
-
-
-
 }

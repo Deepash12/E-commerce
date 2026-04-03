@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "orders")
+
 public class Order {
 
     @Id
@@ -66,7 +66,7 @@ public class Order {
 
     private BigDecimal discountAmount;
 
-    //Address Entity Snapshot
+
     private String shippingFullName;
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String shippingPhone;

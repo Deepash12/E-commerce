@@ -1,6 +1,5 @@
 package com.example.E.commerce.E_commerce.Service.Product;
 
-import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
@@ -25,7 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -43,49 +41,6 @@ public class ProductService
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final WishlistRepository wishlistRepository;
-
-//    public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
-//            int pageNumber,
-//            int pageSize,
-//            String sortBy,
-//            String sortDir,
-//            Integer subCategoryId,
-//            Double minPrice,
-//            Double maxPrice,
-//            String keyword
-//    ) {
-//
-//        Sort sort = sortDir.equalsIgnoreCase("asc")
-//                ? Sort.by(sortBy).ascending()
-//                : Sort.by(sortBy).descending();
-//
-//        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-//
-//        // Only ONE query should be used
-//        Boolean flag = true;
-//        Page<Product> productPage =
-//                productRepository.findWithFilter(
-//                        subCategoryId, minPrice, maxPrice, keyword,flag, pageable
-//                );
-//
-//        List<ProductResponseDTO> dtoList =
-//                productPage.getContent()
-//                        .stream()
-//                        .map(this::convertToDTO)
-//                        .toList();
-//
-//        ProductPageResponseDTO<ProductResponseDTO> response =
-//                new ProductPageResponseDTO<>();
-//
-//        response.setContent(dtoList);
-//        response.setCurrentPage(productPage.getNumber());
-//        response.setPageSize(productPage.getSize());
-//        response.setTotalPages(productPage.getTotalPages());
-//        response.setTotalElements(productPage.getTotalElements());
-//        response.setLast(productPage.isLast());
-//
-//        return response;
-//    }
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
@@ -111,7 +66,6 @@ public class ProductService
                         subCategoryId, minPrice, maxPrice, keyword, flag, pageable
                 );
 
-        // ✅ STEP 1: Get user
         String username = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -119,7 +73,6 @@ public class ProductService
             username = auth.getName();
         }
 
-        // ✅ STEP 2: Get wishlist product IDs
         Set<Object> wishlistProductIds;
 
         if (username != null) {
@@ -136,7 +89,6 @@ public class ProductService
             wishlistProductIds = new HashSet<>();
         }
 
-        // ✅ STEP 3: Map DTO
         List<ProductResponseDTO> dtoList =
                 productPage.getContent()
                         .stream()
@@ -173,11 +125,9 @@ public class ProductService
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
-//                .isWishlist(product.getIsWishlist())
                 .isActive(product.isActive())
                 .build();
     }
-
 
     public Product addProduct(ProductRequestDTO productRequestDTO, MultipartFile image) throws IOException {
 
@@ -185,7 +135,8 @@ public class ProductService
             productRequestDTO.getSubcategoryId()
     ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId()).orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
+        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+                .orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
 
     String productImageUrl = fileService.uploadFile(image);
     Product product = new Product();
@@ -201,13 +152,11 @@ public class ProductService
     return productRepository.save(product);
 }
 
-
     public ProductResponseDTO getProductById(Long id) {
         Product product =  productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Product not found"));
         return convertToDTO(product);
     }
-
 
     @Transactional
     public String deleteProductById(Long id,Boolean flag)
@@ -258,7 +207,6 @@ public class ProductService
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        // Only ONE query should be used
         Boolean flag = true;
         Page<Product> productPage =
                 productRepository.findWithFilters(

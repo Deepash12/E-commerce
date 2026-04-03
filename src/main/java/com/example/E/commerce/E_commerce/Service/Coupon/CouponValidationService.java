@@ -6,20 +6,18 @@ import com.example.E.commerce.E_commerce.Entity.Coupon.CouponType;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Coupon.CouponRepository;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 
 @Service
 public class CouponValidationService
 {
     private final CouponRepository couponRepository;
 
-    public CouponValidationService(CouponRepository couponRepository) {
+    public CouponValidationService(CouponRepository couponRepository)
+    {
         this.couponRepository = couponRepository;
     }
 
@@ -94,7 +92,6 @@ public class CouponValidationService
         if (!requestDTO.getExpiryAt().isAfter(requestDTO.getValidFrom()))
             throw new BadRequestException("Expiry must be after valid from date");
 
-        // Coupon Type validations
         if (requestDTO.getCouponType() == CouponType.PERCENTAGE) {
 
             if (requestDTO.getDiscountAmount().compareTo(BigDecimal.valueOf(100)) > 0)

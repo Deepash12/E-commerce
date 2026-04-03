@@ -1,8 +1,6 @@
 package com.example.E.commerce.E_commerce.DTO.Product;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import java.math.BigDecimal;
 
 @Getter

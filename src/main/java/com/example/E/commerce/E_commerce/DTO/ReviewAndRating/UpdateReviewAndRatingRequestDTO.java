@@ -1,5 +1,4 @@
 package com.example.E.commerce.E_commerce.DTO.ReviewAndRating;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class UpdateReviewAndRatingRequestDTO
 {
     private Integer rating;

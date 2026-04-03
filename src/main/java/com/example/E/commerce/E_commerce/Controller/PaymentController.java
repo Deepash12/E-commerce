@@ -5,15 +5,10 @@ import com.example.E.commerce.E_commerce.DTO.Payment.PaymentMapper;
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
-import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
 import com.example.E.commerce.E_commerce.Service.Payments.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/payment")

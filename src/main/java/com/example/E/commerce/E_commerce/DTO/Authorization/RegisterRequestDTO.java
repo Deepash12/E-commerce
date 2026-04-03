@@ -15,7 +15,6 @@ public class RegisterRequestDTO
     @NotBlank(message = "Password is Required")
     private String password;
     private Long roleId;
-//    private String roles;
     @Pattern(
             regexp = "^[6-9]\\d{9}$",
             message = "Invalid phone number"

@@ -24,7 +24,6 @@ public class PaymentResponseDTO
     private PaymentMethod paymentMethod;
     private String transactionId;
 
-        // Nested Order Object
     private OrderDTO order;
 
     @Data
