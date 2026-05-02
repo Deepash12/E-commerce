@@ -13,7 +13,7 @@ public class CartItemsResponseDTO
 {
     private Long productId;
     private String productName;
-    private BigDecimal price;
+    private BigDecimal finalPrice;
     private Integer quantity;
     private String productImageUrl;
     private BigDecimal totalPrice;

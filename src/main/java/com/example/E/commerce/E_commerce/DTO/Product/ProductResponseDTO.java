@@ -20,6 +20,7 @@ public class ProductResponseDTO
     private SubCategory subCategoryName;
     private Category categoryName;
     private BigDecimal discountPrice;
+    private BigDecimal finalPrice;
     private String productImageUrl;
     private Boolean isWishlist;
     private LocalDateTime createdAt;

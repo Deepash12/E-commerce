@@ -138,7 +138,6 @@ public class CouponService
         try
         {
             Coupon coupon = new Coupon();
-            System.out.println(addCouponRequestDTO.getCouponCode());
             coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
             coupon.setCouponType(addCouponRequestDTO.getCouponType());
             coupon.setDescription(addCouponRequestDTO.getDescription());
@@ -348,7 +347,7 @@ public class CouponService
 
         for (CartItems item : cart.getItems()) {
 
-            BigDecimal price = item.getProduct().getPrice();
+            BigDecimal price = item.getProduct().getFinalPrice();
             BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
 
             BigDecimal itemTotal = price.multiply(quantity);
@@ -379,7 +378,6 @@ public class CouponService
 
         BigDecimal finalAmount = totalAmount.subtract(discount);
 
-        cart.setCoupon(coupon);
         cartRepository.save(cart);
 
         CouponResponseUserDTO response = new CouponResponseUserDTO();

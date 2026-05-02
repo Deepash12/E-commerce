@@ -1,5 +1,6 @@
 package com.example.E.commerce.E_commerce.DTO.Authorization;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class LoginRequestDTO
 {
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
 }

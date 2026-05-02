@@ -39,6 +39,6 @@ public class CategoryService
 
     private CategoryResponseDTO convertToDTO(Category category)
     {
-        return new CategoryResponseDTO(category.getID(), category.getName(), category.getDescription());
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getDescription());
     }
 }

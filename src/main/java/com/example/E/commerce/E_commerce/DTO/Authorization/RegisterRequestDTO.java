@@ -19,6 +19,7 @@ public class RegisterRequestDTO
             regexp = "^[6-9]\\d{9}$",
             message = "Invalid phone number"
     )
+    @NotBlank
     private String phoneNumber;
     @Email(message = "Invalid Email is Written")
     @NotBlank(message = "Email is Required")

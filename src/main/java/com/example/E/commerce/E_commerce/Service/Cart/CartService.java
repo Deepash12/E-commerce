@@ -41,17 +41,16 @@ public class CartService
                     return cartRepository.save(newCart);
                 });
 
-
         List<CartItemsResponseDTO> items = cart1.getItems().stream()
                 .filter(cartItems -> cartItems.getProduct().isActive())
                 .map(item-> new CartItemsResponseDTO
                         (
                                 item.getProduct().getId(),
                                 item.getProduct().getName(),
-                                item.getProduct().getPrice(),
+                                item.getProduct().getFinalPrice(),
                                 item.getQuantity(),
                                 item.getProduct().getProductImageUrl(),
-                                item.getProduct().getPrice()
+                                item.getProduct().getFinalPrice()
                                         .multiply(BigDecimal.valueOf(item.getQuantity())),
                                 true
                         )).toList();
@@ -174,6 +173,12 @@ public class CartService
         if (request.getQuantity() == 0) {
             cartItemsRepository.delete(cartItems);
             return "Item removed from cart";
+        }
+        if(request.getQuantity()> product.getStockQuantity())
+
+        {
+            throw new BadRequestException("Only " + product.getStockQuantity() + " items available in stock");
+
         }
         cartItems.setQuantity(request.getQuantity().intValue());
 

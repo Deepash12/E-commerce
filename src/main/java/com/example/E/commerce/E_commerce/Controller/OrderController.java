@@ -30,7 +30,7 @@ public class OrderController
 
         return new ApiResponseDTO<>(
                 200,
-                "Payment Order Created Successfully",
+                "Checkout Successfully",
                 LocalDateTime.now(),
                 response
         );

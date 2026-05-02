@@ -15,7 +15,9 @@ import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Repository.Wishlist.WishlistRepository;
 import com.example.E.commerce.E_commerce.Service.File.FileService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -122,6 +124,7 @@ public class ProductService
                 .price(product.getPrice())
                 .categoryName(product.getCategory())
                 .discountPrice(product.getDiscountPrice())
+                .finalPrice(product.getPrice().subtract(product.getDiscountPrice()))
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())
@@ -129,7 +132,7 @@ public class ProductService
                 .build();
     }
 
-    public Product addProduct(ProductRequestDTO productRequestDTO, MultipartFile image) throws IOException {
+    public Product addProduct(@Valid ProductRequestDTO productRequestDTO, MultipartFile image) throws IOException {
 
     SubCategory subCategory = subCategoryRepository.findById(
             productRequestDTO.getSubcategoryId()
@@ -145,6 +148,7 @@ public class ProductService
     product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
     product.setStockQuantity(productRequestDTO.getStockQuantity());
     product.setDiscountPrice(productRequestDTO.getDiscountPrice());
+    product.setFinalPrice(product.getPrice().subtract(product.getDiscountPrice()));
     product.setSubCategory(subCategory);
     product.setCategory(category);
     product.setProductImageUrl(productImageUrl);
