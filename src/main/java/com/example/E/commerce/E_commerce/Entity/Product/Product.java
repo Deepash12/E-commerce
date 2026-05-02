@@ -38,6 +38,7 @@ public class Product
     private Timestamp deletedAt;
 
     private BigDecimal discountPrice;
+    private BigDecimal finalPrice;
 
     private String productImageUrl;
 

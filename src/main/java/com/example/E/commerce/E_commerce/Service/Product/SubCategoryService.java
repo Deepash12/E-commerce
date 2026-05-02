@@ -28,7 +28,7 @@ public class SubCategoryService
                 (
                 subCategory.getId(), subCategory.getName(), subCategory.getDescription(),
                 new CategoryResponseDTO
-                        (subCategory.getCategory().getID(),
+                        (subCategory.getCategory().getId(),
                         subCategory.getCategory().getName(),subCategory.getCategory().getDescription()
                         )
                 );

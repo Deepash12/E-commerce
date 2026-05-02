@@ -24,6 +24,7 @@ import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Coupon.CouponCalculationService;
+import com.example.E.commerce.E_commerce.Service.Coupon.CouponValidationService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +46,9 @@ public class OrderService
     private final AddressRepository addressRepository;
     private final CartItemsRepository cartItemsRepository;
     private final CouponCalculationService couponCalculationService;
+    private final CouponValidationService couponValidationService;
 
-    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository, CouponCalculationService couponCalculationService) {
+    public OrderService(UserRepository userRepository, CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository, AddressRepository addressRepository, CartItemsRepository cartItemsRepository, CouponCalculationService couponCalculationService, CouponValidationService couponValidationService) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
@@ -54,6 +56,7 @@ public class OrderService
         this.addressRepository = addressRepository;
         this.cartItemsRepository = cartItemsRepository;
         this.couponCalculationService = couponCalculationService;
+        this.couponValidationService = couponValidationService;
     }
 
 
@@ -159,7 +162,7 @@ public class OrderService
             Product product = productRepository.findById(item.getProduct().getId())
                     .orElseThrow(() -> new BadRequestException("Product Not Found!!!"));
 
-            BigDecimal itemTotal = product.getPrice()
+            BigDecimal itemTotal = product.getFinalPrice()
                     .multiply(BigDecimal.valueOf(item.getQuantity()));
 
             totalAmount = totalAmount.add(itemTotal);
@@ -169,11 +172,20 @@ public class OrderService
 
         BigDecimal discountAmount = BigDecimal.ZERO;
 
-        Coupon coupon = cart.getCoupon();
+        Coupon coupon = null;
 
-        if (coupon != null && !coupon.getCouponCode().isBlank())
-        {
-            discountAmount = couponCalculationService.calculateDiscount(coupon,totalAmount);
+
+        if (dto.getCouponCode() != null && !dto.getCouponCode().isBlank()) {
+
+            coupon = couponCalculationService.validateCoupon(
+                    dto.getCouponCode(),
+                    totalAmount
+            );
+
+            discountAmount = couponCalculationService.calculateDiscount(
+                    coupon,
+                    totalAmount
+            );
         }
 
         BigDecimal finalAmount = totalAmount.subtract(discountAmount);
@@ -311,11 +323,11 @@ public class OrderService
             orderItem.setProduct(product);
             orderItem.setProductName(product.getName());
             orderItem.setQuantity(items.getQuantity());
-            orderItem.setPriceAtPurchase(product.getPrice());
+            orderItem.setPriceAtPurchase(product.getFinalPrice());
 
             orderItems.add(orderItem);
 
-            BigDecimal itemTotal = product.getPrice()
+            BigDecimal itemTotal = product.getFinalPrice()
                     .multiply(BigDecimal.valueOf(items.getQuantity()));
 
             totalAmount = totalAmount.add(itemTotal);

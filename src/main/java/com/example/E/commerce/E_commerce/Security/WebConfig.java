@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer
     {
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:C:/Users/deepa/OneDrive/Desktop/Project/E-commerce/uploads/");
+//                .addResourceLocations("file:C:/Users/deepa/OneDrive/Desktop/Project/E-commerce/uploads/");
+                .addResourceLocations("file:C:/Projects/E-commerce/uploads/");
     }
 }

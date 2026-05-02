@@ -37,6 +37,7 @@ public class WishlistService
                 .price(product.getPrice())
                 .categoryName(product.getCategory())
                 .discountPrice(product.getDiscountPrice())
+                .finalPrice(product.getPrice().subtract(product.getDiscountPrice()))
                 .stockQuantity(product.getStockQuantity())
                 .subCategoryName(product.getSubCategory())
                 .productImageUrl(product.getProductImageUrl())

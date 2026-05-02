@@ -5,6 +5,7 @@ import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Service.Product.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -88,7 +89,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Product addProduct
-            (@RequestPart("dto") String dto,
+            (@Valid @RequestPart("dto") String dto,
              @RequestPart(value = "image",required = false) MultipartFile image) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
