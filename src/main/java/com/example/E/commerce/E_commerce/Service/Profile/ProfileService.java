@@ -37,7 +37,6 @@ public class ProfileService
                     .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         return mapTODto(user);
     }
-
     public ProfileResponseDTO editProfile(String username,
                                           @Valid EditProfileDTO dto,
                                           MultipartFile image) throws IOException {
@@ -45,26 +44,25 @@ public class ProfileService
         User existingUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
-        if (dto.getFirstname() != null && dto.getLastname() != null) {
-            existingUser.setUsername(dto.getFirstname() + " " + dto.getLastname());
-        }
 
         existingUser.setEmail(dto.getEmail());
         existingUser.setGender(dto.getGender());
         existingUser.setPhone(dto.getPhone());
 
         if (Boolean.TRUE.equals(dto.getRemoveAvatar())) {
-            // Case: User wants to REMOVE avatar
             existingUser.setAvatar_url(null);
-
         } else if (image != null && !image.isEmpty()) {
-            // Case: User uploads NEW avatar
             String avatarUrl = fileService.uploadFile(image);
             existingUser.setAvatar_url(avatarUrl);
         }
 
-        existingUser.setFirst_name(dto.getFirstname());
-        existingUser.setLast_name(dto.getLastname());
+        // Only update names if values are actually provided
+        if (dto.getFirstname() != null) {
+            existingUser.setFirst_name(dto.getFirstname());
+        }
+        if (dto.getLastname() != null) {
+            existingUser.setLast_name(dto.getLastname());
+        }
 
         return mapTODto(userRepository.save(existingUser));
     }

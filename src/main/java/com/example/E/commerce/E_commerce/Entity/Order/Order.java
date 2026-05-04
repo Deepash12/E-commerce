@@ -78,4 +78,19 @@ public class Order {
     private String shippingPostalCode;
     private String shippingLandmark;
     private String shippingCountry;
+
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;       // set when order is CONFIRMED
+
+    @Column(name = "in_progress_at")
+    private LocalDateTime inProgressAt;      // set when status → IN_PROGRESS
+
+    @Column(name = "shipped_at")
+    private LocalDateTime shippedAt;         // set when status → SHIPPED
+
+    @Column(name = "out_for_delivery_at")
+    private LocalDateTime outForDeliveryAt;  // set when status → OUT_FOR_DELIVERY
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
 }

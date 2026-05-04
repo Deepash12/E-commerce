@@ -8,11 +8,13 @@ import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.Review;
+import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.ReviewLike;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderItemsRepository;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.ReviewAndRating.ReviewAndRatingRepository;
+import com.example.E.commerce.E_commerce.Repository.ReviewAndRating.ReviewLikeRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -35,6 +37,7 @@ public class ReviewAndRatingService
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderItemsRepository orderItemsRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     private ReviewAndRatingResponseDTO mapTOReviewDTO(Review review)
     {
@@ -47,7 +50,8 @@ public class ReviewAndRatingService
                         review.getComment(),
                         review.getCreatedAt(),
                         review.getLikes(),
-                        review.getDislikes()
+                        review.getDislikes(),
+                        review.getUser()
                 );
     }
 
@@ -257,17 +261,86 @@ public class ReviewAndRatingService
 
     public ReviewAndRatingResponseDTO updateLikes(Long id, String action)
     {
-        Review review = reviewAndRatingRepository.findById(id).orElseThrow(()-> new BadRequestException("Review Not Exist!!!"));
-        if(Objects.equals(action, "LIKE") || Objects.equals(action, "like"))
-        {
-            review.setLikes(review.getLikes()+1);
-            reviewAndRatingRepository.save(review);
+
+        Review review = reviewAndRatingRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Review Not Exist!!!"));
+
+        // 2. Get the currently logged-in user
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+
+        // 3. Check if this user already reacted to this review
+        Optional<ReviewLike> existingReaction = reviewLikeRepository.findByUserAndReview(user, review);
+
+        if (existingReaction.isPresent()) {
+            ReviewLike existing = existingReaction.get();
+
+            if (existing.getAction().equalsIgnoreCase(action)) {
+                // ─── Same action again (e.g. liked → liked again) ───────────────
+                // UNDO the reaction (toggle off)
+                reviewLikeRepository.delete(existing);
+
+                if (action.equalsIgnoreCase("LIKE")) {
+                    review.setLikes(Math.max(0, review.getLikes() - 1));
+                } else {
+                    review.setDislikes(Math.max(0, review.getDislikes() - 1));
+                }
+
+            } else {
+                // ─── Switched reaction (e.g. liked → disliked) ──────────────────
+                existing.setAction(action.toUpperCase());
+                reviewLikeRepository.save(existing);
+
+                if (action.equalsIgnoreCase("LIKE")) {
+                    review.setLikes(review.getLikes() + 1);
+                    review.setDislikes(Math.max(0, review.getDislikes() - 1));
+                } else {
+                    review.setDislikes(review.getDislikes() + 1);
+                    review.setLikes(Math.max(0, review.getLikes() - 1));
+                }
+            }
+
+        } else {
+            // ─── First time reacting ─────────────────────────────────────────────
+            ReviewLike newReaction = ReviewLike.builder()
+                    .user(user)
+                    .review(review)
+                    .action(action.toUpperCase())
+                    .build();
+            reviewLikeRepository.save(newReaction);
+
+            if (action.equalsIgnoreCase("LIKE")) {
+                review.setLikes(review.getLikes() + 1);
+            } else {
+                review.setDislikes(review.getDislikes() + 1);
+            }
         }
-        if(Objects.equals(action,"DISLIKE")||Objects.equals(action,"dislike"))
-        {
-            review.setDislikes(review.getDislikes()+1);
-            reviewAndRatingRepository.save(review);
-        }
+
+        reviewAndRatingRepository.save(review);
         return mapTOReviewDTO(review);
+
+
     }
 }
+
+//        Review review = reviewAndRatingRepository.findById(id).orElseThrow(()-> new BadRequestException("Review Not Exist!!!"));
+//        if(Objects.equals(action, "LIKE") || Objects.equals(action, "like"))
+//        {
+//            review.setLikes(review.getLikes()+1);
+//            reviewAndRatingRepository.save(review);
+//        }
+//        if(Objects.equals(action,"DISLIKE")||Objects.equals(action,"dislike"))
+//        {
+//            review.setDislikes(review.getDislikes()+1);
+//            reviewAndRatingRepository.save(review);
+//        }
+//        return mapTOReviewDTO(review);
+
+//        if (action.equalsIgnoreCase("LIKE")) {
+//            review.setLikes(review.getLikes() + 1);
+//        } else if (action.equalsIgnoreCase("DISLIKE")) {
+//            review.setDislikes(review.getDislikes() + 1);
+//        }
+//        reviewAndRatingRepository.save(review); // save once, outside the if blocks
+//        return mapTOReviewDTO(review);
