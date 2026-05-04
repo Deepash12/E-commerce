@@ -1,7 +1,10 @@
 package com.example.E.commerce.E_commerce.DTO.ReviewAndRating;
+import com.example.E.commerce.E_commerce.Entity.Authorization.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+
 import java.time.LocalDateTime;
 
 @Data
@@ -18,4 +21,6 @@ public class ReviewAndRatingResponseDTO
     private LocalDateTime createdAt;
     private Integer like;
     private Integer dislike;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private User user;
 }

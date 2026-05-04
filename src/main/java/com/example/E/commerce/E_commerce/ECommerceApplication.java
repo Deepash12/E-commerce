@@ -2,8 +2,10 @@ package com.example.E.commerce.E_commerce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class ECommerceApplication {
 
 	public static void main(String[] args) {
