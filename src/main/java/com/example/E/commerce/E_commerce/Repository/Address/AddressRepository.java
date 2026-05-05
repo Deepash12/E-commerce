@@ -15,8 +15,12 @@ public interface AddressRepository extends JpaRepository<UserAddresses,Long>
 {
     int countByUserId(Long userId);
 
+//    @Modifying
+//    @Query("UPDATE UserAddresses a SET a.isDefault = false WHERE a.user.id = :userId")
+//    void resetDefaultForUser(@Param("userId") Long userId);
+
     @Modifying
-    @Query("UPDATE UserAddresses a SET a.isDefault = false WHERE a.user.id = :userId")
+    @Query("UPDATE UserAddresses u SET u.isDefault = false WHERE u.user.id = :userId")
     void resetDefaultForUser(@Param("userId") Long userId);
 
     Page<UserAddresses> findByUser(User user, Pageable pageable);

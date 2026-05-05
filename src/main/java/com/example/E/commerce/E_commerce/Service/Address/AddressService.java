@@ -43,15 +43,17 @@ public class AddressService {
     }
 
 
+
     @Transactional
-    public String addAddress(AddAddressRequestDTO addAddressRequestDTO,String username)
+    public String addAddress(AddAddressRequestDTO addAddressRequestDTO, String username)
     {
-        User user = userRepository.findByUsername(username).
-                orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Long userId = user.getId();
         int addressCount = addressRepository.countByUserId(userId);
-        if(addressCount>=5)
+
+        if (addressCount >= 5)
         {
             throw new BadRequestException("Address limit reached");
         }
@@ -65,24 +67,58 @@ public class AddressService {
         address.setLandmark(addAddressRequestDTO.getLandmark());
         address.setState(addAddressRequestDTO.getState());
         address.setPostalCode(addAddressRequestDTO.getPostalCode());
+        address.setCountry(addAddressRequestDTO.getCountry());
         address.setUser(user);
 
-        if(addressCount==0)
-        {
-            address.setIsDefault(true);
-        }
-        else if (Boolean.TRUE.equals(addAddressRequestDTO.getIsDefault()))
-        {
-            addressRepository.resetDefaultForUser(userId);
-            address.setIsDefault(true);
-        }
-        else
-        {
-            address.setIsDefault(false);
-        }
+        // ✅ FIX: Always reset previous default and make new address the default
+        addressRepository.resetDefaultForUser(userId);
+        address.setIsDefault(true);
+
         addressRepository.save(address);
         return "Address Saved Successfully";
     }
+
+
+//    @Transactional
+//    public String addAddress(AddAddressRequestDTO addAddressRequestDTO,String username)
+//    {
+//        User user = userRepository.findByUsername(username).
+//                orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+//
+//        Long userId = user.getId();
+//        int addressCount = addressRepository.countByUserId(userId);
+//        if(addressCount>=5)
+//        {
+//            throw new BadRequestException("Address limit reached");
+//        }
+//
+//        UserAddresses address = new UserAddresses();
+//        address.setFullName(addAddressRequestDTO.getFullName());
+//        address.setPhone(addAddressRequestDTO.getPhone());
+//        address.setAddressLine1(addAddressRequestDTO.getAddressLine1());
+//        address.setAddressLine2(addAddressRequestDTO.getAddressLine2());
+//        address.setCity(addAddressRequestDTO.getCity());
+//        address.setLandmark(addAddressRequestDTO.getLandmark());
+//        address.setState(addAddressRequestDTO.getState());
+//        address.setPostalCode(addAddressRequestDTO.getPostalCode());
+//        address.setUser(user);
+//
+//        if(addressCount==0)
+//        {
+//            address.setIsDefault(true);
+//        }
+//        else if (Boolean.TRUE.equals(addAddressRequestDTO.getIsDefault()))
+//        {
+//            addressRepository.resetDefaultForUser(userId);
+//            address.setIsDefault(true);
+//        }
+//        else
+//        {
+//            address.setIsDefault(false);
+//        }
+//        addressRepository.save(address);
+//        return "Address Saved Successfully";
+//    }
 
     public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize)
     {
@@ -106,14 +142,35 @@ public class AddressService {
         return mapToDTO(addresses);
     }
 
+//    @Transactional
+//    public AddressResponseDTO updateAddress(Long id, String username,AddAddressRequestDTO addAddressRequestDTO)
+//    {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+//
+//        UserAddresses address =addressRepository.findByIdAndUser(id,user)
+//                .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!! for the USER"));
+//
+//        address.setFullName(addAddressRequestDTO.getFullName());
+//        address.setPhone(addAddressRequestDTO.getPhone());
+//        address.setAddressLine1(addAddressRequestDTO.getAddressLine1());
+//        address.setAddressLine2(addAddressRequestDTO.getAddressLine2());
+//        address.setCity(addAddressRequestDTO.getCity());
+//        address.setLandmark(addAddressRequestDTO.getLandmark());
+//        address.setState(addAddressRequestDTO.getState());
+//        address.setPostalCode(addAddressRequestDTO.getPostalCode());
+//        address.setIsDefault(addAddressRequestDTO.getIsDefault());
+//        return mapToDTO(address);
+//    }
+
     @Transactional
-    public AddressResponseDTO updateAddress(Long id, String username,AddAddressRequestDTO addAddressRequestDTO)
+    public AddressResponseDTO updateAddress(Long id, String username, AddAddressRequestDTO addAddressRequestDTO)
     {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
-        UserAddresses address =addressRepository.findByIdAndUser(id,user)
-                .orElseThrow(()-> new BadRequestException("Address Does Not Exist!!! for the USER"));
+        UserAddresses address = addressRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new BadRequestException("Address Does Not Exist!!! for the USER"));
 
         address.setFullName(addAddressRequestDTO.getFullName());
         address.setPhone(addAddressRequestDTO.getPhone());
@@ -123,7 +180,16 @@ public class AddressService {
         address.setLandmark(addAddressRequestDTO.getLandmark());
         address.setState(addAddressRequestDTO.getState());
         address.setPostalCode(addAddressRequestDTO.getPostalCode());
-        address.setIsDefault(addAddressRequestDTO.getIsDefault());
+        address.setCountry(addAddressRequestDTO.getCountry());
+
+        // ✅ FIX: Reset all defaults before setting new one
+        if (Boolean.TRUE.equals(addAddressRequestDTO.getIsDefault())) {
+            addressRepository.resetDefaultForUser(user.getId());
+            address.setIsDefault(true);
+        } else {
+            address.setIsDefault(false);
+        }
+
         return mapToDTO(address);
     }
 
