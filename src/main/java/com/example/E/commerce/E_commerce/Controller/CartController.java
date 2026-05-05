@@ -45,4 +45,11 @@ public class CartController
         return ResponseEntity.ok(cartService.updateQuantityInCart(cartItemsRequestDTO,username));
     }
 
+    // ✅ Yeh endpoint add karo
+    @DeleteMapping("/coupon")
+    public ResponseEntity<CartResponseDTO> removeCoupon(Authentication authentication) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(cartService.removeCoupon(username));
+    }
+
 }

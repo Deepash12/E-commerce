@@ -290,8 +290,42 @@ public class CartService
     // ─────────────────────────────────────────────────────────────────────────
     // View cart
     // ─────────────────────────────────────────────────────────────────────────
-    public CartResponseDTO viewCart(String username)
-    {
+//    public CartResponseDTO viewCart(String username)
+//    {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new BadRequestException("User not found"));
+//
+//        Cart cart = cartRepository.findByUser(user)
+//                .orElseGet(() -> {
+//                    Cart newCart = new Cart();
+//                    newCart.setUser(user);
+//                    return cartRepository.save(newCart);
+//                });
+//
+//        List<CartItemsResponseDTO> items = cart.getItems().stream()
+//                .filter(cartItems -> cartItems.getProduct().isActive())
+//                .map(item -> new CartItemsResponseDTO(
+//                        item.getProduct().getId(),
+//                        item.getProduct().getName(),
+//                        item.getProduct().getFinalPrice(),
+//                        item.getQuantity(),
+//                        item.getProduct().getProductImageUrl(),
+//                        item.getProduct().getFinalPrice().multiply(BigDecimal.valueOf(item.getQuantity())),
+//                        true
+//                )).toList();
+//
+//        BigDecimal totalAmount = items.stream()
+//                .map(CartItemsResponseDTO::getTotalPrice)
+//                .filter(Objects::nonNull)
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//        int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
+//
+//        return new CartResponseDTO(items, totalAmount, totalItems);
+//    }
+
+
+    public CartResponseDTO viewCart(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -310,18 +344,47 @@ public class CartService
                         item.getProduct().getFinalPrice(),
                         item.getQuantity(),
                         item.getProduct().getProductImageUrl(),
-                        item.getProduct().getFinalPrice().multiply(BigDecimal.valueOf(item.getQuantity())),
+                        item.getProduct().getFinalPrice()
+                                .multiply(BigDecimal.valueOf(item.getQuantity())),
                         true
                 )).toList();
 
-        BigDecimal totalAmount = items.stream()
+        BigDecimal grandTotal = items.stream()
                 .map(CartItemsResponseDTO::getTotalPrice)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
 
-        return new CartResponseDTO(items, totalAmount, totalItems);
+        // ✅ Coupon info include karo response mein
+        Coupon coupon = cart.getCoupon();
+//        if (coupon != null)
+//        {
+//            BigDecimal discountAmount = cart.getDiscountAmount() != null
+//                    ? cart.getDiscountAmount()
+//                    : BigDecimal.ZERO;
+//            BigDecimal finalAmount = grandTotal.subtract(discountAmount);
+//
+//            return new CartResponseDTO(
+//                    items,
+//                    grandTotal,
+//                    totalItems,
+//                    coupon.getCouponCode(),
+//                    discountAmount,
+//                    finalAmount
+//            );
+//        }
+
+        if (coupon != null) {
+            BigDecimal discountAmount = cart.getDiscountAmount() != null
+                    ? cart.getDiscountAmount()   // ← DB se lo, recalculate mat karo
+                    : BigDecimal.ZERO;
+            BigDecimal finalAmount = grandTotal.subtract(discountAmount);
+            return new CartResponseDTO(items, grandTotal, totalItems,
+                    coupon.getCouponCode(), discountAmount, finalAmount);
+        }
+
+        return new CartResponseDTO(items, grandTotal, totalItems);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -477,5 +540,25 @@ public class CartService
         }
 
         return "Quantity updated successfully";
+    }
+    @Transactional
+    public CartResponseDTO removeCoupon(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new BadRequestException("Cart not found"));
+
+        if (cart.getCoupon() == null) {
+            throw new BadRequestException("No coupon applied on cart");
+        }
+
+        // ✅ Coupon clear karo
+        cart.setCoupon(null);
+        cart.setDiscountAmount(BigDecimal.ZERO);
+        cart.setFinalAmount(calculateCartTotal(cart));
+        cartRepository.save(cart);
+
+        return viewCart(username);
     }
 }
