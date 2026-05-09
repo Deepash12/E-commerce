@@ -56,7 +56,6 @@ public class ProfileService
             existingUser.setAvatar_url(avatarUrl);
         }
 
-        // Only update names if values are actually provided
         if (dto.getFirstname() != null) {
             existingUser.setFirst_name(dto.getFirstname());
         }

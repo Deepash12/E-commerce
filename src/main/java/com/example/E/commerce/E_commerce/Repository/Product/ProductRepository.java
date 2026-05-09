@@ -2,6 +2,7 @@ package com.example.E.commerce.E_commerce.Repository.Product;
 
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import jakarta.persistence.LockModeType;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,7 @@ AND (:maxPrice IS NULL OR p.price <= :maxPrice)
 AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
 """)
     Page<Product> findWithFilters(Integer subCategoryId, Double minPrice, Double maxPrice, String keyword, Pageable pageable);
+
+    boolean existsByNameIgnoreCase(String trim);
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 }
