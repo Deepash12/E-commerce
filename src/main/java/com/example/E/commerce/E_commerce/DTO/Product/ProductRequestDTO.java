@@ -13,7 +13,7 @@ public class ProductRequestDTO
     @NotBlank(message = "description not be null")
     private String description;
     @NotBlank(message = "price not be null")
-    private Double price;
+    private BigDecimal price;
     @NotBlank(message = "stockQuantity not be null")
     private Integer stockQuantity;
     @NotBlank(message = "subcategoryId not be null")

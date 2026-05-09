@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -132,29 +133,79 @@ public class ProductService
                 .build();
     }
 
-    public Product addProduct(@Valid ProductRequestDTO productRequestDTO, MultipartFile image) throws IOException {
 
-    SubCategory subCategory = subCategoryRepository.findById(
-            productRequestDTO.getSubcategoryId()
-    ).orElseThrow(() -> new BadRequestException("SubCategory not found"));
+    public Product addProduct(@Valid ProductRequestDTO productRequestDTO,
+                              MultipartFile image) throws IOException
+    {
+        // Validate SubCategory
+        SubCategory subCategory = subCategoryRepository.findById(
+                productRequestDTO.getSubcategoryId()
+        ).orElseThrow(() ->
+                new BadRequestException("SubCategory not found"));
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-                .orElseThrow(()-> new BadRequestException("Category Not Existed!!!"));
+        // Validate Category
+        Category category = categoryRepository.findById(
+                productRequestDTO.getCategoryId()
+        ).orElseThrow(() ->
+                new BadRequestException("Category not found"));
 
-    String productImageUrl = fileService.uploadFile(image);
-    Product product = new Product();
-    product.setName(productRequestDTO.getName());
-    product.setDescription(productRequestDTO.getDescription());
-    product.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
-    product.setStockQuantity(productRequestDTO.getStockQuantity());
-    product.setDiscountPrice(productRequestDTO.getDiscountPrice());
-    product.setFinalPrice(product.getPrice().subtract(product.getDiscountPrice()));
-    product.setSubCategory(subCategory);
-    product.setCategory(category);
-    product.setProductImageUrl(productImageUrl);
+        // Check duplicate product by name
+        boolean existingProduct = productRepository.existsByNameIgnoreCase(
+                productRequestDTO.getName().trim()
+        );
 
-    return productRepository.save(product);
-}
+        if (existingProduct)
+        {
+            throw new BadRequestException(
+                    "Product with this name already exists"
+            );
+        }
+
+        // Upload image
+        String productImageUrl = fileService.uploadFile(image);
+
+        // Handle null discount price
+        BigDecimal discountPrice = productRequestDTO.getDiscountPrice();
+
+        if (discountPrice == null)
+        {
+            discountPrice = BigDecimal.ZERO;
+        }
+
+        // Prevent negative discount
+        if (discountPrice.compareTo(productRequestDTO.getPrice()) > 0)
+        {
+            throw new BadRequestException(
+                    "Discount price cannot be greater than actual price"
+            );
+        }
+
+        // Calculate final price
+        BigDecimal finalPrice = productRequestDTO.getPrice()
+                .subtract(discountPrice);
+
+        // Create Product
+        Product product = new Product();
+        product.setName(productRequestDTO.getName().trim());
+        product.setDescription(productRequestDTO.getDescription());
+        product.setPrice(productRequestDTO.getPrice());
+        product.setDiscountPrice(discountPrice);
+        product.setFinalPrice(finalPrice);
+
+        if(productRequestDTO.getStockQuantity()<0)
+        {
+            throw new BadRequestException("Stock quanty should be either 0 or more than 0 , not be negative");
+        }
+        else
+        {
+            product.setStockQuantity(productRequestDTO.getStockQuantity());
+        }
+        product.setCategory(category);
+        product.setSubCategory(subCategory);
+        product.setProductImageUrl(productImageUrl);
+
+        return productRepository.save(product);
+    }
 
     public ProductResponseDTO getProductById(Long id) {
         Product product =  productRepository.findById(id)
@@ -174,31 +225,132 @@ public class ProductService
         return "Product Deleted Successfully";
     }
 
-    public Product updateProductById(Long id, ProductRequestDTO productRequestDTO,MultipartFile image)
+//    public Product updateProductById(Long id, ProductRequestDTO productRequestDTO,MultipartFile image)
+//            throws IOException
+//    {
+//
+//        Product existingProduct = productRepository.findById(id)
+//                .orElseThrow(() -> new BadRequestException("Product does not exist!!!"));
+//
+//        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+//                .orElseThrow(()-> new BadRequestException("Category Not Exist!!!"));
+//
+//        SubCategory subCategory = subCategoryRepository.findById(productRequestDTO.getSubcategoryId())
+//                .orElseThrow(() -> new BadRequestException("SubCategory not found"));
+//
+//        String productImageUrl = fileService.uploadFile(image);
+//        boolean product = productRepository.existsByNameIgnoreCase(
+//                productRequestDTO.getName().trim()
+//        );
+//
+//        if (product)
+//        {
+//            throw new BadRequestException(
+//                    "Product with this name already exists"
+//            );
+//        }
+//        existingProduct.setName(productRequestDTO.getName());
+//        existingProduct.setDescription(productRequestDTO.getDescription());
+//        existingProduct.setPrice(productRequestDTO.getPrice());
+//        if(productRequestDTO.getStockQuantity()<0)
+//        {
+//            throw new BadRequestException("Stock quanty should be either 0 or more than 0 , not be negative");
+//        }
+//        else
+//        {
+//            existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
+//        }
+//        existingProduct.setDiscountPrice(productRequestDTO.getDiscountPrice());
+//        existingProduct.setFinalPrice(
+//                productRequestDTO.getPrice().subtract(productRequestDTO.getDiscountPrice())
+//        );
+//        existingProduct.setCategory(category);
+//        existingProduct.setSubCategory(subCategory);
+//        existingProduct.setProductImageUrl(productImageUrl);
+//        return productRepository.save(existingProduct);
+//
+//    }
+
+
+    public Product updateProductById(Long id,
+                                     ProductRequestDTO productRequestDTO,
+                                     MultipartFile image)
             throws IOException
     {
-
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Product does not exist!!!"));
+                .orElseThrow(() ->
+                        new BadRequestException("Product does not exist!!!"));
 
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-                .orElseThrow(()-> new BadRequestException("Category Not Exist!!!"));
+        Category category = categoryRepository.findById(
+                productRequestDTO.getCategoryId()
+        ).orElseThrow(() ->
+                new BadRequestException("Category Not Exist!!!"));
 
-        SubCategory subCategory = subCategoryRepository.findById(productRequestDTO.getSubcategoryId())
-                .orElseThrow(() -> new BadRequestException("SubCategory not found"));
+        SubCategory subCategory = subCategoryRepository.findById(
+                productRequestDTO.getSubcategoryId()
+        ).orElseThrow(() ->
+                new BadRequestException("SubCategory not found"));
 
-        String productImageUrl = fileService.uploadFile(image);
-        existingProduct.setName(productRequestDTO.getName());
+        // Check duplicate name except current product
+        boolean productExists =
+                productRepository.existsByNameIgnoreCaseAndIdNot(
+                        productRequestDTO.getName().trim(),
+                        id
+                );
+
+        if (productExists)
+        {
+            throw new BadRequestException(
+                    "Product with this name already exists"
+            );
+        }
+
+        // Upload image only if image is present
+        if (image != null && !image.isEmpty())
+        {
+            String productImageUrl = fileService.uploadFile(image);
+            existingProduct.setProductImageUrl(productImageUrl);
+        }
+
+        // Stock validation
+        if (productRequestDTO.getStockQuantity() < 0)
+        {
+            throw new BadRequestException(
+                    "Stock quantity cannot be negative"
+            );
+        }
+
+        // Handle null discount
+        BigDecimal discountPrice = productRequestDTO.getDiscountPrice();
+
+        if (discountPrice == null)
+        {
+            discountPrice = BigDecimal.ZERO;
+        }
+
+        // Discount validation
+        if (discountPrice.compareTo(productRequestDTO.getPrice()) > 0)
+        {
+            throw new BadRequestException(
+                    "Discount price cannot be greater than actual price"
+            );
+        }
+
+        // Update fields
+        existingProduct.setName(productRequestDTO.getName().trim());
         existingProduct.setDescription(productRequestDTO.getDescription());
-        existingProduct.setPrice(BigDecimal.valueOf(productRequestDTO.getPrice()));
+        existingProduct.setPrice(productRequestDTO.getPrice());
         existingProduct.setStockQuantity(productRequestDTO.getStockQuantity());
-        existingProduct.setDiscountPrice(productRequestDTO.getDiscountPrice());
+        existingProduct.setDiscountPrice(discountPrice);
+
+        existingProduct.setFinalPrice(
+                productRequestDTO.getPrice().subtract(discountPrice)
+        );
+
         existingProduct.setCategory(category);
         existingProduct.setSubCategory(subCategory);
-        existingProduct.setProductImageUrl(productImageUrl);
 
         return productRepository.save(existingProduct);
-
     }
 
     public ProductPageResponseDTO<ProductResponseDTO> viewAllProduct
