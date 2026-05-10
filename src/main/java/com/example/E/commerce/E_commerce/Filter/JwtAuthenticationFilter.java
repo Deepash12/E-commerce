@@ -31,54 +31,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-
         String header = request.getHeader("Authorization");
-        String path = request.getServletPath();
 
-        if(path.contains("/auth/login")|| path.contains("/auth/forget-password")||path.contains("/auth/reset-password"))
-        {
-            filterChain.doFilter(request,response);
+        // 1. Agar header nahi hai ya Bearer se start nahi ho raha, toh seedha aage bhej do
+        // Isse public requests (like /products/all) block nahi hongi
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+        String token = header.substring(7);
 
-            if (tokenBlackListService.isBlacklisted(token)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+        // 2. Blacklist check
+        if (tokenBlackListService.isBlacklisted(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
-            try {
+        try {
+            Claims claims = jwtUtil.validateTokens(token);
+            String username = claims.getSubject();
 
-                Claims claims = jwtUtil.validateTokens(token);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String role = claims.get("role", String.class);
 
-                String username = claims.getSubject();
-                if (username != null &&
-                        SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                    String role = claims.get("role", String.class);
-
-                    if (role == null) {
-                        filterChain.doFilter(request, response);
-                        return;
-                    }
-
+                // Role null check ko handle karein bina aage ki processing roke
+                if (role != null) {
                     var authorities = List.of(new SimpleGrantedAuthority(role));
-
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    username, null, authorities
-                            );
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace(); // 🔥 debug
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
             }
+
+        } catch (Exception e) {
+            // Token invalid hai toh context clear karein aur exception entry point ko handle karne dein
+            SecurityContextHolder.clearContext();
+            // Yahan response.setStatus(401) karne ki zaroorat nahi hai,
+            // filterChain aage jayega aur SecurityConfig decide karega access.
         }
 
         filterChain.doFilter(request, response);

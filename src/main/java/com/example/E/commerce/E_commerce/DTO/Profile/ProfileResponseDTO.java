@@ -15,4 +15,7 @@ public class ProfileResponseDTO
     private String phone;
     private String username;
     private Gender gender;
+
+    private String token;
+    private String refreshToken;
 }
