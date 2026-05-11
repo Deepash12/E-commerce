@@ -358,7 +358,7 @@ import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
@@ -502,7 +502,7 @@ public class OrderService
                 SecurityContextHolder.getContext().getAuthentication()
         ).getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -556,7 +556,7 @@ public class OrderService
                 SecurityContextHolder.getContext().getAuthentication()
         ).getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -661,7 +661,7 @@ public class OrderService
 
     private Order checkOrder(String username, Long id)
     {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Order order = orderRepository.findById(id)
@@ -677,7 +677,7 @@ public class OrderService
     @Transactional
     public String cancelOrder(String username, Long id)
     {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Order order = orderRepository.findById(id)
@@ -714,7 +714,7 @@ public class OrderService
                 SecurityContextHolder.getContext().getAuthentication()
         ).getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());

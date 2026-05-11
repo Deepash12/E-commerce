@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service.Address;
 import com.example.E.commerce.E_commerce.DTO.Address.AddAddressRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Address.AddressResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Address.AddressRepository;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
@@ -47,7 +47,7 @@ public class AddressService {
     @Transactional
     public String addAddress(AddAddressRequestDTO addAddressRequestDTO, String username)
     {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Long userId = user.getId();
@@ -123,7 +123,7 @@ public class AddressService {
     public Page<AddressResponseDTO> viewAddress(Integer pageNumber, Integer pageSize)
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User not found with username: "+ username));
+        Users user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User not found with username: "+ username));
         Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
         Page<UserAddresses> addresses = addressRepository.findByUser(user,pageable);
 
@@ -134,7 +134,7 @@ public class AddressService {
 
     public AddressResponseDTO selectedAddress(Long id, String username)
     {
-        User user =userRepository.findByUsername(username)
+        Users user =userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         UserAddresses addresses= addressRepository.findByIdAndUser(id,user)
@@ -166,7 +166,7 @@ public class AddressService {
     @Transactional
     public AddressResponseDTO updateAddress(Long id, String username, AddAddressRequestDTO addAddressRequestDTO)
     {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         UserAddresses address = addressRepository.findByIdAndUser(id, user)
@@ -196,7 +196,7 @@ public class AddressService {
     @Transactional
     public String deleteAddress(Long id, String username)
     {
-        User user=  userRepository.findByUsername(username)
+        Users user=  userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         UserAddresses address = addressRepository.findByIdAndUser(id,user)

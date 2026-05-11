@@ -1,7 +1,7 @@
 package com.example.E.commerce.E_commerce.Repository.Cart;
 
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +16,5 @@ public interface CartRepository extends JpaRepository<Cart,Long>
             "WHERE ci.cart.id = :cartId AND ci.product.id = :productId ")
     int RemoveItemFromCart(Long cartId,Long productId);
 
-    Optional<Cart> findByUser(User user);
+    Optional<Cart> findByUser(Users user);
 }

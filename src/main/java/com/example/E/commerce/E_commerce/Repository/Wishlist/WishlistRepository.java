@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Repository.Wishlist;
 
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Wishlist.Wishlist;
 import org.springframework.data.domain.Page;
@@ -17,10 +17,10 @@ public interface WishlistRepository extends JpaRepository<Wishlist,Long>
 {
 
     @Query("select w from Wishlist w where w.user= :user and w.product.isActive= true")
-    Page<Wishlist> findByUser(@Param("user") User user, Pageable pageable);
+    Page<Wishlist> findByUser(@Param("user") Users user, Pageable pageable);
 
 
-    Optional<Wishlist> findByUserAndProduct(User user, Product product);
+    Optional<Wishlist> findByUserAndProduct(Users user, Product product);
 
-    List<Wishlist> findByUser(User user);
+    List<Wishlist> findByUser(Users user);
 }

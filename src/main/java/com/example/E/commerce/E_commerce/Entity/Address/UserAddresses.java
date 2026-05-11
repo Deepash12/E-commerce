@@ -1,5 +1,5 @@
 package com.example.E.commerce.E_commerce.Entity.Address;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class UserAddresses
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Users user;
     private String fullName;
     private String phone;
     private String addressLine1;

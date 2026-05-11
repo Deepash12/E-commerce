@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service.Product;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Product.Category;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Product.SubCategory;
@@ -17,7 +17,6 @@ import com.example.E.commerce.E_commerce.Service.File.FileService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +78,7 @@ public class ProductService
 
         if (username != null) {
 
-            User user = userRepository.findByUsername(username)
+            Users user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
             wishlistProductIds = wishlistRepository.findByUser(user)

@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Entity.Order;
 
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
@@ -28,7 +28,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
-    private User user;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")

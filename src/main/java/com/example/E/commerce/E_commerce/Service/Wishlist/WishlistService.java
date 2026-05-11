@@ -2,7 +2,7 @@ package com.example.E.commerce.E_commerce.Service.Wishlist;
 
 import com.example.E.commerce.E_commerce.DTO.Product.ProductResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Wishlist.WishlistResponse;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.Wishlist.Wishlist;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
@@ -51,7 +51,7 @@ public class WishlistService
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("addedAt").descending());
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Page<Wishlist> wishlistPage = wishlistRepository.findByUser(user, pageable);
@@ -75,7 +75,7 @@ public class WishlistService
                 .getAuthentication()
                 .getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Product product = productRepository.findById(productId)

@@ -2,7 +2,7 @@ package com.example.E.commerce.E_commerce.Service.ReviewAndRating;
 
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.ReviewAndRating.*;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderItem;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
@@ -11,7 +11,6 @@ import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.Review;
 import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.ReviewLike;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.Order.OrderItemsRepository;
-import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
 import com.example.E.commerce.E_commerce.Repository.Product.ProductRepository;
 import com.example.E.commerce.E_commerce.Repository.ReviewAndRating.ReviewAndRatingRepository;
 import com.example.E.commerce.E_commerce.Repository.ReviewAndRating.ReviewLikeRepository;
@@ -71,7 +70,7 @@ public class ReviewAndRatingService
                 .build();
 
     }
-    private UserResponseDTO mapToUserDTO(User user)
+    private UserResponseDTO mapToUserDTO(Users user)
     {
         return UserResponseDTO.builder()
                 .id(user.getId()).username(user.getUsername()).avatar_url(user.getAvatar_url()).build();
@@ -99,7 +98,7 @@ public class ReviewAndRatingService
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         if(!item.getOrder().getUser().getId().equals(user.getId()))
@@ -159,7 +158,7 @@ public class ReviewAndRatingService
     public ProductPageResponseDTO<MyReviewsResponseDTO> seeMyReview(Integer pageNumber, Integer pageSize)
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        Users user = userRepository.findByUsername(username).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
         Page<Review> reviews = reviewAndRatingRepository.findAllByUser(user,pageable);
         List<MyReviewsResponseDTO> dtoList = reviews.getContent().stream().map(this::mapTOMyReviewDTO).toList();
@@ -177,7 +176,7 @@ public class ReviewAndRatingService
     public ReviewAndRatingResponseDTO updateMyReviewAndRating(Long id, UpdateReviewAndRatingRequestDTO updatedto)
     {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         Review existinngReview = reviewAndRatingRepository.findByIdAndUser(id,user)
@@ -195,7 +194,7 @@ public class ReviewAndRatingService
     public String deleteReview(Long id)
     {
         String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
 
         Review review = reviewAndRatingRepository.findByIdAndUser(id,user)
@@ -267,7 +266,7 @@ public class ReviewAndRatingService
 
         // 2. Get the currently logged-in user
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         // 3. Check if this user already reacted to this review

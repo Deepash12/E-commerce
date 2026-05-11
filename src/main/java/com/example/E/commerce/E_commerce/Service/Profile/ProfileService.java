@@ -148,7 +148,7 @@ package com.example.E.commerce.E_commerce.Service.Profile;
 
 import com.example.E.commerce.E_commerce.DTO.Profile.EditProfileDTO;
 import com.example.E.commerce.E_commerce.DTO.Profile.ProfileResponseDTO;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.File.FileService;
@@ -170,7 +170,7 @@ public class ProfileService
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
-    private ProfileResponseDTO mapToDto(User user)
+    private ProfileResponseDTO mapToDto(Users user)
     {
         ProfileResponseDTO response = new ProfileResponseDTO();
         response.setAvatarUrl(user.getAvatar_url());
@@ -185,7 +185,7 @@ public class ProfileService
 
     public ProfileResponseDTO viewProfile(String name)
     {
-        User user = userRepository.findByUsername(name)
+        Users user = userRepository.findByUsername(name)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
         return mapToDto(user);
     }
@@ -194,7 +194,7 @@ public class ProfileService
                                           @Valid EditProfileDTO dto,
                                           MultipartFile image) throws IOException
     {
-        User existingUser = userRepository.findByUsername(username)
+        Users existingUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         // Fields jo username se related nahi — hamesha update honge
@@ -246,7 +246,7 @@ public class ProfileService
             }
         }
 
-        User savedUser = userRepository.save(existingUser);
+        Users savedUser = userRepository.save(existingUser);
         ProfileResponseDTO responseDTO = mapToDto(savedUser);
 
         // Tokens sirf tab set honge jab username change hua ho

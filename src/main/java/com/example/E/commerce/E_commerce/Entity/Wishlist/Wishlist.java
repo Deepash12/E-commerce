@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Entity.Wishlist;
 
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +28,7 @@ public class Wishlist
     private Product product;
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Users user;
 
     @CreationTimestamp
     private LocalDateTime addedAt;

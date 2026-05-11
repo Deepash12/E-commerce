@@ -162,10 +162,9 @@ import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentMapper;
 import com.example.E.commerce.E_commerce.DTO.Payment.PaymentResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
-import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
 import com.example.E.commerce.E_commerce.Entity.Payment.Payment;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentMethod;
 import com.example.E.commerce.E_commerce.Entity.Payment.PaymentStatus;
@@ -244,7 +243,7 @@ public class PaymentService
                     SecurityContextHolder.getContext().getAuthentication()
             ).getName();
 
-            User user = userRepository.findByUsername(username)
+            Users user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BadRequestException("User Not Found"));
 
             Payment payment = paymentRepository.findById(paymentId)

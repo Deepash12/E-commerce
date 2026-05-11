@@ -1,7 +1,7 @@
 package com.example.E.commerce.E_commerce.Repository.Address;
 
 import com.example.E.commerce.E_commerce.Entity.Address.UserAddresses;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,9 +23,9 @@ public interface AddressRepository extends JpaRepository<UserAddresses,Long>
     @Query("UPDATE UserAddresses u SET u.isDefault = false WHERE u.user.id = :userId")
     void resetDefaultForUser(@Param("userId") Long userId);
 
-    Page<UserAddresses> findByUser(User user, Pageable pageable);
+    Page<UserAddresses> findByUser(Users user, Pageable pageable);
 
-    Optional<UserAddresses> findByIdAndUser(Long id, User user);
+    Optional<UserAddresses> findByIdAndUser(Long id, Users user);
 
-    long countByUser(User user);
+    long countByUser(Users user);
 }

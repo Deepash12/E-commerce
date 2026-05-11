@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Repository.ReviewAndRating;
 
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
 import com.example.E.commerce.E_commerce.Entity.ReviewAndRating.Review;
 import org.springframework.data.domain.Page;
@@ -14,13 +14,13 @@ import java.util.Optional;
 public interface ReviewAndRatingRepository extends JpaRepository<Review,Long>
 {
 
-    Optional<Review> findByUserAndProduct(User user, Product product);
+    Optional<Review> findByUserAndProduct(Users user, Product product);
 
     Page<Review> findAllByProductId(Long id, Pageable pageable);
 
-    Page<Review> findAllByUser(User user,Pageable pageable);
+    Page<Review> findAllByUser(Users user, Pageable pageable);
 
-    Optional<Review> findByIdAndUser(Long id, User user);
+    Optional<Review> findByIdAndUser(Long id, Users user);
 
     List<Review> findByProductId(Long id);
 

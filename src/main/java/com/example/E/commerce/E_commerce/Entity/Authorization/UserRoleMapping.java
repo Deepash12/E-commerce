@@ -18,7 +18,7 @@ public class UserRoleMapping
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
     @Enumerated(EnumType.STRING)
     private Role role;
     private Timestamp assignedAt;

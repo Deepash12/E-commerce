@@ -1,6 +1,6 @@
 package com.example.E.commerce.E_commerce.Repository.Order;
 
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Order.Order;
 import com.example.E.commerce.E_commerce.Entity.Order.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order,Long>
 {
 
-    Page<Order> findByUser(User user, Pageable pageable);
+    Page<Order> findByUser(Users user, Pageable pageable);
 
     long countByUserIdAndCouponId(Long id, Long id1);
 

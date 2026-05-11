@@ -1,5 +1,5 @@
 package com.example.E.commerce.E_commerce.DTO.ReviewAndRating;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +22,5 @@ public class ReviewAndRatingResponseDTO
     private Integer like;
     private Integer dislike;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private User user;
+    private Users user;
 }

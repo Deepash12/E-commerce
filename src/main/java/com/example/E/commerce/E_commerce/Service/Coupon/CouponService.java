@@ -3,7 +3,7 @@ package com.example.E.commerce.E_commerce.Service.Coupon;
 import com.example.E.commerce.E_commerce.DTO.Coupon.*;
 import com.example.E.commerce.E_commerce.DTO.Filter.CouponFilterRequestAdmin;
 import com.example.E.commerce.E_commerce.DTO.Product.ProductPageResponseDTO;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
@@ -201,7 +201,7 @@ public class CouponService
     public ProductPageResponseDTO<CouponResponseDTOForUser> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
     {
         String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         CouponFilterRequestAdmin filterRequestUser = new CouponFilterRequestAdmin();
@@ -240,7 +240,7 @@ public class CouponService
                 .orElseThrow(() -> new BadRequestException("Coupon is not Active Anymore!!!"));
 
         String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
         CouponResponseDTOForUser responseDTOForUser = mapCouponToDTOForUser(coupon);
         long usage = orderRepository.countByUserIdAndCouponId(user.getId(), coupon.getId());
@@ -274,7 +274,7 @@ public class CouponService
         String username = Objects.requireNonNull(
                 SecurityContextHolder.getContext().getAuthentication()).getName();
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -293,7 +293,7 @@ public class CouponService
     public CouponResponseUserDTO applyCoupon(ApplyCouponResponseDTO dto)
     {
         String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
 
         Cart cart = cartRepository.findByUser(user)

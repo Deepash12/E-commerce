@@ -5,7 +5,7 @@ import com.example.E.commerce.E_commerce.DTO.Authorization.LoginResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.RefreshTokenRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Authorization.RegisterRequestDTO;
 import com.example.E.commerce.E_commerce.Entity.Authorization.Role;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Exception.BadRequestException;
 import com.example.E.commerce.E_commerce.Repository.User.UserRepository;
 import com.example.E.commerce.E_commerce.Service.Email.EmailService;
@@ -58,7 +58,7 @@ public class AuthService
             throw new BadRequestException("Username Already existed!!!");
         }
 
-        User user =  new User();
+        Users user =  new Users();
         user.setUsername(registerRequestDTO.getUsername());
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setEmail(registerRequestDTO.getEmail());
@@ -89,7 +89,7 @@ public class AuthService
     @Transactional
     public String forgetPassword(String email)
     {
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
+        Users user = userRepository.findByEmail(email).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         if(user==null)
         {
             return ("If email exists, reset link has been sent.");
@@ -109,7 +109,7 @@ public class AuthService
     {
         System.out.println(token);
         System.out.println(newPassword);
-        User user = userRepository.findByResetToken(token).
+        Users user = userRepository.findByResetToken(token).
                 orElseThrow(()-> new BadRequestException("Invalid Token!!!"));
 
         if(user.getResetTokenExpiry().isBefore(LocalDateTime.now()))
@@ -133,7 +133,7 @@ public class AuthService
         {
             throw new BadRequestException("Username Already Existed!!!");
         }
-        User user = new User();
+        Users user = new Users();
         user.setEmail(registerRequestDTO.getEmail());
         user.setRole(Role.ADMIN);
         user.setPassword_hash(passwordEncoder.encode(registerRequestDTO.getPassword()));
@@ -151,7 +151,7 @@ public class AuthService
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         Claims claims = jwtUtil.validateTokens(refreshToken);
-        User user = userRepository.findByUsername(claims.getSubject())
+        Users user = userRepository.findByUsername(claims.getSubject())
                 .orElseThrow(()-> new BadRequestException("User Not Found!!!"));
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
 

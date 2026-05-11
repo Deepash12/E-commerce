@@ -4,7 +4,7 @@ import com.example.E.commerce.E_commerce.DTO.Cart.CartItemsRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Cart.CartItemsResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Cart.CartResponseDTO;
 import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
-import com.example.E.commerce.E_commerce.Entity.Authorization.User;
+import com.example.E.commerce.E_commerce.Entity.Authorization.Users;
 import com.example.E.commerce.E_commerce.Entity.Cart.CartItems;
 import com.example.E.commerce.E_commerce.Entity.Coupon.Coupon;
 import com.example.E.commerce.E_commerce.Entity.Product.Product;
@@ -92,7 +92,7 @@ public class CartService
     }
 
     public CartResponseDTO viewCart(String username) {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -144,7 +144,7 @@ public class CartService
     @Transactional
     public String removeProductFromCart(String username, Long productId)
     {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -183,7 +183,7 @@ public class CartService
             throw new BadRequestException("Quantity must be greater than 0");
         }
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User does not exist"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -245,7 +245,7 @@ public class CartService
             throw new BadRequestException("Quantity must be greater than 0");
         }
 
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User does not exist"));
 
         Cart cart = cartRepository.findByUser(user)
@@ -302,7 +302,7 @@ public class CartService
     }
     @Transactional
     public CartResponseDTO removeCoupon(String username) {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
         Cart cart = cartRepository.findByUser(user)
