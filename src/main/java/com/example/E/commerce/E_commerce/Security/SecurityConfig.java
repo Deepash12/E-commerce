@@ -76,7 +76,7 @@ public class SecurityConfig {
     {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://e-commerce-frontend-iota-eight.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://e-commerce-frontend-iota-eight.vercel.app","https://e-commerce-frontend-e6ztq245e-deepash12s-projects.vercel.app"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
