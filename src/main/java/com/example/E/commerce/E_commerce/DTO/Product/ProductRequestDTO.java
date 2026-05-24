@@ -22,4 +22,6 @@ public class ProductRequestDTO
     private Long categoryId;
     @NotBlank(message = "discountPrice not be null")
     private BigDecimal discountPrice;
-};
+
+    private Boolean removeImage = false;
+}

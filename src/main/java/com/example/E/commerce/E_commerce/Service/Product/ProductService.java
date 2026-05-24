@@ -304,11 +304,19 @@ public class ProductService
         }
 
         // Upload image only if image is present
-        if (image != null && !image.isEmpty())
-        {
+//        if (image != null && !image.isEmpty())
+//        {
+//            String productImageUrl = fileService.uploadFile(image);
+//            existingProduct.setProductImageUrl(productImageUrl);
+//        }
+
+        if (Boolean.TRUE.equals(productRequestDTO.getRemoveImage())) {
+            existingProduct.setProductImageUrl(null);
+        } else if (image != null && !image.isEmpty()) {
             String productImageUrl = fileService.uploadFile(image);
             existingProduct.setProductImageUrl(productImageUrl);
         }
+
 
         // Stock validation
         if (productRequestDTO.getStockQuantity() < 0)
@@ -361,7 +369,6 @@ public class ProductService
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        Boolean flag = true;
         Page<Product> productPage =
                 productRepository.findWithFilters(
                         subCategoryId, minPrice, maxPrice, keyword, pageable
