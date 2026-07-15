@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Getter
-@Setter
 
 public class Product
 {

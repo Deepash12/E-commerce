@@ -3,18 +3,13 @@ package com.example.E.commerce.E_commerce.Entity.Authorization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.type.descriptor.jdbc.TinyIntAsSmallIntJdbcType;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @Entity
-@Getter
-@Setter
+
 public class Users {
 
     @Id
@@ -37,7 +32,7 @@ public class Users {
     private Gender gender;
     private String phone;
     private String avatar_url;
-    private TinyIntAsSmallIntJdbcType email_verified;
+    private Boolean email_verified;
     private String accountStatus;
 
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -51,6 +46,5 @@ public class Users {
 
     @Column(name = "reset_token_expiry")
     private LocalDateTime resetTokenExpiry;
-
 
 }
