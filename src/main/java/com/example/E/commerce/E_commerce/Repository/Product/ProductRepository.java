@@ -19,9 +19,10 @@ SELECT p FROM Product p
 WHERE (:subCategoryId IS NULL OR p.subCategory.id = :subCategoryId)
 AND (:minPrice IS NULL OR p.price >= :minPrice)
 AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER (:keyword))
 AND (:flag IS NULL OR p.isActive = :flag)
 """)
+//    (CONCAT('%', :keyword, '%')))
     Page<Product> findWithFilter(Integer subCategoryId, Double minPrice, Double maxPrice, String keyword,Boolean flag, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -29,13 +30,24 @@ AND (:flag IS NULL OR p.isActive = :flag)
     Optional<Product> findByIdForUpdate(@Param("id") Long id);
 
 
+//    @Query("""
+//SELECT p FROM Product p
+//WHERE (:subCategoryId IS NULL OR p.subCategory.id = :subCategoryId)
+//AND (:minPrice IS NULL OR p.price >= :minPrice)
+//AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+//AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(:keyword))
+//""")
+
     @Query("""
 SELECT p FROM Product p
 WHERE (:subCategoryId IS NULL OR p.subCategory.id = :subCategoryId)
 AND (:minPrice IS NULL OR p.price >= :minPrice)
 AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+AND LOWER(p.name) LIKE CONCAT('%', :keyword, '%')
 """)
+
+
+        //(CONCAT('%', :keyword, '%')))
     Page<Product> findWithFilters(Integer subCategoryId, Double minPrice, Double maxPrice, String keyword, Pageable pageable);
 
     boolean existsByNameIgnoreCase(String trim);

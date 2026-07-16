@@ -303,12 +303,7 @@ public class ProductService
             );
         }
 
-        // Upload image only if image is present
-//        if (image != null && !image.isEmpty())
-//        {
-//            String productImageUrl = fileService.uploadFile(image);
-//            existingProduct.setProductImageUrl(productImageUrl);
-//        }
+
 
         if (Boolean.TRUE.equals(productRequestDTO.getRemoveImage())) {
             existingProduct.setProductImageUrl(null);
@@ -359,9 +354,10 @@ public class ProductService
         return productRepository.save(existingProduct);
     }
 
-    public ProductPageResponseDTO<ProductResponseDTO> viewAllProduct
-            (Integer pageNumber, Integer pageSize, String sortBy, String sortDir, Integer subCategoryId,
-             Double minPrice, Double maxPrice, String keyword)
+
+    public ProductPageResponseDTO<ProductResponseDTO> viewAllProduct(
+            Integer pageNumber, Integer pageSize, String sortBy, String sortDir,
+            Integer subCategoryId, Double minPrice, Double maxPrice, String keyword)
     {
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
@@ -369,10 +365,21 @@ public class ProductService
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
+        // FIX STARTS HERE: Add wildcards in Java instead of the database
+//        String searchKeyword = null;
+//        if (keyword != null && !keyword.trim().isEmpty()) {
+//            searchKeyword = "%" + keyword + "%";
+//        }
+        if(keyword==null)
+        {
+            keyword="";
+        }
+
         Page<Product> productPage =
                 productRepository.findWithFilters(
                         subCategoryId, minPrice, maxPrice, keyword, pageable
                 );
+        // FIX ENDS HERE
 
         List<ProductResponseDTO> dtoList =
                 productPage.getContent()
@@ -380,9 +387,7 @@ public class ProductService
                         .map(this::convertToDTO)
                         .toList();
 
-        ProductPageResponseDTO<ProductResponseDTO> response =
-                new ProductPageResponseDTO<>();
-
+        ProductPageResponseDTO<ProductResponseDTO> response = new ProductPageResponseDTO<>();
         response.setContent(dtoList);
         response.setCurrentPage(productPage.getNumber());
         response.setPageSize(productPage.getSize());
@@ -392,4 +397,40 @@ public class ProductService
 
         return response;
     }
+
+
+
+//    public ProductPageResponseDTO<ProductResponseDTO> viewAllProduct
+//            (Integer pageNumber, Integer pageSize, String sortBy, String sortDir, Integer subCategoryId,
+//             Double minPrice, Double maxPrice, String keyword)
+//    {
+//        Sort sort = sortDir.equalsIgnoreCase("asc")
+//                ? Sort.by(sortBy).ascending()
+//                : Sort.by(sortBy).descending();
+//
+//        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+//
+//        Page<Product> productPage =
+//                productRepository.findWithFilters(
+//                        subCategoryId, minPrice, maxPrice, keyword, pageable
+//                );
+//
+//        List<ProductResponseDTO> dtoList =
+//                productPage.getContent()
+//                        .stream()
+//                        .map(this::convertToDTO)
+//                        .toList();
+//
+//        ProductPageResponseDTO<ProductResponseDTO> response =
+//                new ProductPageResponseDTO<>();
+//
+//        response.setContent(dtoList);
+//        response.setCurrentPage(productPage.getNumber());
+//        response.setPageSize(productPage.getSize());
+//        response.setTotalPages(productPage.getTotalPages());
+//        response.setTotalElements(productPage.getTotalElements());
+//        response.setLast(productPage.isLast());
+//
+//        return response;
+//    }
 }
