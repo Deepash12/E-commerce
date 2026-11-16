@@ -62,6 +62,14 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+<!--		swagger dependency added-->
+
+		<!-- swagger dependency added -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 <!--		 MySQL-->
 
 <!--		<dependency>-->
@@ -77,7 +85,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Lombok -->
+
 
 		<dependency>
 			<groupId>com.cloudinary</groupId>
@@ -85,10 +93,11 @@
 			<version>1.39.0</version>
 		</dependency>
 
-
+		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.38</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -133,16 +142,30 @@
 	<build>
 		<plugins>
 
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-compiler-plugin</artifactId>-->
+
+<!--				<configuration>-->
+<!--					<annotationProcessorPaths>-->
+<!--						<path>-->
+<!--							<groupId>org.projectlombok</groupId>-->
+<!--							<artifactId>lombok</artifactId>-->
+<!--							<version>1.18.34</version>-->
+<!--						</path>-->
+<!--					</annotationProcessorPaths>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-
 				<configuration>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.34</version>
+							<version>1.18.38</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
