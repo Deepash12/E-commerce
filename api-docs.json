@@ -1,1 +1,3473 @@
-{"openapi":"3.0.1","info":{"title":"OpenAPI definition","version":"v0"},"servers":[{"url":"https://e-commerce-2-ibeq.onrender.com","description":"Generated server url"}],"paths":{"/api/wishlist/toggleWishlist/{ProductId}":{"put":{"tags":["wishlist-controller"],"operationId":"addToWatchlist","parameters":[{"name":"ProductId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/reviewAndRating/reviews/update/{id}":{"put":{"tags":["review-and-rating-controller"],"operationId":"updateRatingAndReview","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateReviewAndRatingRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/reviewAndRating/product/update/likes/{id}":{"put":{"tags":["review-and-rating-controller"],"operationId":"updateLikeAndDislike","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"action","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/profile/edit":{"put":{"tags":["profile-controller"],"operationId":"editProfile","requestBody":{"content":{"application/json":{"schema":{"required":["dto"],"type":"object","properties":{"dto":{"$ref":"#/components/schemas/EditProfileDTO"},"avatar":{"type":"string","format":"binary"}}}}}},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ProfileResponseDTO"}}}}}}},"/api/products/enable-disable/{id}":{"put":{"tags":["product-controller"],"operationId":"deleteProduct","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"flag","in":"query","required":true,"schema":{"type":"boolean"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/products/edit/{id}":{"put":{"tags":["product-controller"],"operationId":"updateProduct","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"multipart/form-data":{"schema":{"required":["dto"],"type":"object","properties":{"dto":{"type":"string"},"image":{"type":"string","format":"binary"}}}}}},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Product"}}}}}}},"/api/coupon/updateCoupon/{id}":{"put":{"tags":["coupon-admin-controller"],"operationId":"updateCoupon","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddCouponRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CouponResponseDTO"}}}}}}},"/api/cart/update/quantity":{"put":{"tags":["cart-controller"],"operationId":"UpdateProductQuantity","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CartItemsRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/address/update/{id}":{"put":{"tags":["address-controller"],"operationId":"updateAddress","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddAddressRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/AddressResponseDTO"}}}}}}},"/api/user/coupons/apply":{"post":{"tags":["coupon-controller"],"operationId":"applyCoupon","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApplyCouponResponseDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CouponResponseUserDTO"}}}}}}},"/api/reviewAndRating/create":{"post":{"tags":["review-and-rating-controller"],"operationId":"createReviewAndRating","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ReviewAndRatingRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOReviewAndRatingResponseDTO"}}}}}}},"/api/products/add":{"post":{"tags":["product-controller"],"operationId":"addProduct","requestBody":{"content":{"multipart/form-data":{"schema":{"required":["dto"],"type":"object","properties":{"dto":{"type":"string"},"image":{"type":"string","format":"binary"}}}}}},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/Product"}}}}}}},"/api/payment/initiate":{"post":{"tags":["payment-controller"],"operationId":"initiatePayment","parameters":[{"name":"paymentMethod","in":"query","required":true,"schema":{"type":"string","enum":["COD","CARD","UPI","NET_BANKING"]}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CheckoutOrderResponseDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PaymentResponseDTO"}}}}}}},"/api/payment/complete/{paymentId}":{"post":{"tags":["payment-controller"],"operationId":"completePayment","parameters":[{"name":"paymentId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PaymentResponseDTO"}}}}}}},"/api/orders/checkout":{"post":{"tags":["order-controller"],"operationId":"checkoutOrder","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CheckoutOrderRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/coupon/createCoupon":{"post":{"tags":["coupon-admin-controller"],"operationId":"createCoupon","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddCouponRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CouponResponseDTO"}}}}}}},"/api/cart/addToCart":{"post":{"tags":["cart-controller"],"operationId":"addToCart","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CartItemsRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/auth/reset-password":{"post":{"tags":["auth"],"operationId":"resetPassword","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ResetPasswordDtoRequest"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/auth/register":{"post":{"tags":["auth"],"operationId":"Register","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RegisterRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/auth/refresh":{"post":{"tags":["auth"],"operationId":"refreshToken","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshTokenRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/auth/logout":{"post":{"tags":["auth"],"operationId":"LogoutUser","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RefreshTokenRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/auth/login":{"post":{"tags":["auth"],"operationId":"login","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/LoginResponseDTO"}}}}}}},"/api/auth/forget-password":{"post":{"tags":["auth"],"operationId":"forgetPassword","parameters":[{"name":"email","in":"query","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/auth/admin/register":{"post":{"tags":["auth"],"operationId":"registerAdmin","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RegisterRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/address/add":{"post":{"tags":["address-controller"],"operationId":"addAddress","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AddAddressRequestDTO"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/coupon/toggle/{id}":{"patch":{"tags":["coupon-admin-controller"],"operationId":"toggleCoupon","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/wishlist":{"get":{"tags":["wishlist-controller"],"operationId":"getAllWishlistProduct","parameters":[{"name":"PageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"PageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":10}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PageProductResponseDTO"}}}}}}},"/api/user/coupons/active/view/{id}":{"get":{"tags":["coupon-controller"],"operationId":"getActiveCoupon","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CouponResponseDTOForUser"}}}}}}},"/api/user/coupons/active/all":{"get":{"tags":["coupon-controller"],"operationId":"getAllActiveCoupon","parameters":[{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":10}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ProductPageResponseDTOCouponResponseDTOForUser"}}}}}}},"/api/sub-category/view/all":{"get":{"tags":["sub-category-controller"],"operationId":"getAllSubCategory","parameters":[{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}},{"name":"categoryId","in":"query","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/reviewAndRating/reviews/myReviews":{"get":{"tags":["review-and-rating-controller"],"operationId":"getAllUserReviews","parameters":[{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}},{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/reviewAndRating/products/{productId}/rating-summary":{"get":{"tags":["review-and-rating-controller"],"operationId":"getProductRatingSummary","parameters":[{"name":"productId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/reviewAndRating/products/{id}/reviews":{"get":{"tags":["review-and-rating-controller"],"operationId":"getAllProductReviews","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOProductPageResponseDTOReviewAndRatingResponseDTO"}}}}}}},"/api/profile/view":{"get":{"tags":["profile-controller"],"operationId":"viewProfile","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/products/view":{"get":{"tags":["product-controller"],"operationId":"viewAllProducts","parameters":[{"name":"subCategoryId","in":"query","required":false,"schema":{"type":"integer","format":"int32"}},{"name":"minPrice","in":"query","required":false,"schema":{"type":"number","format":"double"}},{"name":"maxPrice","in":"query","required":false,"schema":{"type":"number","format":"double"}},{"name":"keyword","in":"query","required":false,"schema":{"type":"string"}},{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":10}},{"name":"sortBy","in":"query","required":false,"schema":{"type":"string","default":"id"}},{"name":"sortDir","in":"query","required":false,"schema":{"type":"string","default":"asc"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOProductPageResponseDTOProductResponseDTO"}}}}}}},"/api/products/view/{id}":{"get":{"tags":["product-controller"],"operationId":"getProductById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/products/all":{"get":{"tags":["product-controller"],"operationId":"getAllProducts","parameters":[{"name":"subCategoryId","in":"query","required":false,"schema":{"type":"integer","format":"int32"}},{"name":"minPrice","in":"query","required":false,"schema":{"type":"number","format":"double"}},{"name":"maxPrice","in":"query","required":false,"schema":{"type":"number","format":"double"}},{"name":"keyword","in":"query","required":false,"schema":{"type":"string"}},{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}},{"name":"sortBy","in":"query","required":false,"schema":{"type":"string","default":"id"}},{"name":"sortDir","in":"query","required":false,"schema":{"type":"string","default":"asc"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ProductPageResponseDTOProductResponseDTO"}}}}}}},"/api/orders/view/{id}":{"get":{"tags":["order-controller"],"operationId":"checkOrderById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/orders/all":{"get":{"tags":["order-controller"],"operationId":"viewAllOrder","parameters":[{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PageOrderResponseDTO"}}}}}}},"/api/coupon/view/{id}":{"get":{"tags":["coupon-admin-controller"],"operationId":"getCouponById","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/getAllCouponResponseDTO"}}}}}}},"/api/coupon/all":{"get":{"tags":["coupon-admin-controller"],"operationId":"getAllCoupon","parameters":[{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}},{"name":"couponCode","in":"query","required":false,"schema":{"type":"string"}},{"name":"couponType","in":"query","required":false,"schema":{"type":"string","enum":["FLAT","PERCENTAGE"]}},{"name":"isActive","in":"query","required":false,"schema":{"type":"boolean"}},{"name":"status","in":"query","required":false,"schema":{"type":"string","enum":["INACTIVE","ACTIVE","NOT_YET_STARTED","USAGE_LIMIT_REACHED","EXPIRED"]}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PageGetAllCouponResponseDTO"}}}}}}},"/api/category/view/all":{"get":{"tags":["category-controller"],"operationId":"viewAllCategory","parameters":[{"name":"pageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"pageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":10}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOObject"}}}}}}},"/api/cart/view":{"get":{"tags":["cart-controller"],"operationId":"ViewCart","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CartResponseDTO"}}}}}}},"/api/address/{id}":{"get":{"tags":["address-controller"],"operationId":"selectedAddress","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/AddressResponseDTO"}}}}}}},"/api/address/view":{"get":{"tags":["address-controller"],"operationId":"viewAllAddress","parameters":[{"name":"PageNumber","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0}},{"name":"PageSize","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":5}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/PaginationResponseAddressResponseDTO"}}}}}}},"/api/user/coupons/applied/remove":{"delete":{"tags":["coupon-controller"],"operationId":"removeAppliedCoupon","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/reviewAndRating/reviews/delete/{id}":{"delete":{"tags":["review-and-rating-controller"],"operationId":"removeReview","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/ApiResponseDTOString"}}}}}}},"/api/orders/cancel/{id}":{"delete":{"tags":["order-controller"],"operationId":"cancelOrder","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object"}}}}}}},"/api/cart/{productId}":{"delete":{"tags":["cart-controller"],"operationId":"RemoveProductFromCart","parameters":[{"name":"productId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}},"/api/cart/coupon":{"delete":{"tags":["cart-controller"],"operationId":"removeCoupon","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"$ref":"#/components/schemas/CartResponseDTO"}}}}}}},"/api/address/delete/address/{id}":{"delete":{"tags":["address-controller"],"operationId":"deleteAddress","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"string"}}}}}}}},"components":{"schemas":{"UpdateReviewAndRatingRequestDTO":{"required":["comment","rating","title"],"type":"object","properties":{"rating":{"type":"integer","format":"int32"},"comment":{"type":"string"},"title":{"type":"string"}}},"ApiResponseDTOObject":{"type":"object","properties":{"status":{"type":"integer","format":"int32"},"message":{"type":"string"},"timestamp":{"type":"string","format":"date-time"},"data":{"type":"object"}}},"EditProfileDTO":{"required":["email","firstname","gender","lastname","phone"],"type":"object","properties":{"firstname":{"type":"string"},"lastname":{"type":"string"},"phone":{"type":"string"},"gender":{"type":"string","enum":["MALE","FEMALE","TRANSGENDER"]},"email":{"type":"string"},"removeAvatar":{"type":"boolean"}}},"ProfileResponseDTO":{"type":"object","properties":{"avatarUrl":{"type":"string"},"email":{"type":"string"},"firstName":{"type":"string"},"lastName":{"type":"string"},"phone":{"type":"string"},"username":{"type":"string"},"gender":{"type":"string","enum":["MALE","FEMALE","TRANSGENDER"]},"token":{"type":"string"},"refreshToken":{"type":"string"}}},"Category":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"},"description":{"type":"string"}}},"Product":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"},"description":{"type":"string"},"price":{"type":"number"},"stockQuantity":{"type":"integer","format":"int32"},"subCategory":{"$ref":"#/components/schemas/SubCategory"},"category":{"$ref":"#/components/schemas/Category"},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"},"deletedAt":{"type":"string","format":"date-time"},"discountPrice":{"type":"number"},"finalPrice":{"type":"number"},"productImageUrl":{"type":"string"},"averageRating":{"type":"number"},"reviewCount":{"type":"integer","format":"int32"},"active":{"type":"boolean"}}},"SubCategory":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"},"category":{"$ref":"#/components/schemas/Category"},"description":{"type":"string"},"createdAt":{"type":"string","format":"date-time"}}},"AddCouponRequestDTO":{"required":["couponCode","couponType","description","discountAmount","expiryAt","globalUsageLimit","isActive","maximumDiscountAmount","minOrderAmount","perUserLimit","validFrom"],"type":"object","properties":{"couponCode":{"type":"string"},"couponType":{"type":"string","enum":["FLAT","PERCENTAGE"]},"description":{"type":"string"},"minOrderAmount":{"type":"number"},"discountAmount":{"type":"number"},"maximumDiscountAmount":{"type":"number"},"expiryAt":{"type":"string","format":"date-time"},"validFrom":{"type":"string","format":"date-time"},"isActive":{"type":"boolean"},"perUserLimit":{"type":"integer","format":"int32"},"globalUsageLimit":{"type":"integer","format":"int32"}}},"CouponResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"couponCode":{"type":"string"},"description":{"type":"string"},"couponType":{"type":"string","enum":["FLAT","PERCENTAGE"]},"minOrderAmount":{"type":"number"},"discountAmount":{"type":"number"},"maximumDiscountAmount":{"type":"number"},"validFrom":{"type":"string","format":"date-time"},"expiryAt":{"type":"string","format":"date-time"},"perUserLimit":{"type":"integer","format":"int32"},"globalUsageLimit":{"type":"integer","format":"int32"},"usedCount":{"type":"integer","format":"int32"},"isActive":{"type":"boolean"},"createdAt":{"type":"string","format":"date-time"}}},"CartItemsRequestDTO":{"required":["productId","quantity"],"type":"object","properties":{"productId":{"type":"integer","format":"int64"},"quantity":{"type":"integer","format":"int64"}}},"AddAddressRequestDTO":{"required":["addressLine1","city","country","fullName","landmark","phone","postalCode","state"],"type":"object","properties":{"fullName":{"type":"string"},"phone":{"pattern":"^[0-9]{10}$","type":"string"},"addressLine1":{"type":"string"},"addressLine2":{"type":"string"},"city":{"type":"string"},"state":{"type":"string"},"postalCode":{"pattern":"^[0-9]{6}$","type":"string"},"country":{"type":"string"},"isDefault":{"type":"boolean"},"landmark":{"type":"string"}}},"AddressResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"fullName":{"type":"string"},"phone":{"type":"string"},"addressLine1":{"type":"string"},"addressLine2":{"type":"string"},"landmark":{"type":"string"},"city":{"type":"string"},"state":{"type":"string"},"postalCode":{"type":"string"},"country":{"type":"string"},"isDefault":{"type":"boolean"},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"}}},"ApplyCouponResponseDTO":{"required":["couponCode"],"type":"object","properties":{"couponCode":{"type":"string"}}},"CouponResponseUserDTO":{"type":"object","properties":{"couponCode":{"type":"string"},"totalAmount":{"type":"number"},"discountAmount":{"type":"number"},"finalAmount":{"type":"number"},"message":{"type":"string"}}},"ReviewAndRatingRequestDTO":{"required":["comment","orderId","orderItemId","productId","rating","title"],"type":"object","properties":{"orderId":{"type":"integer","format":"int64"},"orderItemId":{"type":"integer","format":"int64"},"productId":{"type":"integer","format":"int64"},"rating":{"type":"integer","format":"int32"},"title":{"type":"string"},"comment":{"type":"string"}}},"ApiResponseDTOReviewAndRatingResponseDTO":{"type":"object","properties":{"status":{"type":"integer","format":"int32"},"message":{"type":"string"},"timestamp":{"type":"string","format":"date-time"},"data":{"$ref":"#/components/schemas/ReviewAndRatingResponseDTO"}}},"ReviewAndRatingResponseDTO":{"type":"object","properties":{"reviewId":{"type":"integer","format":"int64"},"productId":{"type":"integer","format":"int64"},"productName":{"type":"string"},"rating":{"type":"integer","format":"int32"},"comment":{"type":"string"},"createdAt":{"type":"string","format":"date-time"},"like":{"type":"integer","format":"int32"},"dislike":{"type":"integer","format":"int32"},"user":{"$ref":"#/components/schemas/Users"}}},"Users":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"username":{"type":"string"},"email":{"type":"string"},"password_hash":{"type":"string"},"first_name":{"type":"string"},"last_name":{"type":"string"},"role":{"type":"string","enum":["ADMIN","USER"]},"gender":{"type":"string","enum":["MALE","FEMALE","TRANSGENDER"]},"phone":{"type":"string"},"avatar_url":{"type":"string"},"email_verified":{"type":"boolean"},"accountStatus":{"type":"string"},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"},"lastLoggedIn":{"type":"string","format":"date-time"},"resetToken":{"type":"string"},"resetTokenExpiry":{"type":"string","format":"date-time"}}},"CheckoutOrderResponseDTO":{"type":"object","properties":{"address":{"$ref":"#/components/schemas/AddressResponseDTO"},"amount":{"type":"number"}}},"OrderDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"createdAt":{"type":"string","format":"date-time"},"totalAmount":{"type":"number"},"status":{"$ref":"#/components/schemas/StatusDTO"},"paymentStatus":{"type":"string","enum":["PENDING","SUCCESS","FAILED","REFUNDED"]},"orderItems":{"type":"array","items":{"$ref":"#/components/schemas/OrderItemDTO"}}}},"OrderItemDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"quantity":{"type":"integer","format":"int32"},"price":{"type":"number"},"subtotal":{"type":"number"},"product":{"$ref":"#/components/schemas/ProductDTO"}}},"PaymentResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"amount":{"type":"number"},"createdAt":{"type":"string","format":"date-time"},"expiresAt":{"type":"string","format":"date-time"},"status":{"type":"string","enum":["PENDING","SUCCESS","FAILED","REFUNDED"]},"paymentMethod":{"type":"string","enum":["COD","CARD","UPI","NET_BANKING"]},"transactionId":{"type":"string"},"order":{"$ref":"#/components/schemas/OrderDTO"}}},"ProductDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"}}},"StatusDTO":{"type":"object","properties":{"name":{"type":"string"}}},"CheckoutOrderRequestDTO":{"required":["addressId"],"type":"object","properties":{"addressId":{"type":"integer","format":"int64"},"couponCode":{"type":"string"}}},"ResetPasswordDtoRequest":{"required":["newPassword","token"],"type":"object","properties":{"newPassword":{"type":"string"},"token":{"type":"string"}}},"RegisterRequestDTO":{"required":["email","password","phoneNumber","username"],"type":"object","properties":{"username":{"type":"string"},"password":{"type":"string"},"roleId":{"type":"integer","format":"int64"},"phoneNumber":{"pattern":"^[6-9]\\d{9}$","type":"string"},"email":{"type":"string"}}},"RefreshTokenRequestDTO":{"required":["refreshToken"],"type":"object","properties":{"refreshToken":{"type":"string"}}},"LoginRequestDTO":{"required":["email","password"],"type":"object","properties":{"email":{"type":"string"},"password":{"type":"string"}}},"LoginResponseDTO":{"type":"object","properties":{"token":{"type":"string"},"username":{"type":"string"},"refreshToken":{"type":"string"}}},"PageProductResponseDTO":{"type":"object","properties":{"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"first":{"type":"boolean"},"last":{"type":"boolean"},"size":{"type":"integer","format":"int32"},"content":{"type":"array","items":{"$ref":"#/components/schemas/ProductResponseDTO"}},"number":{"type":"integer","format":"int32"},"sort":{"type":"array","items":{"$ref":"#/components/schemas/SortObject"}},"numberOfElements":{"type":"integer","format":"int32"},"pageable":{"$ref":"#/components/schemas/PageableObject"},"empty":{"type":"boolean"}}},"PageableObject":{"type":"object","properties":{"offset":{"type":"integer","format":"int64"},"sort":{"type":"array","items":{"$ref":"#/components/schemas/SortObject"}},"paged":{"type":"boolean"},"pageNumber":{"type":"integer","format":"int32"},"pageSize":{"type":"integer","format":"int32"},"unpaged":{"type":"boolean"}}},"ProductResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"name":{"type":"string"},"description":{"type":"string"},"price":{"type":"number"},"stockQuantity":{"type":"integer","format":"int32"},"subCategoryName":{"$ref":"#/components/schemas/SubCategory"},"categoryName":{"$ref":"#/components/schemas/Category"},"discountPrice":{"type":"number"},"finalPrice":{"type":"number"},"productImageUrl":{"type":"string"},"isWishlist":{"type":"boolean"},"createdAt":{"type":"string","format":"date-time"},"isActive":{"type":"boolean"}}},"SortObject":{"type":"object","properties":{"direction":{"type":"string"},"nullHandling":{"type":"string"},"ascending":{"type":"boolean"},"property":{"type":"string"},"ignoreCase":{"type":"boolean"}}},"CouponResponseDTOForUser":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"couponCode":{"type":"string"},"description":{"type":"string"},"discountAmount":{"type":"number"},"maximumDiscountAmount":{"type":"number"},"minOrderAmount":{"type":"number"},"expiryAt":{"type":"string","format":"date-time"},"calculatedStatus":{"type":"string","enum":["INACTIVE","ACTIVE","NOT_YET_STARTED","USAGE_LIMIT_REACHED","EXPIRED"]},"alreadyUsed":{"type":"boolean"}}},"ProductPageResponseDTOCouponResponseDTOForUser":{"type":"object","properties":{"content":{"type":"array","items":{"$ref":"#/components/schemas/CouponResponseDTOForUser"}},"currentPage":{"type":"integer","format":"int32"},"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"pageSize":{"type":"integer","format":"int32"},"last":{"type":"boolean"}}},"ApiResponseDTOProductPageResponseDTOReviewAndRatingResponseDTO":{"type":"object","properties":{"status":{"type":"integer","format":"int32"},"message":{"type":"string"},"timestamp":{"type":"string","format":"date-time"},"data":{"$ref":"#/components/schemas/ProductPageResponseDTOReviewAndRatingResponseDTO"}}},"ProductPageResponseDTOReviewAndRatingResponseDTO":{"type":"object","properties":{"content":{"type":"array","items":{"$ref":"#/components/schemas/ReviewAndRatingResponseDTO"}},"currentPage":{"type":"integer","format":"int32"},"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"pageSize":{"type":"integer","format":"int32"},"last":{"type":"boolean"}}},"ApiResponseDTOProductPageResponseDTOProductResponseDTO":{"type":"object","properties":{"status":{"type":"integer","format":"int32"},"message":{"type":"string"},"timestamp":{"type":"string","format":"date-time"},"data":{"$ref":"#/components/schemas/ProductPageResponseDTOProductResponseDTO"}}},"ProductPageResponseDTOProductResponseDTO":{"type":"object","properties":{"content":{"type":"array","items":{"$ref":"#/components/schemas/ProductResponseDTO"}},"currentPage":{"type":"integer","format":"int32"},"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"pageSize":{"type":"integer","format":"int32"},"last":{"type":"boolean"}}},"CouponDtoOrderResponse":{"type":"object","properties":{"couponCode":{"type":"string"},"discountAmount":{"type":"number"},"minimumAmount":{"type":"string"}}},"OrderItemsResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"productId":{"type":"integer","format":"int64"},"productName":{"type":"string"},"description":{"type":"string"},"productImageUrl":{"type":"string"},"price":{"type":"number"},"quantity":{"type":"integer","format":"int32"},"totalPrice":{"type":"number"}}},"OrderResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"totalAmount":{"type":"number"},"orderStatus":{"type":"string"},"paymentStatus":{"type":"string"},"paymentMethod":{"type":"string","enum":["COD","CARD","UPI","NET_BANKING"]},"createdAt":{"type":"string","format":"date-time"},"estimatedDeliveryDate":{"type":"string","format":"date-time"},"items":{"type":"array","items":{"$ref":"#/components/schemas/OrderItemsResponseDTO"}},"discountAmount":{"type":"number"},"coupon":{"$ref":"#/components/schemas/CouponDtoOrderResponse"},"address":{"$ref":"#/components/schemas/AddressResponseDTO"},"cancelReason":{"type":"string"}}},"PageOrderResponseDTO":{"type":"object","properties":{"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"first":{"type":"boolean"},"last":{"type":"boolean"},"size":{"type":"integer","format":"int32"},"content":{"type":"array","items":{"$ref":"#/components/schemas/OrderResponseDTO"}},"number":{"type":"integer","format":"int32"},"sort":{"type":"array","items":{"$ref":"#/components/schemas/SortObject"}},"numberOfElements":{"type":"integer","format":"int32"},"pageable":{"$ref":"#/components/schemas/PageableObject"},"empty":{"type":"boolean"}}},"getAllCouponResponseDTO":{"type":"object","properties":{"id":{"type":"integer","format":"int64"},"couponCode":{"type":"string"},"couponType":{"type":"string","enum":["FLAT","PERCENTAGE"]},"description":{"type":"string"},"discountAmount":{"type":"number"},"maximumDiscountAmount":{"type":"number"},"minOrderAmount":{"type":"number"},"validFrom":{"type":"string","format":"date-time"},"expiryAt":{"type":"string","format":"date-time"},"perUserLimit":{"type":"integer","format":"int32"},"globalUsageLimit":{"type":"integer","format":"int32"},"usedCount":{"type":"integer","format":"int32"},"remainingUsage":{"type":"integer","format":"int32"},"isActive":{"type":"boolean"},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"},"calculatedStatus":{"type":"string","enum":["INACTIVE","ACTIVE","NOT_YET_STARTED","USAGE_LIMIT_REACHED","EXPIRED"]}}},"PageGetAllCouponResponseDTO":{"type":"object","properties":{"totalPages":{"type":"integer","format":"int32"},"totalElements":{"type":"integer","format":"int64"},"first":{"type":"boolean"},"last":{"type":"boolean"},"size":{"type":"integer","format":"int32"},"content":{"type":"array","items":{"$ref":"#/components/schemas/getAllCouponResponseDTO"}},"number":{"type":"integer","format":"int32"},"sort":{"type":"array","items":{"$ref":"#/components/schemas/SortObject"}},"numberOfElements":{"type":"integer","format":"int32"},"pageable":{"$ref":"#/components/schemas/PageableObject"},"empty":{"type":"boolean"}}},"CartItemsResponseDTO":{"type":"object","properties":{"productId":{"type":"integer","format":"int64"},"productName":{"type":"string"},"finalPrice":{"type":"number"},"quantity":{"type":"integer","format":"int32"},"productImageUrl":{"type":"string"},"totalPrice":{"type":"number"},"isActiveProduct":{"type":"boolean"}}},"CartResponseDTO":{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/components/schemas/CartItemsResponseDTO"}},"grandTotal":{"type":"number"},"totalItems":{"type":"integer","format":"int32"},"appliedCouponCode":{"type":"string"},"discountAmount":{"type":"number"},"finalAmount":{"type":"number"}}},"PaginationResponseAddressResponseDTO":{"type":"object","properties":{"data":{"type":"array","items":{"$ref":"#/components/schemas/AddressResponseDTO"}},"currentPage":{"type":"integer","format":"int32"},"totalPages":{"type":"integer","format":"int32"},"totalItems":{"type":"integer","format":"int64"}}},"ApiResponseDTOString":{"type":"object","properties":{"status":{"type":"integer","format":"int32"},"message":{"type":"string"},"timestamp":{"type":"string","format":"date-time"},"data":{"type":"string"}}}}}}
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "https://e-commerce-2-ibeq.onrender.com",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/wishlist/toggleWishlist/{ProductId}": {
+      "put": {
+        "tags": [
+          "wishlist-controller"
+        ],
+        "operationId": "addToWatchlist",
+        "parameters": [
+          {
+            "name": "ProductId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/reviews/update/{id}": {
+      "put": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "updateRatingAndReview",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewAndRatingRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/product/update/likes/{id}": {
+      "put": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "updateLikeAndDislike",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/edit": {
+      "put": {
+        "tags": [
+          "profile-controller"
+        ],
+        "operationId": "editProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "dto"
+                ],
+                "type": "object",
+                "properties": {
+                  "dto": {
+                    "$ref": "#/components/schemas/EditProfileDTO"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/enable-disable/{id}": {
+      "put": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "flag",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/edit/{id}": {
+      "put": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "dto"
+                ],
+                "type": "object",
+                "properties": {
+                  "dto": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coupon/updateCoupon/{id}": {
+      "put": {
+        "tags": [
+          "coupon-admin-controller"
+        ],
+        "operationId": "updateCoupon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCouponRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/update/quantity": {
+      "put": {
+        "tags": [
+          "cart-controller"
+        ],
+        "operationId": "UpdateProductQuantity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartItemsRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/update/{id}": {
+      "put": {
+        "tags": [
+          "address-controller"
+        ],
+        "operationId": "updateAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAddressRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/coupons/apply": {
+      "post": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "applyCoupon",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyCouponResponseDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseUserDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/create": {
+      "post": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "createReviewAndRating",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAndRatingRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOReviewAndRatingResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/add": {
+      "post": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "addProduct",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "dto"
+                ],
+                "type": "object",
+                "properties": {
+                  "dto": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payment/initiate": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "initiatePayment",
+        "parameters": [
+          {
+            "name": "paymentMethod",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "COD",
+                "CARD",
+                "UPI",
+                "NET_BANKING"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutOrderResponseDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payment/complete/{paymentId}": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "completePayment",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/checkout": {
+      "post": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "checkoutOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutOrderRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coupon/createCoupon": {
+      "post": {
+        "tags": [
+          "coupon-admin-controller"
+        ],
+        "operationId": "createCoupon",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCouponRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/addToCart": {
+      "post": {
+        "tags": [
+          "cart-controller"
+        ],
+        "operationId": "addToCart",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartItemsRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "resetPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDtoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "Register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "refreshToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "LogoutUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/forget-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "forgetPassword",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/admin/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "registerAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/add": {
+      "post": {
+        "tags": [
+          "address-controller"
+        ],
+        "operationId": "addAddress",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAddressRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coupon/toggle/{id}": {
+      "patch": {
+        "tags": [
+          "coupon-admin-controller"
+        ],
+        "operationId": "toggleCoupon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wishlist": {
+      "get": {
+        "tags": [
+          "wishlist-controller"
+        ],
+        "operationId": "getAllWishlistProduct",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProductResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/coupons/active/view/{id}": {
+      "get": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "getActiveCoupon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDTOForUser"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/coupons/active/all": {
+      "get": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "getAllActiveCoupon",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductPageResponseDTOCouponResponseDTOForUser"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sub-category/view/all": {
+      "get": {
+        "tags": [
+          "sub-category-controller"
+        ],
+        "operationId": "getAllSubCategory",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/reviews/myReviews": {
+      "get": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "getAllUserReviews",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/products/{productId}/rating-summary": {
+      "get": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "getProductRatingSummary",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/products/{id}/reviews": {
+      "get": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "getAllProductReviews",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOProductPageResponseDTOReviewAndRatingResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/view": {
+      "get": {
+        "tags": [
+          "profile-controller"
+        ],
+        "operationId": "viewProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/view": {
+      "get": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "viewAllProducts",
+        "parameters": [
+          {
+            "name": "subCategoryId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sortDir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOProductPageResponseDTOProductResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/view/{id}": {
+      "get": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/all": {
+      "get": {
+        "tags": [
+          "product-controller"
+        ],
+        "operationId": "getAllProducts",
+        "parameters": [
+          {
+            "name": "subCategoryId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sortDir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductPageResponseDTOProductResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/view/{id}": {
+      "get": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "checkOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/all": {
+      "get": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "viewAllOrder",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageOrderResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coupon/view/{id}": {
+      "get": {
+        "tags": [
+          "coupon-admin-controller"
+        ],
+        "operationId": "getCouponById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/getAllCouponResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/coupon/all": {
+      "get": {
+        "tags": [
+          "coupon-admin-controller"
+        ],
+        "operationId": "getAllCoupon",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          },
+          {
+            "name": "couponCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "couponType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FLAT",
+                "PERCENTAGE"
+              ]
+            }
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "INACTIVE",
+                "ACTIVE",
+                "NOT_YET_STARTED",
+                "USAGE_LIMIT_REACHED",
+                "EXPIRED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageGetAllCouponResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/category/view/all": {
+      "get": {
+        "tags": [
+          "category-controller"
+        ],
+        "operationId": "viewAllCategory",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/view": {
+      "get": {
+        "tags": [
+          "cart-controller"
+        ],
+        "operationId": "ViewCart",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/{id}": {
+      "get": {
+        "tags": [
+          "address-controller"
+        ],
+        "operationId": "selectedAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/view": {
+      "get": {
+        "tags": [
+          "address-controller"
+        ],
+        "operationId": "viewAllAddress",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginationResponseAddressResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/coupons/applied/remove": {
+      "delete": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "removeAppliedCoupon",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviewAndRating/reviews/delete/{id}": {
+      "delete": {
+        "tags": [
+          "review-and-rating-controller"
+        ],
+        "operationId": "removeReview",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseDTOString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/cancel/{id}": {
+      "delete": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "cancelOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/{productId}": {
+      "delete": {
+        "tags": [
+          "cart-controller"
+        ],
+        "operationId": "RemoveProductFromCart",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cart/coupon": {
+      "delete": {
+        "tags": [
+          "cart-controller"
+        ],
+        "operationId": "removeCoupon",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponseDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/delete/address/{id}": {
+      "delete": {
+        "tags": [
+          "address-controller"
+        ],
+        "operationId": "deleteAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateReviewAndRatingRequestDTO": {
+        "required": [
+          "comment",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiResponseDTOObject": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "EditProfileDTO": {
+        "required": [
+          "email",
+          "firstname",
+          "gender",
+          "lastname",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "TRANSGENDER"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "removeAvatar": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProfileResponseDTO": {
+        "type": "object",
+        "properties": {
+          "avatarUrl": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "TRANSGENDER"
+            ]
+          },
+          "token": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "stockQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subCategory": {
+            "$ref": "#/components/schemas/SubCategory"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "finalPrice": {
+            "type": "number"
+          },
+          "productImageUrl": {
+            "type": "string"
+          },
+          "averageRating": {
+            "type": "number"
+          },
+          "reviewCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SubCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AddCouponRequestDTO": {
+        "required": [
+          "couponCode",
+          "couponType",
+          "description",
+          "discountAmount",
+          "expiryAt",
+          "globalUsageLimit",
+          "isActive",
+          "maximumDiscountAmount",
+          "minOrderAmount",
+          "perUserLimit",
+          "validFrom"
+        ],
+        "type": "object",
+        "properties": {
+          "couponCode": {
+            "type": "string"
+          },
+          "couponType": {
+            "type": "string",
+            "enum": [
+              "FLAT",
+              "PERCENTAGE"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "minOrderAmount": {
+            "type": "number"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "maximumDiscountAmount": {
+            "type": "number"
+          },
+          "expiryAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "perUserLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "globalUsageLimit": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CouponResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "couponCode": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "couponType": {
+            "type": "string",
+            "enum": [
+              "FLAT",
+              "PERCENTAGE"
+            ]
+          },
+          "minOrderAmount": {
+            "type": "number"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "maximumDiscountAmount": {
+            "type": "number"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiryAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "perUserLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "globalUsageLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CartItemsRequestDTO": {
+        "required": [
+          "productId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AddAddressRequestDTO": {
+        "required": [
+          "addressLine1",
+          "city",
+          "country",
+          "fullName",
+          "landmark",
+          "phone",
+          "postalCode",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "phone": {
+            "pattern": "^[0-9]{10}$",
+            "type": "string"
+          },
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "landmark": {
+            "type": "string"
+          }
+        }
+      },
+      "AddressResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "landmark": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApplyCouponResponseDTO": {
+        "required": [
+          "couponCode"
+        ],
+        "type": "object",
+        "properties": {
+          "couponCode": {
+            "type": "string"
+          }
+        }
+      },
+      "CouponResponseUserDTO": {
+        "type": "object",
+        "properties": {
+          "couponCode": {
+            "type": "string"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "finalAmount": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ReviewAndRatingRequestDTO": {
+        "required": [
+          "comment",
+          "orderId",
+          "orderItemId",
+          "productId",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "orderItemId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiResponseDTOReviewAndRatingResponseDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ReviewAndRatingResponseDTO"
+          }
+        }
+      },
+      "ReviewAndRatingResponseDTO": {
+        "type": "object",
+        "properties": {
+          "reviewId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "like": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dislike": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users"
+          }
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password_hash": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ]
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "TRANSGENDER"
+            ]
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "accountStatus": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLoggedIn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resetToken": {
+            "type": "string"
+          },
+          "resetTokenExpiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CheckoutOrderResponseDTO": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AddressResponseDTO"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "OrderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusDTO"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESS",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemDTO"
+            }
+          }
+        }
+      },
+      "OrderItemDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number"
+          },
+          "subtotal": {
+            "type": "number"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductDTO"
+          }
+        }
+      },
+      "PaymentResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESS",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "COD",
+              "CARD",
+              "UPI",
+              "NET_BANKING"
+            ]
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "order": {
+            "$ref": "#/components/schemas/OrderDTO"
+          }
+        }
+      },
+      "ProductDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "StatusDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CheckoutOrderRequestDTO": {
+        "required": [
+          "addressId"
+        ],
+        "type": "object",
+        "properties": {
+          "addressId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "couponCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetPasswordDtoRequest": {
+        "required": [
+          "newPassword",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterRequestDTO": {
+        "required": [
+          "email",
+          "password",
+          "phoneNumber",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "phoneNumber": {
+            "pattern": "^[6-9]\\d{9}$",
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "RefreshTokenRequestDTO": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequestDTO": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponseDTO": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "PageProductResponseDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductResponseDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "stockQuantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subCategoryName": {
+            "$ref": "#/components/schemas/SubCategory"
+          },
+          "categoryName": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "discountPrice": {
+            "type": "number"
+          },
+          "finalPrice": {
+            "type": "number"
+          },
+          "productImageUrl": {
+            "type": "string"
+          },
+          "isWishlist": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "nullHandling": {
+            "type": "string"
+          },
+          "ascending": {
+            "type": "boolean"
+          },
+          "property": {
+            "type": "string"
+          },
+          "ignoreCase": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CouponResponseDTOForUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "couponCode": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "maximumDiscountAmount": {
+            "type": "number"
+          },
+          "minOrderAmount": {
+            "type": "number"
+          },
+          "expiryAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "calculatedStatus": {
+            "type": "string",
+            "enum": [
+              "INACTIVE",
+              "ACTIVE",
+              "NOT_YET_STARTED",
+              "USAGE_LIMIT_REACHED",
+              "EXPIRED"
+            ]
+          },
+          "alreadyUsed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductPageResponseDTOCouponResponseDTOForUser": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CouponResponseDTOForUser"
+            }
+          },
+          "currentPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "last": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ApiResponseDTOProductPageResponseDTOReviewAndRatingResponseDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ProductPageResponseDTOReviewAndRatingResponseDTO"
+          }
+        }
+      },
+      "ProductPageResponseDTOReviewAndRatingResponseDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewAndRatingResponseDTO"
+            }
+          },
+          "currentPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "last": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ApiResponseDTOProductPageResponseDTOProductResponseDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ProductPageResponseDTOProductResponseDTO"
+          }
+        }
+      },
+      "ProductPageResponseDTOProductResponseDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductResponseDTO"
+            }
+          },
+          "currentPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "last": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CouponDtoOrderResponse": {
+        "type": "object",
+        "properties": {
+          "couponCode": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "minimumAmount": {
+            "type": "string"
+          }
+        }
+      },
+      "OrderItemsResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "productImageUrl": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPrice": {
+            "type": "number"
+          }
+        }
+      },
+      "OrderResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "orderStatus": {
+            "type": "string"
+          },
+          "paymentStatus": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": [
+              "COD",
+              "CARD",
+              "UPI",
+              "NET_BANKING"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estimatedDeliveryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemsResponseDTO"
+            }
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "coupon": {
+            "$ref": "#/components/schemas/CouponDtoOrderResponse"
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressResponseDTO"
+          },
+          "cancelReason": {
+            "type": "string"
+          }
+        }
+      },
+      "PageOrderResponseDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderResponseDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "getAllCouponResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "couponCode": {
+            "type": "string"
+          },
+          "couponType": {
+            "type": "string",
+            "enum": [
+              "FLAT",
+              "PERCENTAGE"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "maximumDiscountAmount": {
+            "type": "number"
+          },
+          "minOrderAmount": {
+            "type": "number"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiryAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "perUserLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "globalUsageLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "usedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "remainingUsage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "calculatedStatus": {
+            "type": "string",
+            "enum": [
+              "INACTIVE",
+              "ACTIVE",
+              "NOT_YET_STARTED",
+              "USAGE_LIMIT_REACHED",
+              "EXPIRED"
+            ]
+          }
+        }
+      },
+      "PageGetAllCouponResponseDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/getAllCouponResponseDTO"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CartItemsResponseDTO": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "finalPrice": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productImageUrl": {
+            "type": "string"
+          },
+          "totalPrice": {
+            "type": "number"
+          },
+          "isActiveProduct": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CartResponseDTO": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItemsResponseDTO"
+            }
+          },
+          "grandTotal": {
+            "type": "number"
+          },
+          "totalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "appliedCouponCode": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "finalAmount": {
+            "type": "number"
+          }
+        }
+      },
+      "PaginationResponseAddressResponseDTO": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressResponseDTO"
+            }
+          },
+          "currentPage": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalItems": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiResponseDTOString": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
