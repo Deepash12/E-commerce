@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/reviewAndRating")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER')")
+
 public class ReviewAndRatingController
 {
     private final ReviewAndRatingService reviewAndRatingService;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
     public ApiResponseDTO<ReviewAndRatingResponseDTO> createReviewAndRating(@RequestBody ReviewAndRatingRequestDTO reviewAndRatingRequestDTO)
     {
@@ -35,6 +36,7 @@ public class ReviewAndRatingController
         ProductPageResponseDTO<ReviewAndRatingResponseDTO> responseDTO = reviewAndRatingService.seeAllReviews(id,pageNumber,pageSize);
          return new ApiResponseDTO<>(201,"All Reviews",LocalDateTime.now(),responseDTO);
     }
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/reviews/myReviews")
     public ApiResponseDTO<?> getAllUserReviews(@RequestParam (defaultValue = "5") Integer pageSize,@RequestParam (defaultValue = "0") Integer pageNumber)
     {
@@ -44,6 +46,7 @@ public class ReviewAndRatingController
         return new ApiResponseDTO<>(201,"Fetch User Reviews",LocalDateTime.now(),responseDTO);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/reviews/update/{id}")
     public ApiResponseDTO<?> updateRatingAndReview(@PathVariable Long id, @RequestBody UpdateReviewAndRatingRequestDTO updateReviewAndRatingRequestDTO)
     {
@@ -51,12 +54,14 @@ public class ReviewAndRatingController
         return new ApiResponseDTO<>(201,"Review updated Successfully!!!",LocalDateTime.now(),responseDTO);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/reviews/delete/{id}")
     public ApiResponseDTO<String> removeReview(@PathVariable Long id)
     {
         reviewAndRatingService.deleteReview(id);
         return new ApiResponseDTO<>(201,"Review Deleted Successfully",LocalDateTime.now(),null);
     }
+
 
     @GetMapping("/products/{productId}/rating-summary")
     public ApiResponseDTO<?> getProductRatingSummary(@PathVariable Long productId)
@@ -66,6 +71,7 @@ public class ReviewAndRatingController
                 );
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/product/update/likes/{id}")
     public ApiResponseDTO<?> updateLikeAndDislike(@PathVariable Long id , @RequestParam String action)
     {

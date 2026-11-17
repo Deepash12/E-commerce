@@ -67,6 +67,11 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/reviewAndRating/products/*/reviews",
+                                "/api/reviewAndRating/products/*/rating-summary"
+                        ).permitAll()
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtAuthenticationFilter,
