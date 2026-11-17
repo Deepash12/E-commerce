@@ -8,7 +8,7 @@ import requests
 
 BASE = os.getenv("API_BASE_URL", "https://e-commerce-2-ibeq.onrender.com").rstrip("/")
 SPEC = json.loads((Path(__file__).resolve().parents[1] / "api-docs.json").read_text())
-TIMEOUT = (12, 50)
+TIMEOUT = (15, 75)
 SESSION = requests.Session()
 SESSION.trust_env = True
 
@@ -56,7 +56,8 @@ def test_openapi_contract_has_expected_modules():
 @pytest.mark.parametrize("path", ["/api/products/view", "/api/products/all"])
 def test_public_product_listing(path):
     resp = call("GET", path, params={"pageNumber": 0, "pageSize": 5})
-    assert resp.status_code == 200, f"{path}: HTTP {resp.status_code}: {resp.text[:300]}"
+    assert resp.status_code == 200, (f"PUBLIC ACCESS CONTRACT CHECK: {path} returned HTTP {resp.status_code}. "
+        "If intentionally protected, change the test to authenticate; otherwise inspect SecurityConfig.")
     assert resp.headers.get("Content-Type", "").lower().startswith("application/json")
     resp.json()
 
@@ -108,7 +109,8 @@ def test_admin_coupon_list(admin_token):
 
 def test_public_catalog_pagination():
     resp = call("GET", "/api/products/view", params={"pageNumber": 0, "pageSize": 2})
-    assert resp.status_code == 200
+    assert resp.status_code == 200, (f"Pagination requires accessible catalog; HTTP {resp.status_code}. "
+        "Verify security configuration or use authenticated token.")
     payload = resp.json()
     data = payload.get("data", payload) if isinstance(payload, dict) else payload
     if isinstance(data, dict) and "content" in data:
