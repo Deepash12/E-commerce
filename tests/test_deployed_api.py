@@ -53,7 +53,7 @@ def test_openapi_contract_has_expected_modules():
                  "/api/orders/checkout", "/api/coupon/createCoupon", "/api/payment/initiate"):
         assert path in SPEC["paths"]
 
-@pytest.mark.parametrize("path", ["/api/products/view", "/api/products/all"])
+@pytest.mark.parametrize("path", ["/api/products/all"])
 def test_public_product_listing(path):
     resp = call("GET", path, params={"pageNumber": 0, "pageSize": 5})
     assert resp.status_code == 200, (f"PUBLIC ACCESS CONTRACT CHECK: {path} returned HTTP {resp.status_code}. "
@@ -107,8 +107,13 @@ def test_admin_coupon_list(admin_token):
     assert resp.status_code == 200, f"Admin coupon list HTTP {resp.status_code}: {resp.text[:300]}"
     resp.json()
 
-def test_public_catalog_pagination():
-    resp = call("GET", "/api/products/view", params={"pageNumber": 0, "pageSize": 2})
+def test_admin_catalog_pagination(admin_token):
+    resp = call(
+        "GET",
+        "/api/products/view",
+        token=admin_token,
+        params={"pageNumber": 0, "pageSize": 2}
+    )
     assert resp.status_code == 200, (f"Pagination requires accessible catalog; HTTP {resp.status_code}. "
         "Verify security configuration or use authenticated token.")
     payload = resp.json()
@@ -124,3 +129,22 @@ def test_frontend_reachable():
         pytest.fail(f"Frontend network failure: {exc}")
     assert resp.status_code == 200, f"Frontend HTTP {resp.status_code}"
     assert "<html" in resp.text.lower(), "Frontend response is not HTML"
+
+    def test_admin_products_reject_anonymous():
+        resp = call("GET", "/api/products/view")
+        assert resp.status_code in (401, 403)
+
+
+    def test_user_cannot_view_admin_products(user_token):
+        resp = call("GET", "/api/products/view", token=user_token)
+        assert resp.status_code == 403
+
+
+    def test_admin_can_view_products(admin_token):
+        resp = call(
+            "GET",
+            "/api/products/view",
+            token=admin_token,
+            params={"pageNumber": 0, "pageSize": 5}
+        )
+        assert resp.status_code == 200, resp.text[:300]
