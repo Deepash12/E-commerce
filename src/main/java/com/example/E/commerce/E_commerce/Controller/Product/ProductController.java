@@ -76,7 +76,7 @@ public class ProductController {
 
 
 
-    @GetMapping("/view/{id:[0-9]+}")
+    @GetMapping("/view/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(productService.getProductById(id));

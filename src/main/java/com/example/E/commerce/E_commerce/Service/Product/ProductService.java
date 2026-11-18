@@ -21,10 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -206,6 +210,10 @@ public class ProductService
     }
 
     public ProductResponseDTO getProductById(Long id) {
+        if(id==null||id<=0)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Product id must be greater than 0");
+        }
         Product product =  productRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Product not found"));
         return convertToDTO(product);
