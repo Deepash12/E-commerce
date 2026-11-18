@@ -58,7 +58,12 @@ public class SecurityConfig {
                         exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/products/**",
+                                "/api/reviewAndRating/products/*/reviews",
+                                "/api/reviewAndRating/products/*/rating-summary",
+                                "/api/category/view/all",
+                                "/api/sub-category/view/all"
+                                ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/coupon/**").hasRole("ADMIN")
@@ -66,11 +71,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/reviewAndRating/products/*/reviews",
-                                "/api/reviewAndRating/products/*/rating-summary"
                         ).permitAll()
                         .anyRequest().authenticated())
 
@@ -90,7 +90,6 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "https://*.vercel.app"
         ));
-//        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://*.vercel.app"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

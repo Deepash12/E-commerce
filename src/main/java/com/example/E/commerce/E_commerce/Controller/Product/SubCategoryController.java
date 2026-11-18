@@ -3,7 +3,6 @@ package com.example.E.commerce.E_commerce.Controller.Product;
 import com.example.E.commerce.E_commerce.DTO.ApiResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Product.SubCategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/sub-category")
-@PreAuthorize("hasAnyRole('ADMIN','USER')")
+
 @RequiredArgsConstructor
 public class SubCategoryController
 {
