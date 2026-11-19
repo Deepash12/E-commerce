@@ -17,7 +17,7 @@ def coupon_payload(kind):
         'couponCode': code, 'couponType': kind,
         'description': 'Automated isolated QA test coupon',
         'minOrderAmount': 200, 'discountAmount': amount,
-        'maximumDiscountAmount': 25 if kind == 'FLAT' else 50,
+        'maximumDiscountAmount': 25 if kind == 'FLAT' else 200,
         'validFrom': (now - timedelta(minutes=2)).replace(tzinfo=None).isoformat(timespec='seconds'),
         'expiryAt': (now + timedelta(days=2)).replace(tzinfo=None).isoformat(timespec='seconds'),
         'perUserLimit': 1, 'globalUsageLimit': 5, 'isActive': True,
@@ -62,13 +62,14 @@ def test_admin_rejects_duplicate_coupon_code(admin_token):
 def test_admin_rejects_invalid_percent_coupon(admin_token):
     payload = coupon_payload('PERCENTAGE')
     payload['discountAmount'] = 150
+    payload['maximumDiscountAmount'] = 200  # Isolate >100% rule
     r = api('POST', '/api/coupon/createCoupon', token=admin_token, json=payload)
     assert r.status_code in (400, 422), f'Invalid percentage accepted: {r.status_code} {r.text[:250]}'
 
 
 def test_user_create_and_delete_address(user_token):
     payload = {
-        'fullName': 'QA Automated Test', 'phone': '9876543210',
+        'fullName': 'QA Automated ' + uuid4().hex[:10], 'phone': '9876543210',
         'addressLine1': 'QA Test Street 1', 'addressLine2': 'Automated Test',
         'city': 'Ajmer', 'state': 'Rajasthan', 'postalCode': '305001',
         'country': 'India', 'landmark': 'QA Test Landmark', 'isDefault': False,
@@ -77,7 +78,12 @@ def test_user_create_and_delete_address(user_token):
     try:
         r = api('POST', '/api/address/add', token=user_token, json=payload)
         assert r.status_code in (200, 201), f'{r.status_code}: {r.text[:400]}'
-        data = unwrap(r)
+        # The API returns plain text on successful address creation.
+        # Only parse JSON if the response actually contains JSON.
+        try:
+            data = unwrap(r)
+        except ValueError:
+            data = None
         if isinstance(data, dict):
             address_id = data.get('id')
         if not address_id:
@@ -85,7 +91,15 @@ def test_user_create_and_delete_address(user_token):
             listing = api('GET', '/api/address/view', token=user_token,
                           params={'PageNumber': 0, 'PageSize': 100})
             assert listing.status_code == 200
-            rows = unwrap(listing).get('data', [])
+            result = unwrap(listing)
+            if isinstance(result, list):
+                rows = result
+            elif isinstance(result, dict):
+                rows = result.get('content', result.get('data', []))
+                if isinstance(rows, dict):
+                    rows = rows.get('content', [])
+            else:
+                rows = []
             matches = [a for a in rows if a.get('addressLine1') == payload['addressLine1']
                        and a.get('fullName') == payload['fullName']]
             assert matches, 'Created address not visible in address list'

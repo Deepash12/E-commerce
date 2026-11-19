@@ -11,7 +11,8 @@ def api(method, path, token=None, **kwargs):
     headers = dict(kwargs.pop('headers', {}))
     if token:
         headers['Authorization'] = f'Bearer {token}'
-    return SESSION.request(method, BASE + path, headers=headers, timeout=90, **kwargs)
+    response = SESSION.request(method, BASE + path, headers=headers, timeout=90, **kwargs)
+    return response
 
 
 def unwrap(response):
@@ -32,7 +33,7 @@ def pytest_collection_modifyitems(config, items):
                 item.add_marker(skip)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def user_token():
     email, password = os.getenv('QA_USER_EMAIL'), os.getenv('QA_USER_PASSWORD')
     if not email or not password:
@@ -44,7 +45,7 @@ def user_token():
     return token
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def admin_token():
     email, password = os.getenv('QA_ADMIN_EMAIL'), os.getenv('QA_ADMIN_PASSWORD')
     if not email or not password:
