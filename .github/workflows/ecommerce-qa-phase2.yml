@@ -1,0 +1,68 @@
+name: E-commerce Advanced QA Phase 2
+on:
+  workflow_dispatch:
+    inputs:
+      run_mutations:
+        description: 'Run guarded mutations (ONLY isolated QA DB)'
+        type: boolean
+        default: false
+        required: true
+permissions:
+  contents: read
+jobs:
+  phase2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      QA_BASE_URL: ${{ vars.QA_BASE_URL }}
+      QA_USER_EMAIL: ${{ secrets.QA_USER_EMAIL }}
+      QA_USER_PASSWORD: ${{ secrets.QA_USER_PASSWORD }}
+      QA_ADMIN_EMAIL: ${{ secrets.QA_ADMIN_EMAIL }}
+      QA_ADMIN_PASSWORD: ${{ secrets.QA_ADMIN_PASSWORD }}
+      QA_USER2_EMAIL: ${{ secrets.QA_USER2_EMAIL }}
+      QA_USER2_PASSWORD: ${{ secrets.QA_USER2_PASSWORD }}
+      QA_USER1_ADDRESS_ID: ${{ vars.QA_USER1_ADDRESS_ID }}
+      QA_USER1_ORDER_ID: ${{ vars.QA_USER1_ORDER_ID }}
+      QA_DISPOSABLE_PRODUCT_ID: ${{ vars.QA_DISPOSABLE_PRODUCT_ID }}
+      QA_ISOLATED_DB_CONFIRMED: ${{ vars.QA_ISOLATED_DB_CONFIRMED }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install QA dependencies
+        run: python -m pip install -r requirements-qa.txt
+      - name: Check QA target
+        run: |
+          python - <<'PYCODE'
+          import os,sys
+          url=os.getenv('QA_BASE_URL','').strip()
+          if not url.startswith('https://'):
+              sys.exit('Set repository variable QA_BASE_URL to an HTTPS QA deployment URL')
+          if '${{' in url: sys.exit('Invalid QA_BASE_URL')
+          print('QA target configured')
+          PYCODE
+      - name: Execute Phase 2 tests
+        shell: bash
+        env:
+          RUN_MUTATIONS: ${{ inputs.run_mutations }}
+        run: |
+          set -o pipefail
+          if [[ "$RUN_MUTATIONS" == "true" ]]; then
+            if [[ "$QA_ISOLATED_DB_CONFIRMED" != "true" ]]; then
+              echo 'Refusing mutation tests without QA_ISOLATED_DB_CONFIRMED=true'
+              exit 1
+            fi
+            pytest tests/test_phase2_*.py -v --tb=short --show-capture=no --mutations --junitxml=phase2-junit.xml 2>&1 | tee phase2-output.txt
+          else
+            pytest tests/test_phase2_*.py -v --tb=short --show-capture=no --junitxml=phase2-junit.xml 2>&1 | tee phase2-output.txt
+          fi
+      - name: Upload Phase 2 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecommerce-phase2-results
+          path: |
+            phase2-junit.xml
+            phase2-output.txt
+          if-no-files-found: warn
