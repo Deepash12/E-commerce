@@ -168,35 +168,36 @@ public class CouponService
         return mapCouponToDTO(coupon);
     }
 
+
     @Transactional
     public String toggleCouponStatus(Long id)
     {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Coupon Not Found!!!"));
+                .orElseThrow(() ->
+                        new BadRequestException("Coupon Not Found!!!"));
 
+        LocalDateTime now = LocalDateTime.now();
+
+        if (!Boolean.TRUE.equals(coupon.getIsActive())
+                && !coupon.getExpiryAt().isAfter(now))
+        {
+            throw new BadRequestException(
+                    "Expired coupon cannot be enabled again"
+            );
+        }
         if (Boolean.TRUE.equals(coupon.getIsActive()))
         {
-            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
-            {
-                throw new BadRequestException("Expired coupon cannot be modified");
-            }
             coupon.setIsActive(false);
             return "Coupon Disabled Successfully";
         }
-        else
+        coupon.setIsActive(true);
+        if (coupon.getValidFrom().isAfter(now))
         {
-            if (coupon.getExpiryAt().isBefore(LocalDateTime.now()))
-            {
-                throw new BadRequestException("Coupon is already expired");
-            }
-            if (coupon.getValidFrom().isAfter(LocalDateTime.now()))
-            {
-                throw new BadRequestException("Coupon is not valid yet");
-            }
-            coupon.setIsActive(true);
-            return "Coupon Enabled Successfully";
+            return "Coupon Enabled Successfully. Coupon is Scheduled.";
         }
+        return "Coupon Enabled Successfully";
     }
+
 
     public ProductPageResponseDTO<CouponResponseDTOForUser> viewAllActiveCoupon(Integer pageNumber, Integer pageSize)
     {
@@ -250,25 +251,6 @@ public class CouponService
         }
         return responseDTOForUser;
     }
-
-//    public String removeCoupon(String id)
-//    {
-//        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
-//
-//        Cart cart = cartRepository.findByUser(user)
-//                .orElseThrow(() -> new BadRequestException("Cart Does Not Exist!!!"));
-//
-//        if (cart.getCoupon() == null)
-//        {
-//            throw new BadRequestException("No Coupon Applied");
-//        }
-//        cart.setCoupon(null);
-//        cartRepository.save(cart);
-//        return "Coupon Removed Successfully!!!";
-//    }
-
     public String removeCoupon(String id)  // parameter kept for signature, not used
     {
         String username = Objects.requireNonNull(
@@ -306,8 +288,6 @@ public class CouponService
 
         String code = dto.getCouponCode().trim().toUpperCase();
 
-        // FIX: Allow re-applying the same coupon (e.g. after updating cart quantities).
-        // Only block if a DIFFERENT coupon is already applied — user must remove it first.
         if (cart.getCoupon() != null && !cart.getCoupon().getCouponCode().equals(code))
         {
             throw new BadRequestException(
@@ -382,11 +362,9 @@ public class CouponService
         }
 
         BigDecimal finalAmount = totalAmount.subtract(discount);
-
-        // FIX: Save the coupon on the cart so placeOrderAfterPayment() can read it
         cart.setCoupon(coupon);
-        cart.setTotalAmount(totalAmount);      // ← ADD
-        cart.setDiscountAmount(discount);      // ← ADD
+        cart.setTotalAmount(totalAmount);
+        cart.setDiscountAmount(discount);
         cart.setFinalAmount(finalAmount);
         cartRepository.save(cart);
 
