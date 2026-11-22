@@ -82,38 +82,52 @@ public class AuthService
 
         String token = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
-        System.out.println(refreshToken);
+
         return new LoginResponseDTO(token,userDetails.getUsername(),refreshToken);
     }
 
     @Transactional
-    public String forgetPassword(String email)
-    {
-        Users user = userRepository.findByEmail(email).orElseThrow(()-> new BadRequestException("User Not Found!!!"));
-        if(user==null)
-        {
-            return ("If email exists, reset link has been sent.");
+    public String forgetPassword(String email) {
+
+        String response = "If email exists, reset link has been sent.";
+
+        var optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            return response;
         }
+
+        Users user = optionalUser.get();
+
         String token = UUID.randomUUID().toString();
 
         user.setResetToken(token);
-        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        user.setResetTokenExpiry(
+                LocalDateTime.now().plusMinutes(15)
+        );
 
-        String resetLink = "http://localhost:3000/reset-password?token="+token;
-        emailService.sendResetPasswordEmail(user.getEmail(),resetLink);
-         return("If email exists,reset link has been sent.");
+        String resetLink =
+                "https://e-commerce-frontend-iota-eight.vercel.app/reset-password?token="
+                        + token;
+
+        emailService.sendResetPasswordEmail(
+                user.getEmail(),
+                resetLink
+        );
+
+        return response;
     }
 
     @Transactional
     public ResponseEntity<String> resetPassword(String newPassword, String token)
     {
-        System.out.println(token);
-        System.out.println(newPassword);
+
         Users user = userRepository.findByResetToken(token).
                 orElseThrow(()-> new BadRequestException("Invalid Token!!!"));
 
-        if(user.getResetTokenExpiry().isBefore(LocalDateTime.now()))
-        {
+        if (user.getResetTokenExpiry() == null ||
+                !user.getResetTokenExpiry().isAfter(LocalDateTime.now())) {
+
             throw new BadRequestException("Token Expired!!!");
         }
         user.setPassword_hash(passwordEncoder.encode(newPassword));

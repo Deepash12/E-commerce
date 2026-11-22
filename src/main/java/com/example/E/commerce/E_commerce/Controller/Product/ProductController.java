@@ -29,6 +29,7 @@ public class ProductController {
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts
     (
             @RequestParam(required = false) Integer subCategoryId,
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String keyword,
@@ -40,7 +41,7 @@ public class ProductController {
     )
     {
         try {
-            return productService.getAllProducts(pageNumber,pageSize,sortBy,sortDir,subCategoryId,minPrice,maxPrice,keyword);
+            return productService.getAllProducts(pageNumber,pageSize,sortBy,sortDir,subCategoryId,categoryId,minPrice,maxPrice,keyword);
         } catch (Exception e)
         {
             throw new RuntimeException(e);
@@ -53,6 +54,7 @@ public class ProductController {
     public ApiResponseDTO<ProductPageResponseDTO<ProductResponseDTO>> viewAllProducts
             (
                     @RequestParam(required = false) Integer subCategoryId,
+                    @RequestParam(required = false) Integer categoryId,
                     @RequestParam(required = false) Double minPrice,
                     @RequestParam(required = false) Double maxPrice,
                     @RequestParam(required = false) String keyword,
@@ -64,17 +66,13 @@ public class ProductController {
     {
         try {
 
-            ProductPageResponseDTO<ProductResponseDTO> responseDTO = productService.viewAllProduct(pageNumber,pageSize,sortBy,sortDir,subCategoryId,minPrice,maxPrice,keyword);
+            ProductPageResponseDTO<ProductResponseDTO> responseDTO = productService.viewAllProduct(pageNumber,pageSize,sortBy,sortDir,subCategoryId,categoryId,minPrice,maxPrice,keyword);
             return new ApiResponseDTO<>(201,"fetch All Products", LocalDateTime.now(),responseDTO);
         } catch (Exception e)
         {
             throw new RuntimeException(e);
         }
     }
-
-
-
-
 
     @GetMapping("/view/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
@@ -84,7 +82,6 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -96,8 +93,6 @@ public class ProductController {
         ProductRequestDTO productDTO = mapper.readValue(dto, ProductRequestDTO.class);
         return productService.addProduct(productDTO,image);
     }
-
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/edit/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -112,7 +107,6 @@ public class ProductController {
 
         return productService.updateProductById(id, productDTO, image);
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/enable-disable/{id}")

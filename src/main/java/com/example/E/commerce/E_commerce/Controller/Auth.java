@@ -38,16 +38,17 @@ public class Auth
     public ResponseEntity<String> LogoutUser(HttpServletRequest request,@RequestBody RefreshTokenRequestDTO requestDTO)
     {
         String header = request.getHeader("Authorization");
-        if(header!=null && header.startsWith("Bearer"))
+        if(header!=null && header.startsWith("Bearer "))
         {
             String token = header.substring(7);
             tokenBlackListService.blacklist(token);
             tokenBlackListService.blacklist(requestDTO.getRefreshToken());
             return ResponseEntity.ok("logged out Successfully");
         }
-        else
-        {
-            return ResponseEntity.ok("Failed to logout!!!");
+        else {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Invalid Authorization header");
         }
     }
 
@@ -58,14 +59,13 @@ public class Auth
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDtoRequest resetPasswordDtoRequest)
-    {
-        System.out.println(resetPasswordDtoRequest.getToken());
-        System.out.println(resetPasswordDtoRequest.getNewPassword());
-        return ResponseEntity.ok
-                (authService.resetPassword
-                        (resetPasswordDtoRequest.getNewPassword(),resetPasswordDtoRequest.getToken())
-                );
+    public ResponseEntity<String> resetPassword(
+            @RequestBody @Valid ResetPasswordDtoRequest request) {
+
+        return authService.resetPassword(
+                request.getNewPassword(),
+                request.getToken()
+        );
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/register")
