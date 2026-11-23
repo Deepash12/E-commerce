@@ -35,6 +35,8 @@ public class AuthService
     private final TokenBlackListService tokenBlackListService;
     private  JwtUtil jwtUtil;
     private final EmailService emailService;
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(AuthService.class);
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService, TokenBlackListService tokenBlackListService, JwtUtil jwtUtil, EmailService emailService) {
         this.userRepository = userRepository;
@@ -65,8 +67,14 @@ public class AuthService
         user.setPhone(registerRequestDTO.getPhoneNumber());
         user.setRole(Role.USER);
         userRepository.save(user);
-        emailService.sendRegisteredEmail(registerRequestDTO.getEmail(),registerRequestDTO.getUsername());
-        return "Registered Successfully , Please Login";
+        try {
+            emailService.sendRegisteredEmail(
+                    registerRequestDTO.getEmail(),
+                    registerRequestDTO.getUsername()
+            );
+        } catch (org.springframework.mail.MailException ex) {
+            log.warn("Welcome email could not be sent for newly registered user", ex);
+        }        return "Registered Successfully , Please Login";
     }
 
     public LoginResponseDTO loginUser(@RequestBody LoginRequestDTO loginRequestDTO)
