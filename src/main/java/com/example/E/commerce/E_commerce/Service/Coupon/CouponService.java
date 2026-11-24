@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Locale;
 
 @Service
 public class CouponService
@@ -112,7 +113,11 @@ public class CouponService
         try
         {
             Coupon coupon = new Coupon();
-            coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
+            coupon.setCouponCode(
+                    addCouponRequestDTO.getCouponCode()
+                            .trim()
+                            .toUpperCase(Locale.ROOT)
+            );
             coupon.setCouponType(addCouponRequestDTO.getCouponType());
             coupon.setDescription(addCouponRequestDTO.getDescription());
             coupon.setMinOrderAmount(addCouponRequestDTO.getMinOrderAmount());
@@ -138,7 +143,11 @@ public class CouponService
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Coupon Does not Existed Anymore!!!"));
         couponValidationService.validateForUpdate(addCouponRequestDTO, coupon);
-        coupon.setCouponCode(addCouponRequestDTO.getCouponCode());
+        coupon.setCouponCode(
+                addCouponRequestDTO.getCouponCode()
+                        .trim()
+                        .toUpperCase(Locale.ROOT)
+        );
         coupon.setCouponType(addCouponRequestDTO.getCouponType());
         coupon.setDescription(addCouponRequestDTO.getDescription());
         coupon.setMinOrderAmount(addCouponRequestDTO.getMinOrderAmount());
@@ -154,7 +163,10 @@ public class CouponService
 
     public Page<getAllCouponResponseDTO> viewAllCoupon(Integer pageNumber, Integer pageSize, CouponFilterRequestAdmin filter)
     {
-        Sort sort = Sort.by(Sort.Order.asc("expiryAt"));
+        Sort sort = Sort.by(
+                Sort.Order.asc("expiryAt"),
+                Sort.Order.asc("id")
+        );
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Specification<Coupon> spec = couponSpecification.buildSpecification(filter);
         Page<Coupon> coupons = couponRepository.findAll(spec, pageable);
@@ -286,7 +298,7 @@ public class CouponService
             throw new BadRequestException("Cart is Empty!!!");
         }
 
-        String code = dto.getCouponCode().trim().toUpperCase();
+        String code = dto.getCouponCode().trim().toUpperCase(Locale.ROOT);
 
         if (cart.getCoupon() != null && !cart.getCoupon().getCouponCode().equals(code))
         {
@@ -321,7 +333,6 @@ public class CouponService
             throw new BadRequestException("You have already used this coupon the maximum number of times");
         }
 
-        // Calculate current cart total from live product prices
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (CartItems item : cart.getItems())
         {
@@ -337,8 +348,6 @@ public class CouponService
                     "Minimum order amount of ₹" + coupon.getMinOrderAmount() + " is required for this coupon"
             );
         }
-
-        // Calculate discount
         BigDecimal discount = BigDecimal.ZERO;
         if (coupon.getCouponType() == CouponType.FLAT)
         {
