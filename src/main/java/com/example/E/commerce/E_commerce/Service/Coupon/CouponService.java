@@ -263,23 +263,52 @@ public class CouponService
         }
         return responseDTOForUser;
     }
-    public String removeCoupon(String id)  // parameter kept for signature, not used
+    @Transactional
+    public String removeCoupon(String id)
     {
         String username = Objects.requireNonNull(
-                SecurityContextHolder.getContext().getAuthentication()).getName();
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+        ).getName();
 
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BadRequestException("User Not Found!!!"));
+                .orElseThrow(() ->
+                        new BadRequestException("User Not Found!!!")
+                );
 
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new BadRequestException("Cart Does Not Exist!!!"));
+                .orElseThrow(() ->
+                        new BadRequestException(
+                                "Cart Does Not Exist!!!"
+                        )
+                );
 
         if (cart.getCoupon() == null)
         {
             throw new BadRequestException("No Coupon Applied");
         }
+
+        BigDecimal totalAmount = cart.getItems().stream()
+                .filter(item -> item.getProduct().isActive())
+                .filter(item -> item.getQuantity() > 0)
+                .filter(item ->
+                        item.getProduct().getStockQuantity()
+                                >= item.getQuantity()
+                )
+                .map(item -> item.getProduct().getFinalPrice()
+                        .multiply(
+                                BigDecimal.valueOf(item.getQuantity())
+                        ))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
         cart.setCoupon(null);
+        cart.setDiscountAmount(BigDecimal.ZERO);
+        cart.setTotalAmount(totalAmount);
+        cart.setFinalAmount(totalAmount);
+
         cartRepository.save(cart);
+
         return "Coupon Removed Successfully!!!";
     }
 
@@ -334,12 +363,40 @@ public class CouponService
         }
 
         BigDecimal totalAmount = BigDecimal.ZERO;
+
         for (CartItems item : cart.getItems())
         {
+            if (!item.getProduct().isActive())
+            {
+                throw new BadRequestException(
+                        "Product is unavailable: "
+                                + item.getProduct().getName()
+                );
+            }
+
+            if (item.getQuantity() <= 0
+                    || item.getProduct().getStockQuantity()
+                    < item.getQuantity())
+            {
+                throw new BadRequestException(
+                        "Insufficient stock for product: "
+                                + item.getProduct().getName()
+                );
+            }
+
             BigDecimal price = item.getProduct().getFinalPrice();
-            BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
-            totalAmount = totalAmount.add(price.multiply(quantity));
+
+            BigDecimal quantity =
+                    BigDecimal.valueOf(item.getQuantity());
+
+            totalAmount = totalAmount.add(
+                    price.multiply(quantity)
+            );
         }
+
+        totalAmount = totalAmount.setScale(
+                2, RoundingMode.HALF_UP
+        );
         totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
 
         if (totalAmount.compareTo(coupon.getMinOrderAmount()) < 0)

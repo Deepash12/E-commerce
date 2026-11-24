@@ -32,12 +32,49 @@ public class CartService
     private final ProductRepository productRepository;
     private final CartItemsRepository cartItemsRepository;
 
+    private boolean isCartItemAvailable(CartItems item)
+    {
+        Product product = item.getProduct();
+
+        return product != null
+                && product.isActive()
+                && item.getQuantity() > 0
+                && product.getStockQuantity() >= item.getQuantity();
+    }
+
+    private void validateProductAvailability(
+            Product product, long quantity)
+    {
+        if (!product.isActive())
+        {
+            throw new BadRequestException(
+                    "Product is currently unavailable: "
+                            + product.getName()
+            );
+        }
+        if (quantity <= 0)
+        {
+            throw new BadRequestException(
+                    "Quantity must be greater than 0"
+            );
+        }
+        if (quantity > product.getStockQuantity())
+        {
+            throw new BadRequestException(
+                    "Only " + product.getStockQuantity()
+                            + " items available in stock"
+            );
+        }
+    }
+
     private BigDecimal calculateCartTotal(Cart cart)
     {
         return cart.getItems().stream()
-                .filter(item -> item.getProduct().isActive())
+                .filter(this::isCartItemAvailable)
                 .map(item -> item.getProduct().getFinalPrice()
-                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                        .multiply(
+                                BigDecimal.valueOf(item.getQuantity())
+                        ))
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
@@ -103,7 +140,7 @@ public class CartService
                 });
 
         List<CartItemsResponseDTO> items = cart.getItems().stream()
-                .filter(cartItems -> cartItems.getProduct().isActive())
+                .filter(this::isCartItemAvailable)
                 .map(item -> new CartItemsResponseDTO(
                         item.getProduct().getId(),
                         item.getProduct().getName(),
@@ -172,9 +209,6 @@ public class CartService
         return "Product Deleted Successfully";
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Add item to cart
-    // ─────────────────────────────────────────────────────────────────────────
     @Transactional
     public String addItems(CartItemsRequestDTO cartItemsRequestDTO, String username)
     {
@@ -197,18 +231,19 @@ public class CartService
                 .findById(cartItemsRequestDTO.getProductId())
                 .orElseThrow(() -> new BadRequestException("Product does not exist"));
 
-        int requestedQuantity = Math.toIntExact(cartItemsRequestDTO.getQuantity());
-        int productStockQuantity = product.getStockQuantity();
+        int requestedQuantity =
+                Math.toIntExact(cartItemsRequestDTO.getQuantity());
 
-        Optional<CartItems> existingItems = cartItemsRepository.findByCartAndProduct(cart, product);
+        Optional<CartItems> existingItems =
+                cartItemsRepository.findByCartAndProduct(cart, product);
 
-        int currentCartQuantity = existingItems.map(CartItems::getQuantity).orElse(0);
-        int totalRequestedQuantity = currentCartQuantity + requestedQuantity;
+        int currentCartQuantity =
+                existingItems.map(CartItems::getQuantity).orElse(0);
 
-        if (totalRequestedQuantity > productStockQuantity)
-        {
-            throw new BadRequestException("Only " + productStockQuantity + " items available in stock");
-        }
+        long totalRequestedQuantity =
+                (long) currentCartQuantity + requestedQuantity;
+
+        validateProductAvailability(product, totalRequestedQuantity);
 
         CartItems cartItems;
         if (existingItems.isPresent())
@@ -228,15 +263,9 @@ public class CartService
         {
             clearAppliedCoupon(cart);
         }
-
-
-
         return "Product added to cart successfully. Applied coupon removed due to cart changes.";
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Update quantity in cart
-    // ─────────────────────────────────────────────────────────────────────────
     @Transactional
     public String updateQuantityInCart(CartItemsRequestDTO request, String username)
     {
@@ -273,10 +302,10 @@ public class CartService
             return "Item removed from cart";
         }
 
-        if (request.getQuantity() > product.getStockQuantity())
-        {
-            throw new BadRequestException("Only " + product.getStockQuantity() + " items available in stock");
-        }
+        validateProductAvailability(
+                product,
+                request.getQuantity()
+        );
 
         int oldQuantity = cartItems.getQuantity();
         cartItems.setQuantity(request.getQuantity().intValue());

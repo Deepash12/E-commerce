@@ -78,6 +78,7 @@ import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderRequestDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.CheckoutOrderResponseDTO;
 import com.example.E.commerce.E_commerce.DTO.Order.OrderResponseDTO;
 import com.example.E.commerce.E_commerce.Service.Order.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -100,7 +101,7 @@ public class OrderController
 
     // STEP 1 — Checkout summary (price + coupon calculate, kuch save nahi hota)
     @PostMapping("/checkout")
-    public ApiResponseDTO<?> checkoutOrder(@RequestBody CheckoutOrderRequestDTO dto)
+    public ApiResponseDTO<?> checkoutOrder(@Valid @RequestBody CheckoutOrderRequestDTO dto)
     {
         CheckoutOrderResponseDTO response = orderService.checkoutOrders(dto);
         return new ApiResponseDTO<>(

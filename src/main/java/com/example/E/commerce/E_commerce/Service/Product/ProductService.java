@@ -35,6 +35,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.example.E.commerce.E_commerce.Entity.Cart.Cart;
+import com.example.E.commerce.E_commerce.Repository.Cart.CartRepository;
+import com.example.E.commerce.E_commerce.Repository.Cart.CartItemsRepository;
+import java.math.RoundingMode;
+
 @RequiredArgsConstructor
 @Service
 public class ProductService
@@ -45,6 +50,8 @@ public class ProductService
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final WishlistRepository wishlistRepository;
+    private final CartRepository cartRepository;
+    private final CartItemsRepository cartItemsRepository;
 
     public ProductPageResponseDTO<ProductResponseDTO> getAllProducts(
             int pageNumber,
@@ -135,6 +142,52 @@ public class ProductService
                 .build();
     }
 
+    private void removeProductFromAffectedCarts(Long productId)
+    {
+        List<Long> cartIds =
+                cartItemsRepository.findAffectedCartIds(productId);
+
+        for (Long cartId : cartIds)
+        {
+            Cart cart = cartRepository.findByIdForUpdate(cartId)
+                    .orElse(null);
+
+            if (cart == null)
+            {
+                continue;
+            }
+
+            boolean removed = cart.getItems().removeIf(
+                    item -> item.getProduct().getId().equals(productId)
+            );
+
+            if (!removed)
+            {
+                continue;
+            }
+
+            BigDecimal totalAmount = cart.getItems().stream()
+                    .filter(item -> item.getProduct().isActive())
+                    .filter(item -> item.getQuantity() > 0)
+                    .filter(item ->
+                            item.getProduct().getStockQuantity()
+                                    >= item.getQuantity()
+                    )
+                    .map(item -> item.getProduct().getFinalPrice()
+                            .multiply(
+                                    BigDecimal.valueOf(item.getQuantity())
+                            ))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            cart.setCoupon(null);
+            cart.setDiscountAmount(BigDecimal.ZERO);
+            cart.setTotalAmount(totalAmount);
+            cart.setFinalAmount(totalAmount);
+
+            cartRepository.save(cart);
+        }
+    }
 
     public Product addProduct(@Valid ProductRequestDTO productRequestDTO,
                               MultipartFile image) throws IOException
@@ -212,15 +265,32 @@ public class ProductService
     }
 
     @Transactional
-    public String deleteProductById(Long id,Boolean flag)
+    public String deleteProductById(Long id, Boolean flag)
     {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Product Not Exist!!!"));
+        if (flag == null)
+        {
+            throw new BadRequestException(
+                    "Product active status is required"
+            );
+        }
+
+        Product product = productRepository.findByIdForUpdate(id)
+                .orElseThrow(() ->
+                        new BadRequestException("Product Not Exist!!!")
+                );
 
         product.setActive(flag);
+
+        if (!flag)
+        {
+            removeProductFromAffectedCarts(id);
+        }
+
         productRepository.save(product);
 
-        return "Product Deleted Successfully";
+        return flag
+                ? "Product Enabled Successfully"
+                : "Product Disabled Successfully";
     }
 
 

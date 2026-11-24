@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import com.example.E.commerce.E_commerce.Repository.Order.OrderRepository;
+import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
 public class CouponCalculationService
 {
     private final CouponRepository couponRepository;
+    private final OrderRepository orderRepository;
 
     public BigDecimal calculateDiscount(Coupon coupon, BigDecimal orderAmount)
     {
@@ -53,43 +56,80 @@ public class CouponCalculationService
     }
 
 
-        public Coupon validateCoupon(String couponCode, BigDecimal cartTotal) {
-
-        // 1. Check null / empty
-        if (couponCode == null || couponCode.trim().isEmpty()) {
-            throw new BadRequestException("Coupon code is required");
-        }
-
-        // 2. Find coupon
-        Coupon coupon = couponRepository.findByCouponCode(couponCode)
-                .orElseThrow(() -> new BadRequestException("Invalid coupon code"));
-
-        // 3. Check active
-        if (!coupon.getIsActive()) {
-            throw new BadRequestException("Coupon is not active");
-        }
-
-        // 4. Check expiry
-        if (coupon.getExpiryAt() != null &&
-                coupon.getExpiryAt().isBefore(LocalDateTime.now())) {
-
-            throw new BadRequestException("Coupon has expired");
-        }
-
-        // 5. Check minimum order amount
-        if (coupon.getMinOrderAmount() != null &&
-                cartTotal.compareTo(coupon.getMinOrderAmount()) < 0) {
-
+    public Coupon validateCoupon(
+            String couponCode,
+            BigDecimal cartTotal,
+            Long userId)
+    {
+        if (couponCode == null || couponCode.isBlank())
+        {
             throw new BadRequestException(
-                    "Minimum order amount should be ₹" + coupon.getMinOrderAmount()
+                    "Coupon code is required"
             );
         }
 
-        // 6. (Optional) usage limit
-        if (coupon.getGlobalUsageLimit() != null &&
-                coupon.getUsedCount() >= coupon.getGlobalUsageLimit()) {
+        String normalizedCode = couponCode.trim()
+                .toUpperCase(Locale.ROOT);
 
-            throw new BadRequestException("Coupon usage limit exceeded");
+        Coupon coupon = couponRepository
+                .findByCouponCode(normalizedCode)
+                .orElseThrow(() ->
+                        new BadRequestException("Invalid coupon code")
+                );
+
+        if (!Boolean.TRUE.equals(coupon.getIsActive()))
+        {
+            throw new BadRequestException("Coupon is not active");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (coupon.getValidFrom() != null
+                && now.isBefore(coupon.getValidFrom()))
+        {
+            throw new BadRequestException(
+                    "Coupon is not yet active"
+            );
+        }
+
+        if (coupon.getExpiryAt() != null
+                && !now.isBefore(coupon.getExpiryAt()))
+        {
+            throw new BadRequestException("Coupon has expired");
+        }
+
+        if (coupon.getMinOrderAmount() != null
+                && cartTotal.compareTo(
+                coupon.getMinOrderAmount()
+        ) < 0)
+        {
+            throw new BadRequestException(
+                    "Minimum order amount should be ₹"
+                            + coupon.getMinOrderAmount()
+            );
+        }
+
+        if (coupon.getGlobalUsageLimit() != null
+                && coupon.getUsedCount()
+                >= coupon.getGlobalUsageLimit())
+        {
+            throw new BadRequestException(
+                    "Coupon usage limit exceeded"
+            );
+        }
+
+        long userUsage =
+                orderRepository.countByUserIdAndCouponId(
+                        userId, coupon.getId()
+                );
+
+        if (coupon.getPerUserLimit() != null
+                && userUsage >= coupon.getPerUserLimit())
+        {
+            throw new BadRequestException(
+                    "You have already used this coupon "
+                            + "the maximum number of times"
+            );
         }
 
         return coupon;
