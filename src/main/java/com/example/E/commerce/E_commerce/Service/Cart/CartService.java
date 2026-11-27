@@ -18,9 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,12 +32,56 @@ public class CartService
 
     private boolean isCartItemAvailable(CartItems item)
     {
+        return "AVAILABLE".equals(getAvailabilityStatus(item));
+    }
+    private String getAvailabilityStatus(CartItems item)
+    {
         Product product = item.getProduct();
 
-        return product != null
-                && product.isActive()
-                && item.getQuantity() > 0
-                && product.getStockQuantity() >= item.getQuantity();
+        if (product == null || !product.isActive())
+        {
+            return "INACTIVE";
+        }
+
+        if (item.getQuantity() == null
+                || item.getQuantity() <= 0)
+        {
+            return "INVALID_QUANTITY";
+        }
+
+        if (product.getStockQuantity() <= 0)
+        {
+            return "OUT_OF_STOCK";
+        }
+
+        if (item.getQuantity() > product.getStockQuantity())
+        {
+            return "INSUFFICIENT_STOCK";
+        }
+
+        return "AVAILABLE";
+    }
+
+    private String getAvailabilityMessage(
+            CartItems item, String status)
+    {
+        return switch (status)
+        {
+            case "INACTIVE" ->
+                    "This product is currently unavailable.";
+
+            case "OUT_OF_STOCK" ->
+                    "This product is currently out of stock.";
+
+            case "INSUFFICIENT_STOCK" ->
+                    "Only " + item.getProduct().getStockQuantity()
+                            + " items available in stock.";
+
+            case "INVALID_QUANTITY" ->
+                    "Please select a valid quantity.";
+
+            default -> null;
+        };
     }
 
     private void validateProductAvailability(
@@ -80,57 +122,22 @@ public class CartService
     }
     private void clearAppliedCoupon(Cart cart)
     {
+        BigDecimal cartTotal = calculateCartTotal(cart);
+
         cart.setCoupon(null);
         cart.setDiscountAmount(BigDecimal.ZERO);
+        cart.setTotalAmount(cartTotal);
+        cart.setFinalAmount(cartTotal);
 
         cartRepository.save(cart);
     }
 
-    private String revalidateAndClearCouponIfInvalid(Cart cart)
+    @Transactional
+    public CartResponseDTO viewCart(String username)
     {
-        Coupon coupon = cart.getCoupon();
-        if (coupon == null)
-        {
-            return null; // nothing to validate
-        }
-
-        String reason = null;
-
-        if (!coupon.getIsActive())
-        {
-            reason = "Coupon '" + coupon.getCouponCode() + "' is no longer active and has been removed from your cart.";
-        }
-        else if (coupon.getExpiryAt() != null && coupon.getExpiryAt().isBefore(LocalDateTime.now()))
-        {
-            reason = "Coupon '" + coupon.getCouponCode() + "' has expired and has been removed from your cart.";
-        }
-        else if (coupon.getGlobalUsageLimit() != null && coupon.getUsedCount() >= coupon.getGlobalUsageLimit())
-        {
-            reason = "Coupon '" + coupon.getCouponCode() + "' has reached its usage limit and has been removed from your cart.";
-        }
-        else
-        {
-            BigDecimal cartTotal = calculateCartTotal(cart);
-            if (coupon.getMinOrderAmount() != null && cartTotal.compareTo(coupon.getMinOrderAmount()) < 0)
-            {
-                reason = "Coupon '" + coupon.getCouponCode() + "' requires a minimum order of ₹"
-                        + coupon.getMinOrderAmount() + ". It has been removed because your cart total is now ₹"
-                        + cartTotal + ".";
-            }
-        }
-
-        if (reason != null)
-        {
-            cart.setCoupon(null);
-            // cart will be saved by the calling method, no extra save needed here
-        }
-
-        return reason;
-    }
-
-    public CartResponseDTO viewCart(String username) {
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BadRequestException("User not found"));
+                .orElseThrow(() ->
+                        new BadRequestException("User not found"));
 
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> {
@@ -139,82 +146,141 @@ public class CartService
                     return cartRepository.save(newCart);
                 });
 
-        List<CartItemsResponseDTO> items = cart.getItems().stream()
-                .filter(this::isCartItemAvailable)
-                .map(item -> new CartItemsResponseDTO(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
-                        item.getProduct().getFinalPrice(),
-                        item.getQuantity(),
-                        item.getProduct().getProductImageUrl(),
-                        item.getProduct().getFinalPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity())),
-                        true
-                )).toList();
+        List<CartItemsResponseDTO> items = cart.getItems()
+                .stream()
+                .map(item -> {
 
-        BigDecimal grandTotal = items.stream()
-                .map(CartItemsResponseDTO::getTotalPrice)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    Product product = item.getProduct();
 
-        int totalItems = items.stream().mapToInt(CartItemsResponseDTO::getQuantity).sum();
+                    String status = getAvailabilityStatus(item);
 
-        // ✅ Coupon info include karo response mein
+                    boolean available = "AVAILABLE".equals(status);
+
+                    BigDecimal totalPrice = product.getFinalPrice()
+                            .multiply(BigDecimal.valueOf(item.getQuantity()))
+                            .setScale(2, RoundingMode.HALF_UP);
+
+                    return new CartItemsResponseDTO(
+                            product.getId(),
+                            product.getName(),
+                            product.getFinalPrice(),
+                            item.getQuantity(),
+                            product.getProductImageUrl(),
+                            totalPrice,
+                            product.isActive(),
+                            product.getStockQuantity(),
+                            available,
+                            status,
+                            getAvailabilityMessage(item, status)
+                    );
+                })
+                .toList();
+
+        BigDecimal grandTotal = calculateCartTotal(cart);
+
+        int totalItems = items.stream()
+                .mapToInt(CartItemsResponseDTO::getQuantity)
+                .sum();
+
+        int unavailableItemsCount = (int) items.stream()
+                .filter(item ->
+                        !Boolean.TRUE.equals(item.getIsAvailable()))
+                .count();
+
+        boolean hasUnavailableItems = unavailableItemsCount > 0;
+
+        boolean canCheckout =
+                !items.isEmpty() && !hasUnavailableItems;
+
         Coupon coupon = cart.getCoupon();
 
-
-        if (coupon != null) {
-            BigDecimal discountAmount = cart.getDiscountAmount() != null
-                    ? cart.getDiscountAmount()   // ← DB se lo, recalculate mat karo
-                    : BigDecimal.ZERO;
-            BigDecimal finalAmount = grandTotal.subtract(discountAmount);
-            return new CartResponseDTO(items, grandTotal, totalItems,
-                    coupon.getCouponCode(), discountAmount, finalAmount);
+        if (coupon != null
+                && (hasUnavailableItems
+                || cart.getTotalAmount() == null
+                || cart.getTotalAmount().compareTo(grandTotal) != 0))
+        {
+            clearAppliedCoupon(cart);
+            coupon = null;
+        }
+        if (coupon == null
+                && (cart.getTotalAmount() == null
+                || cart.getTotalAmount().compareTo(grandTotal) != 0
+                || cart.getFinalAmount() == null
+                || cart.getFinalAmount().compareTo(grandTotal) != 0
+                || cart.getDiscountAmount() == null
+                || cart.getDiscountAmount().signum() != 0))
+        {
+            clearAppliedCoupon(cart);
         }
 
-        return new CartResponseDTO(items, grandTotal, totalItems);
+        BigDecimal discountAmount = BigDecimal.ZERO;
+
+        if (coupon != null && cart.getDiscountAmount() != null)
+        {
+            discountAmount = cart.getDiscountAmount()
+                    .max(BigDecimal.ZERO)
+                    .min(grandTotal);
+        }
+
+        BigDecimal finalAmount = grandTotal
+                .subtract(discountAmount)
+                .max(BigDecimal.ZERO);
+
+        return new CartResponseDTO(
+                items,
+                grandTotal,
+                totalItems,
+                coupon != null ? coupon.getCouponCode() : null,
+                discountAmount,
+                finalAmount,
+                hasUnavailableItems,
+                unavailableItemsCount,
+                canCheckout
+        );
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Remove product from cart
-    // ─────────────────────────────────────────────────────────────────────────
     @Transactional
-    public String removeProductFromCart(String username, Long productId)
+    public String removeProductFromCart(
+            String username, Long productId)
     {
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BadRequestException("User not found"));
+                .orElseThrow(() ->
+                        new BadRequestException("User not found"));
 
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new BadRequestException("Cart not found"));
+                .orElseThrow(() ->
+                        new BadRequestException("Cart not found"));
 
-        int deleted = cartRepository.RemoveItemFromCart(cart.getId(), productId);
-        if (deleted == 0)
+        boolean removed = cart.getItems().removeIf(
+                item -> item.getProduct().getId().equals(productId)
+        );
+
+        if (!removed)
         {
-            throw new BadRequestException("Product not found in cart");
+            throw new BadRequestException(
+                    "Product not found in cart"
+            );
         }
 
-        // Reload items so the cart total reflects the removal
-        cartItemsRepository.flush();
-        cartRepository.flush();
-        Cart refreshedCart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new BadRequestException("Cart not found"));
+        boolean hadCoupon = cart.getCoupon() != null;
 
-        String couponWarning = revalidateAndClearCouponIfInvalid(refreshedCart);
-        cartRepository.save(refreshedCart);
+        clearAppliedCoupon(cart);
 
-        if (couponWarning != null)
-        {
-            return "Product removed from cart. Note: " + couponWarning;
-        }
-        return "Product Deleted Successfully";
+        return hadCoupon
+                ? "Product removed successfully. "
+                + "Applied coupon removed due to cart changes."
+                : "Product Deleted Successfully";
     }
 
     @Transactional
     public String addItems(CartItemsRequestDTO cartItemsRequestDTO, String username)
     {
-        if (cartItemsRequestDTO.getQuantity() <= 0)
+        if (cartItemsRequestDTO.getQuantity() == null
+                || cartItemsRequestDTO.getQuantity() <= 0
+                || cartItemsRequestDTO.getQuantity() > Integer.MAX_VALUE)
         {
-            throw new BadRequestException("Quantity must be greater than 0");
+            throw new BadRequestException(
+                    "Quantity must be a positive integer within the supported range");
         }
 
         Users user = userRepository.findByUsername(username)
@@ -256,50 +322,67 @@ public class CartService
             cartItems = new CartItems();
             cartItems.setCart(cart);
             cartItems.setProduct(product);
-            cartItems.setQuantity(cartItemsRequestDTO.getQuantity().intValue());
+            cartItems.setQuantity(requestedQuantity);
+
+            cart.getItems().add(cartItems);
         }
         cartItemsRepository.save(cartItems);
-        if (cart.getCoupon() != null)
-        {
-            clearAppliedCoupon(cart);
-        }
-        return "Product added to cart successfully. Applied coupon removed due to cart changes.";
+
+        boolean hadCoupon = cart.getCoupon() != null;
+
+        clearAppliedCoupon(cart);
+
+        return hadCoupon
+                ? "Product added to cart successfully. "
+                + "Applied coupon removed due to cart changes."
+                : "Product added to cart successfully.";
     }
 
+
     @Transactional
-    public String updateQuantityInCart(CartItemsRequestDTO request, String username)
+    public String updateQuantityInCart(
+            CartItemsRequestDTO request, String username)
     {
-        if (request.getQuantity() < 0)
+        if (request.getQuantity() == null
+                || request.getQuantity() < 0
+                || request.getQuantity() > Integer.MAX_VALUE)
         {
-            throw new BadRequestException("Quantity must be greater than 0");
+            throw new BadRequestException(
+                    "Invalid quantity"
+            );
         }
 
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BadRequestException("User does not exist"));
+                .orElseThrow(() ->
+                        new BadRequestException("User does not exist"));
 
         Cart cart = cartRepository.findByUser(user)
-                .orElseThrow(() -> new BadRequestException("Cart not found"));
+                .orElseThrow(() ->
+                        new BadRequestException("Cart not found"));
 
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new BadRequestException("Product not found"));
+        Product product = productRepository
+                .findById(request.getProductId())
+                .orElseThrow(() ->
+                        new BadRequestException("Product not found"));
 
-        CartItems cartItems = cartItemsRepository
-                .findByCartAndProduct(cart, product)
-                .orElseThrow(() -> new BadRequestException("Item not in cart"));
+        CartItems cartItems = cart.getItems().stream()
+                .filter(item ->
+                        item.getProduct().getId().equals(product.getId()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new BadRequestException("Item not in cart"));
+
+        boolean hadCoupon = cart.getCoupon() != null;
 
         if (request.getQuantity() == 0)
         {
-            cartItemsRepository.delete(cartItems);
+            cart.getItems().remove(cartItems);
 
-            // Removing an item reduces cart total — coupon may no longer be valid
-            String couponWarning = revalidateAndClearCouponIfInvalid(cart);
-            cartRepository.save(cart);
+            clearAppliedCoupon(cart);
 
-            if (couponWarning != null)
-            {
-                return "Item removed from cart. Note: " + couponWarning;
-            }
-            return "Item removed from cart";
+            return hadCoupon
+                    ? "Item removed from cart. Applied coupon removed."
+                    : "Item removed from cart";
         }
 
         validateProductAvailability(
@@ -307,28 +390,24 @@ public class CartService
                 request.getQuantity()
         );
 
-        int oldQuantity = cartItems.getQuantity();
-        cartItems.setQuantity(request.getQuantity().intValue());
-        cartItemsRepository.save(cartItems);
-
-        if (cart.getCoupon() != null)
+        if (cartItems.getQuantity().longValue()
+                == request.getQuantity().longValue())
         {
-            clearAppliedCoupon(cart);
+            return "Quantity is already up to date";
         }
 
-        // Only re-validate coupon if quantity was reduced (cart total went down)
-        if (request.getQuantity() < oldQuantity)
-        {
-            String couponWarning = revalidateAndClearCouponIfInvalid(cart);
-            if (couponWarning != null)
-            {
-                cartRepository.save(cart);
-                return "Quantity updated successfully. Note: " + couponWarning;
-            }
-        }
+        cartItems.setQuantity(
+                Math.toIntExact(request.getQuantity())
+        );
 
-        return "Quantity updated successfully. Applied coupon removed due to cart changes.";
+        clearAppliedCoupon(cart);
+
+        return hadCoupon
+                ? "Quantity updated successfully. "
+                + "Applied coupon removed due to cart changes."
+                : "Quantity updated successfully.";
     }
+
     @Transactional
     public CartResponseDTO removeCoupon(String username) {
         Users user = userRepository.findByUsername(username)
@@ -341,11 +420,7 @@ public class CartService
             throw new BadRequestException("No coupon applied on cart");
         }
 
-        // ✅ Coupon clear karo
-        cart.setCoupon(null);
-        cart.setDiscountAmount(BigDecimal.ZERO);
-        cart.setFinalAmount(calculateCartTotal(cart));
-        cartRepository.save(cart);
+        clearAppliedCoupon(cart);
 
         return viewCart(username);
     }

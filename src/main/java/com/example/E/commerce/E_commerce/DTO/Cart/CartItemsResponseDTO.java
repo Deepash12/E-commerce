@@ -19,4 +19,26 @@ public class CartItemsResponseDTO
     private BigDecimal totalPrice;
     private Boolean isActiveProduct;
 
+    private Integer stockQuantity;
+    private Boolean isAvailable;
+    private String availabilityStatus;
+    private String availabilityMessage;
+
+    public CartItemsResponseDTO(
+            Long productId,
+            String productName,
+            BigDecimal finalPrice,
+            Integer quantity,
+            String productImageUrl,
+            BigDecimal totalPrice,
+            Boolean isActiveProduct)
+    {
+        this.productId = productId;
+        this.productName = productName;
+        this.finalPrice = finalPrice;
+        this.quantity = quantity;
+        this.productImageUrl = productImageUrl;
+        this.totalPrice = totalPrice;
+        this.isActiveProduct = isActiveProduct;
+    }
 }

@@ -189,6 +189,78 @@ public class ProductService
         }
     }
 
+
+    private void reconcileAffectedCarts(Long productId)
+    {
+        List<Long> cartIds =
+                cartItemsRepository.findAffectedCartIds(productId);
+
+        for (Long cartId : cartIds)
+        {
+            Cart cart = cartRepository.findByIdForUpdate(cartId)
+                    .orElse(null);
+
+            if (cart == null)
+            {
+                continue;
+            }
+
+            boolean hasUnavailableItems = cart.getItems().stream()
+                    .anyMatch(item ->
+                            item.getProduct() == null
+                                    || !item.getProduct().isActive()
+                                    || item.getQuantity() == null
+                                    || item.getQuantity() <= 0
+                                    || item.getProduct().getStockQuantity()
+                                    < item.getQuantity()
+                    );
+
+            BigDecimal totalAmount = cart.getItems().stream()
+                    .filter(item -> item.getProduct() != null)
+                    .filter(item -> item.getProduct().isActive())
+                    .filter(item -> item.getQuantity() != null
+                            && item.getQuantity() > 0)
+                    .filter(item ->
+                            item.getProduct().getStockQuantity()
+                                    >= item.getQuantity()
+                    )
+                    .map(item -> item.getProduct().getFinalPrice()
+                            .multiply(
+                                    BigDecimal.valueOf(item.getQuantity())
+                            ))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            boolean totalChanged =
+                    cart.getTotalAmount() == null
+                            || cart.getTotalAmount().compareTo(totalAmount) != 0;
+
+            if (hasUnavailableItems || totalChanged)
+            {
+                cart.setCoupon(null);
+                cart.setDiscountAmount(BigDecimal.ZERO);
+            }
+
+            BigDecimal discountAmount =
+                    cart.getCoupon() != null
+                            && cart.getDiscountAmount() != null
+                            ? cart.getDiscountAmount()
+                            .max(BigDecimal.ZERO)
+                            .min(totalAmount)
+                            : BigDecimal.ZERO;
+
+            cart.setTotalAmount(totalAmount);
+            cart.setDiscountAmount(discountAmount);
+            cart.setFinalAmount(
+                    totalAmount.subtract(discountAmount)
+            );
+
+            cartRepository.save(cart);
+        }
+    }
+
+
+
     public Product addProduct(@Valid ProductRequestDTO productRequestDTO,
                               MultipartFile image) throws IOException
     {
@@ -293,15 +365,21 @@ public class ProductService
                 : "Product Disabled Successfully";
     }
 
-
+    @Transactional(rollbackOn = IOException.class)
     public Product updateProductById(Long id,
                                      ProductRequestDTO productRequestDTO,
                                      MultipartFile image)
             throws IOException
     {
-        Product existingProduct = productRepository.findById(id)
+        Product existingProduct = productRepository.findByIdForUpdate(id)
                 .orElseThrow(() ->
                         new BadRequestException("Product does not exist!!!"));
+
+        int previousStockQuantity =
+                existingProduct.getStockQuantity();
+
+        BigDecimal previousFinalPrice =
+                existingProduct.getFinalPrice();
 
         Category category = categoryRepository.findById(
                 productRequestDTO.getCategoryId()
@@ -365,7 +443,24 @@ public class ProductService
         existingProduct.setCategory(category);
         existingProduct.setSubCategory(subCategory);
 
-        return productRepository.save(existingProduct);
+        boolean stockChanged =
+                previousStockQuantity
+                        != existingProduct.getStockQuantity();
+
+        boolean priceChanged =
+                previousFinalPrice == null
+                        || previousFinalPrice.compareTo(
+                        existingProduct.getFinalPrice()) != 0;
+
+        Product updatedProduct =
+                productRepository.save(existingProduct);
+
+        if (stockChanged || priceChanged)
+        {
+            reconcileAffectedCarts(updatedProduct.getId());
+        }
+
+        return updatedProduct;
     }
 
 
